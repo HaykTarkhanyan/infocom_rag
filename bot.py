@@ -41,7 +41,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.chat.send_action("typing")
 
     try:
-        answer = rag.answer(query)
+        answer, _ = rag.answer(query)
         await update.message.reply_text(answer)
     except Exception as e:
         logger.error(f"Error processing query: {e}", exc_info=True)

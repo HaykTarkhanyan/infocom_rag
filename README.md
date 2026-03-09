@@ -1,78 +1,52 @@
 # Telegram RAG Chatbot
 
 A RAG chatbot that ingests Telegram chat history and answers questions using:
-- **Metric-AI/armenian-text-embeddings-1** for embeddings
-- **Weaviate** as the vector database
+- **Metric-AI/armenian-text-embeddings-1** for embeddings (768-dim, Armenian-optimized)
+- **Weaviate** as the vector database (Docker)
 - **Gemini 2.5 Flash** for answer generation
-- **python-telegram-bot** for the Telegram interface
+- **Two interfaces**: Telegram bot + Streamlit web UI
 
-## Setup
+Supports Armenian, English, and Russian in mixed-language settings.
 
-### 1. Prerequisites
-- Python 3.11+
-- Docker & Docker Compose
-
-### 2. Install dependencies
+## Quick Start
 
 ```bash
+# 1. Install
 pip install -r requirements.txt
-```
 
-### 3. Configure environment
+# 2. Configure
+cp .env.example .env   # fill in TELEGRAM_BOT_TOKEN and GEMINI_API_KEY
 
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and fill in:
-- `TELEGRAM_BOT_TOKEN` — get from [@BotFather](https://t.me/BotFather)
-- `GEMINI_API_KEY` — get from [Google AI Studio](https://aistudio.google.com/)
-
-### 4. Start Weaviate
-
-```bash
+# 3. Start Weaviate
 docker compose up -d
+
+# 4. Export your Telegram chat (Telegram Desktop → Settings → Advanced → Export chat history → JSON)
+
+# 5. Ingest
+python ingest.py path/to/result.json                    # default: single_message chunking
+python ingest.py path/to/result.json sliding_window     # or: sliding_window / conversation_thread
+
+# 6. Run
+python bot.py              # Telegram bot
+streamlit run ui.py        # Web UI with live hyperparameter tuning
 ```
 
-### 5. Export Telegram chat
+## Chunking Strategies
 
-In Telegram Desktop: **Settings → Advanced → Export chat history → JSON format**
-
-This produces a `result.json` file.
-
-### 6. Ingest data
-
-```bash
-python ingest.py path/to/result.json
-```
-
-This parses the Telegram export, embeds all messages, and stores them in Weaviate.
-
-### 7. Run the bot
-
-```bash
-python bot.py
-```
-
-Open your bot in Telegram and start asking questions!
-
-## Architecture
-
-```
-result.json → ingest.py → [Armenian Embeddings] → Weaviate
-                                                      ↓
-User Question → bot.py → [Armenian Embeddings] → Vector Search
-                                                      ↓
-                                              Retrieved Context
-                                                      ↓
-                                                Gemini 2.5 Flash
-                                                      ↓
-                                                   Answer
-```
+| Strategy | Description | Best for |
+|---|---|---|
+| `single_message` | Each message = one chunk | Large chats, precise retrieval |
+| `sliding_window` | N consecutive messages with overlap | Group chats with flowing conversations |
+| `conversation_thread` | Reply chains grouped together | Chats where people use the reply feature |
 
 ## Configuration
 
-Edit `config.py` to adjust:
-- `TOP_K` — number of messages to retrieve (default: 10)
-- `COLLECTION_NAME` — Weaviate collection name
-- Embedding model settings
+All settings are configurable via environment variables in `.env`. See `.env.example` for the full list, or `REPORT.md` for detailed documentation.
+
+Key settings: `TOP_K`, `MAX_DISTANCE`, `CHUNKING_STRATEGY`, `GEMINI_MODEL`, `GEMINI_TEMPERATURE`.
+
+The Streamlit UI also lets you tune retrieval and generation parameters in real-time via the sidebar.
+
+## Documentation
+
+See **[REPORT.md](REPORT.md)** for the full technical report covering architecture, data flow, chunking strategies, hyperparameter tuning guide, and performance considerations.
