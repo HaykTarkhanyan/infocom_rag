@@ -145,10 +145,11 @@ def chunk_conversation_thread(
 
     def collect_thread(root_id: int) -> list[dict]:
         """BFS to collect a thread starting from root."""
-        queue = [root_id]
+        from collections import deque
+        queue = deque([root_id])
         thread = []
         while queue:
-            mid = queue.pop(0)
+            mid = queue.popleft()
             if mid in visited or mid not in id_to_msg:
                 continue
             visited.add(mid)
@@ -316,7 +317,12 @@ def main():
     embedder = EmbeddingModel()
 
     print(f"Connecting to Weaviate at {WEAVIATE_URL}")
-    client = weaviate.connect_to_local()
+    from urllib.parse import urlparse
+    parsed = urlparse(WEAVIATE_URL)
+    client = weaviate.connect_to_local(
+        host=parsed.hostname or "localhost",
+        port=parsed.port or 8080,
+    )
 
     try:
         create_collection(client)

@@ -70,15 +70,7 @@ class RAG:
 
     def format_context(self, results: list[dict]) -> str:
         """Format retrieved chunks into a context string."""
-        lines = []
-        for r in results:
-            # For single messages the text already has [date] sender: format from chunking
-            # For thread/window chunks the text is pre-formatted
-            if r["chunk_type"] in ("single_message", ""):
-                lines.append(r["text"])
-            else:
-                lines.append(r["text"])
-        return "\n".join(lines)
+        return "\n".join(r["text"] for r in results)
 
     def answer(self, query: str) -> tuple[str, list[dict]]:
         """Full RAG pipeline: retrieve context, then generate answer.
