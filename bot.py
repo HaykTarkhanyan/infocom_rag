@@ -36,7 +36,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not query:
         return
 
-    logger.info(f"Query from {update.effective_user.username}: {query}")
+    logger.info("Query from %s: %s", update.effective_user.username, query)
 
     await update.message.chat.send_action("typing")
 
@@ -44,7 +44,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         answer, _ = rag.answer(query)
         await update.message.reply_text(answer)
     except Exception as e:
-        logger.error(f"Error processing query: {e}", exc_info=True)
+        logger.error("Error processing query: %s", e, exc_info=True)
         await update.message.reply_text(
             "Sorry, something went wrong while processing your question. Please try again."
         )
