@@ -47,11 +47,10 @@ async def scrape_group(
 ) -> None:
     """Connect to Telegram and scrape messages + media from *group*."""
     if not API_ID or not API_HASH:
-        print(
-            "Error: TELEGRAM_API_ID and TELEGRAM_API_HASH must be set in .env\n"
-            "Get them at https://my.telegram.org"
+        raise RuntimeError(
+            "TELEGRAM_API_ID and TELEGRAM_API_HASH must be set in .env — "
+            "get them at https://my.telegram.org"
         )
-        sys.exit(1)
 
     client = TelegramClient(SESSION_NAME, int(API_ID), API_HASH)
     await client.start()
@@ -70,7 +69,7 @@ async def scrape_group(
             "id": message.id,
             "date": message.date.isoformat() if message.date else None,
             "sender_id": message.sender_id,
-            "text": message.text or "",
+            "text": message.text if message.text is not None else "",
             "reply_to_msg_id": (
                 message.reply_to.reply_to_msg_id if message.reply_to else None
             ),
@@ -87,7 +86,7 @@ async def scrape_group(
                     record["media_file"] = filename
                     media_count += 1
                 elif isinstance(message.media, MessageMediaDocument):
-                    mime = getattr(message.media.document, "mime_type", "") or ""
+                    mime = getattr(message.media.document, "mime_type", None) or ""
                     if mime.startswith("image/"):
                         ext = mime.split("/")[-1]
                         filename = f"doc_{message.id}.{ext}"
@@ -96,7 +95,9 @@ async def scrape_group(
                         record["media_file"] = filename
                         media_count += 1
             except Exception as e:
-                print(f"  Warning: failed to download media for msg {message.id}: {e}")
+                raise RuntimeError(
+                    f"Failed to download media for message {message.id}: {e}"
+                ) from e
 
         messages_data.append(record)
 
@@ -130,13 +131,18 @@ def to_telegram_export_format(scraped_path: str, output_path: str = "result.json
         "messages": [],
     }
 
-    for m in messages:
+    for i, m in enumerate(messages):
+        for field in ("id", "date", "sender_id", "text"):
+            if field not in m:
+                raise KeyError(
+                    f"Message at index {i} is missing required field '{field}'"
+                )
         converted["messages"].append({
             "id": m["id"],
             "type": "message",
-            "date": m.get("date", ""),
-            "from": str(m.get("sender_id", "Unknown")),
-            "text": m.get("text", ""),
+            "date": m["date"],
+            "from": str(m["sender_id"]),
+            "text": m["text"],
             "reply_to_message_id": m.get("reply_to_msg_id"),
         })
 

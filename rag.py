@@ -54,15 +54,25 @@ class RAG:
 
         retrieved = []
         for obj in results.objects:
-            dist = obj.metadata.distance if obj.metadata else None
+            if obj.metadata is None:
+                raise RuntimeError(
+                    f"Weaviate returned object {obj.uuid} without metadata — "
+                    "distance filtering requires metadata"
+                )
+            dist = obj.metadata.distance
             if dist is not None and dist > self.max_distance:
                 continue
             props = obj.properties
+            for field in ("text", "sender", "date", "chunk_type"):
+                if field not in props:
+                    raise KeyError(
+                        f"Weaviate object {obj.uuid} is missing required property '{field}'"
+                    )
             retrieved.append({
-                "text": props.get("text", ""),
-                "sender": props.get("sender", ""),
-                "date": props.get("date", ""),
-                "chunk_type": props.get("chunk_type", ""),
+                "text": props["text"],
+                "sender": props["sender"],
+                "date": props["date"],
+                "chunk_type": props["chunk_type"],
                 "distance": dist,
             })
 

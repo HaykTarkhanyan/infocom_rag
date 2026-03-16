@@ -24,6 +24,8 @@ sys.modules.setdefault("transformers", MagicMock())
 from ingest import (
     extract_text,
     parse_telegram_export,
+    parse_web_articles,
+    detect_source,
     chunk_single_message,
     chunk_sliding_window,
     chunk_conversation_thread,
@@ -54,12 +56,16 @@ class TestExtractText:
         ]
         assert extract_text(parts) == "Check this link out"
 
-    def test_list_with_dict_missing_text(self):
+    def test_list_with_dict_missing_text_raises(self):
         parts = [{"type": "bold"}, "hello"]
-        assert extract_text(parts) == "hello"
+        with pytest.raises(KeyError, match="no 'text' key"):
+            extract_text(parts)
 
-    def test_non_string_non_list(self):
-        assert extract_text(123) == ""
+    def test_non_string_non_list_raises(self):
+        with pytest.raises(TypeError, match="Expected str, list, or None"):
+            extract_text(123)
+
+    def test_none_returns_empty(self):
         assert extract_text(None) == ""
 
     def test_mixed_types_in_list(self):
@@ -304,3 +310,124 @@ class TestApplyChunking:
     def test_unknown_strategy_raises(self):
         with pytest.raises(ValueError, match="Unknown chunking strategy"):
             apply_chunking(_sample_messages(3), "nonexistent")
+
+
+# ---------------------------------------------------------------------------
+# Web article parsing
+# ---------------------------------------------------------------------------
+
+
+def _write_jsonl(articles: list[dict]) -> str:
+    """Write articles as JSONL and return the path."""
+    tmp = tempfile.NamedTemporaryFile(
+        mode="w", suffix=".jsonl", delete=False, encoding="utf-8"
+    )
+    for a in articles:
+        tmp.write(json.dumps(a, ensure_ascii=False) + "\n")
+    tmp.close()
+    return tmp.name
+
+
+class TestParseWebArticles:
+    def test_basic_articles(self):
+        path = _write_jsonl([
+            {"id": 1, "title": "Title One", "content": "Body one", "author": "Alice", "date": "2026-01-01T12:00:00", "url": "https://example.com/1", "categories": ["news"]},
+            {"id": 2, "title": "Title Two", "content": "Body two", "author": "Bob", "date": "2026-01-02T12:00:00", "url": "https://example.com/2", "categories": ["indepth"]},
+        ])
+        try:
+            msgs = parse_web_articles(path)
+            assert len(msgs) == 2
+            assert "Title One" in msgs[0]["text"]
+            assert "Body one" in msgs[0]["text"]
+            assert msgs[0]["sender"] == "Alice"
+            assert msgs[0]["chat_name"] == "news"
+            assert msgs[1]["chat_name"] == "indepth"
+        finally:
+            os.unlink(path)
+
+    def test_empty_content_skipped(self):
+        path = _write_jsonl([
+            {"id": 1, "title": "", "content": "", "author": "X", "date": "", "url": "", "categories": []},
+            {"id": 2, "title": "Real", "content": "Article", "author": "Y", "date": "", "url": "", "categories": []},
+        ])
+        try:
+            msgs = parse_web_articles(path)
+            assert len(msgs) == 1
+            assert msgs[0]["message_id"] == 2
+        finally:
+            os.unlink(path)
+
+    def test_title_only_article(self):
+        path = _write_jsonl([
+            {"id": 1, "title": "Just a title", "content": "", "author": "A", "date": "", "url": "", "categories": []},
+        ])
+        try:
+            msgs = parse_web_articles(path)
+            assert len(msgs) == 1
+            assert msgs[0]["text"] == "Just a title"
+        finally:
+            os.unlink(path)
+
+    def test_no_categories_defaults(self):
+        path = _write_jsonl([
+            {"id": 1, "title": "T", "content": "C", "author": "A", "date": "", "url": "", "categories": []},
+        ])
+        try:
+            msgs = parse_web_articles(path)
+            assert msgs[0]["chat_name"] == "infocom.am"
+        finally:
+            os.unlink(path)
+
+    def test_multiple_categories_joined(self):
+        path = _write_jsonl([
+            {"id": 1, "title": "T", "content": "C", "author": "A", "date": "", "url": "", "categories": ["news", "indepth"]},
+        ])
+        try:
+            msgs = parse_web_articles(path)
+            assert msgs[0]["chat_name"] == "news, indepth"
+        finally:
+            os.unlink(path)
+
+    def test_reply_to_always_none(self):
+        path = _write_jsonl([
+            {"id": 1, "title": "T", "content": "C", "author": "A", "date": "", "url": "", "categories": []},
+        ])
+        try:
+            msgs = parse_web_articles(path)
+            assert msgs[0]["reply_to_message_id"] is None
+        finally:
+            os.unlink(path)
+
+    def test_blank_lines_skipped(self):
+        tmp = tempfile.NamedTemporaryFile(
+            mode="w", suffix=".jsonl", delete=False, encoding="utf-8"
+        )
+        tmp.write('{"id":1,"title":"T","content":"C","author":"A","date":"","url":"","categories":[]}\n')
+        tmp.write("\n")
+        tmp.write('{"id":2,"title":"T2","content":"C2","author":"B","date":"","url":"","categories":[]}\n')
+        tmp.close()
+        try:
+            msgs = parse_web_articles(tmp.name)
+            assert len(msgs) == 2
+        finally:
+            os.unlink(tmp.name)
+
+
+class TestDetectSource:
+    def test_detects_web_jsonl(self):
+        path = _write_jsonl([
+            {"id": 1, "title": "T", "content": "C", "author": "A", "date": "", "url": "", "categories": []},
+        ])
+        try:
+            assert detect_source(path) == "web"
+        finally:
+            os.unlink(path)
+
+    def test_detects_telegram_export(self):
+        path = _make_export([
+            {"id": 1, "type": "message", "text": "Hello", "from": "Alice", "date": "2024-01-01"},
+        ])
+        try:
+            assert detect_source(path) == "telegram"
+        finally:
+            os.unlink(path)

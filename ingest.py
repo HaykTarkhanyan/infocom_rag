@@ -1,4 +1,4 @@
-"""Parse Telegram Desktop 'Export Chat History' JSON and ingest into Weaviate."""
+"""Parse Telegram export JSON or web scraper JSONL and ingest into Weaviate."""
 
 import json
 import sys
@@ -36,16 +36,33 @@ DISTANCE_MAP = {
 
 
 def extract_text(raw_text) -> str:
-    """Extract plain text from Telegram's polymorphic text field."""
+    """Extract plain text from Telegram's polymorphic text field.
+
+    Raises TypeError if *raw_text* is not a str, list, or None.
+    """
+    if raw_text is None:
+        return ""
+    if isinstance(raw_text, str):
+        return raw_text
     if isinstance(raw_text, list):
         parts = []
-        for part in raw_text:
+        for i, part in enumerate(raw_text):
             if isinstance(part, str):
                 parts.append(part)
             elif isinstance(part, dict):
-                parts.append(part.get("text", ""))
+                if "text" not in part:
+                    raise KeyError(
+                        f"Text entity at index {i} is a dict but has no 'text' key: {part}"
+                    )
+                parts.append(part["text"])
+            else:
+                raise TypeError(
+                    f"Text entity at index {i} has unexpected type {type(part).__name__}: {part!r}"
+                )
         return "".join(parts)
-    return raw_text if isinstance(raw_text, str) else ""
+    raise TypeError(
+        f"Expected str, list, or None for text field, got {type(raw_text).__name__}: {raw_text!r}"
+    )
 
 
 def parse_telegram_export(path: str) -> list[dict]:
@@ -53,27 +70,110 @@ def parse_telegram_export(path: str) -> list[dict]:
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    messages = []
-    chat_name = data.get("name", "Unknown Chat")
+    if "name" not in data:
+        raise KeyError("Telegram export JSON is missing required 'name' field")
+    if "messages" not in data:
+        raise KeyError("Telegram export JSON is missing required 'messages' field")
 
-    for msg in data.get("messages", []):
+    messages = []
+    chat_name = data["name"]
+
+    for i, msg in enumerate(data["messages"]):
         if msg.get("type") != "message":
             continue
 
-        text = extract_text(msg.get("text", "")).strip()
+        text = extract_text(msg.get("text")).strip()
         if not text or len(text) < MIN_MESSAGE_LENGTH:
             continue
 
+        sender = msg.get("from") or msg.get("actor")
+        if sender is None:
+            raise KeyError(
+                f"Message id={msg.get('id', '?')} (index {i}) has neither 'from' nor 'actor' field"
+            )
+
+        if "id" not in msg:
+            raise KeyError(f"Message at index {i} is missing required 'id' field")
+        if "date" not in msg:
+            raise KeyError(f"Message id={msg['id']} is missing required 'date' field")
+
         messages.append({
             "text": text,
-            "sender": msg.get("from", msg.get("actor", "Unknown")),
-            "date": msg.get("date", ""),
-            "message_id": msg.get("id", 0),
+            "sender": sender,
+            "date": msg["date"],
+            "message_id": msg["id"],
             "reply_to_message_id": msg.get("reply_to_message_id"),
             "chat_name": chat_name,
         })
 
     return messages
+
+
+def parse_web_articles(path: str) -> list[dict]:
+    """Parse JSONL output from web_scraper.py.
+
+    Each line is a JSON object with keys: id, title, content, author, date,
+    url, categories, infotags.
+    """
+    messages = []
+
+    with open(path, "r", encoding="utf-8") as f:
+        for line_num, line in enumerate(f, 1):
+            line = line.strip()
+            if not line:
+                continue
+            article = json.loads(line)
+
+            for field in ("id", "date", "author"):
+                if field not in article:
+                    raise KeyError(
+                        f"Article on line {line_num} is missing required field '{field}'"
+                    )
+
+            title = article.get("title", "").strip()
+            content = article.get("content", "").strip()
+            text = f"{title}\n\n{content}" if title and content else (title or content)
+
+            if not text or len(text) < MIN_MESSAGE_LENGTH:
+                continue
+
+            categories = article.get("categories", [])
+            chat_name = ", ".join(categories) if categories else "infocom.am"
+
+            messages.append({
+                "text": text,
+                "sender": article["author"],
+                "date": article["date"],
+                "message_id": article["id"],
+                "reply_to_message_id": None,
+                "chat_name": chat_name,
+            })
+
+    return messages
+
+
+def detect_source(path: str) -> str:
+    """Auto-detect whether *path* is a Telegram export JSON or web scraper JSONL.
+
+    Telegram exports are a single JSON object with a ``"messages"`` key.
+    Web scraper output is JSONL where each line has ``"content"``/``"title"`` keys.
+
+    Raises ValueError if the format cannot be determined.
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        first_line = f.readline().strip()
+    if not first_line:
+        raise ValueError(f"Cannot detect source format: {path} is empty")
+    try:
+        obj = json.loads(first_line)
+        if isinstance(obj, dict) and "content" in obj:
+            return "web"
+        # Telegram export is a multi-line JSON object; first line won't parse
+        # as a complete dict with "content", so fall through to "telegram"
+        return "telegram"
+    except json.JSONDecodeError:
+        # Multi-line JSON (Telegram export) — first line is just "{"
+        return "telegram"
 
 
 # ---------------------------------------------------------------------------
@@ -225,7 +325,12 @@ def create_collection(client: weaviate.WeaviateClient):
         print(f"Collection '{COLLECTION_NAME}' already exists. Deleting and recreating.")
         client.collections.delete(COLLECTION_NAME)
 
-    distance = DISTANCE_MAP.get(DISTANCE_METRIC, VectorDistances.COSINE)
+    if DISTANCE_METRIC not in DISTANCE_MAP:
+        raise ValueError(
+            f"Unknown distance metric '{DISTANCE_METRIC}'. "
+            f"Choose from: {list(DISTANCE_MAP.keys())}"
+        )
+    distance = DISTANCE_MAP[DISTANCE_METRIC]
 
     client.collections.create(
         name=COLLECTION_NAME,
@@ -270,7 +375,7 @@ def ingest_chunks(
                     "date": chunk["date"],
                     "message_id": chunk["message_id"],
                     "chat_name": chunk["chat_name"],
-                    "chunk_type": chunk.get("chunk_type", "single_message"),
+                    "chunk_type": chunk["chunk_type"],
                 }
                 if chunk.get("reply_to_message_id") is not None:
                     props["reply_to_message_id"] = chunk["reply_to_message_id"]
@@ -290,7 +395,8 @@ def ingest_chunks(
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python ingest.py <path-to-result.json> [chunking_strategy]")
+        print("Usage: python ingest.py <path-to-data> [chunking_strategy]")
+        print(f"  Accepts: Telegram Desktop export (.json) or web scraper output (.jsonl)")
         print(f"  Strategies: {list(CHUNKING_FUNCTIONS.keys())}")
         sys.exit(1)
 
@@ -301,9 +407,14 @@ def main():
         print(f"File not found: {json_path}")
         sys.exit(1)
 
-    print(f"Parsing Telegram export: {json_path}")
-    messages = parse_telegram_export(json_path)
-    print(f"Found {len(messages)} text messages.")
+    source = detect_source(json_path)
+    if source == "web":
+        print(f"Detected web scraper output: {json_path}")
+        messages = parse_web_articles(json_path)
+    else:
+        print(f"Parsing Telegram export: {json_path}")
+        messages = parse_telegram_export(json_path)
+    print(f"Found {len(messages)} text entries.")
 
     if not messages:
         print("No messages to ingest.")

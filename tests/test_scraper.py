@@ -6,6 +6,8 @@ import sys
 import tempfile
 from unittest.mock import MagicMock
 
+import pytest
+
 # Mock telethon so scraper can be imported without it installed
 sys.modules.setdefault("telethon", MagicMock())
 sys.modules.setdefault("telethon.tl", MagicMock())
@@ -57,18 +59,13 @@ class TestToTelegramExportFormat:
             if os.path.exists(out):
                 os.unlink(out)
 
-    def test_missing_fields_handled(self):
+    def test_missing_fields_raises(self):
         scraped = [{"id": 10, "text": "Hey"}]
         src = self._write_scraped(scraped)
         out = tempfile.mktemp(suffix=".json")
         try:
-            to_telegram_export_format(src, out)
-            with open(out) as f:
-                result = json.load(f)
-            msg = result["messages"][0]
-            assert msg["id"] == 10
-            assert msg["text"] == "Hey"
-            assert msg["from"] == "Unknown"
+            with pytest.raises(KeyError, match="missing required field"):
+                to_telegram_export_format(src, out)
         finally:
             os.unlink(src)
             if os.path.exists(out):
