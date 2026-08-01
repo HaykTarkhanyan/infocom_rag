@@ -13,6 +13,13 @@ dependencies = [
     "huggingface-hub==1.26.0",
     "transformers==5.14.1",
     "psycopg[binary]==3.3.4",
+    "chainlit==2.11.1",
+    "fastapi==0.141.1",
+    "uvicorn==0.52.1",
+    "asyncpg==0.31.0",
+    "sqlalchemy==2.0.51",
+    "rank-bm25==0.2.2",
+    "httpx==0.28.1",
 ]
 
 [dependency-groups]

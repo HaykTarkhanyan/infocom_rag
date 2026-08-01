@@ -8,9 +8,96 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
-## 13. Sessions, turns and feedback persist to Neon Postgres
+## 16. Retrieval is BM25 for now, explicitly as a stopgap
+
+**Date** 2026-08-01 · **Status** active, **temporary by design**
+
+**Why.** Dense retrieval is blocked on downloading ATE-2 weights. BM25 over the
+969 chunks works today with no model and no vector store, and it is not throwaway:
+the intended design is hybrid (BM25 + dense), so this is the first half.
+
+**Known weakness, deliberately not patched.** Armenian is agglutinative and there
+is no stemmer, so `ժողովը` and `ժողով` are different terms. Dense retrieval is
+the fix; hand-written suffix rules would be a worse one.
+
+**Also visible already:** with `top_k = 10` the tail of the results is junk — a
+question about road-accident data returns articles about flower exports and
+scientist attestation. A `min_score` cutoff exists in the API but has no
+principled default, because BM25 scores are corpus-relative. The eval set should
+set it.
+
+**What would change this.** Weights downloaded → dense retrieval → hybrid. The
+whole surface is `search(query, top_k) -> list[Hit]`, so the swap touches
+`src/retrieval.py` alone.
+
+---
+
+## 15. Chainlit's data layer replaces our own persistence schema
+
+**Date** 2026-08-01 · **Status** active (supersedes #13)
+
+**Why.** Chainlit persists users, threads, steps, elements and feedback itself.
+Adopting its schema buys chat history, thread resume and the feedback UI for
+free; maintaining a parallel schema would mean writing every row twice.
+
+**What it costs.** The shape is Chainlit's, not ours. `config_snapshot`,
+`retrieved`-with-scores and per-turn cost have no columns of their own.
+**Mitigated:** the app writes all of it into `steps.metadata` (JSONB), so
+per-answer accounting survives — `src/db.py --check` sums cost straight out of
+`metadata->>'cost_usd'`.
+
+**Alternatives rejected.** Keeping both schemas (double writes, two sources of
+truth); keeping ours and forgoing Chainlit's history/resume/feedback UI.
+
+**Trap, cost half a debugging session.** Chainlit's *published* DDL is stale
+against the shipped package — 2.11.1 writes an `autoCollapse` column the docs
+never create — and step persistence is fire-and-forget, so every insert failed
+while the UI looked perfect. Derive the schema from `chainlit.step.StepDict`, and
+verify rows actually land before believing it works. See
+[`_learnings/2026-08-01-2205_chainlit-schema-stale-and-silent-persistence.md`](_learnings/2026-08-01-2205_chainlit-schema-stale-and-silent-persistence.md).
+
+**What would change this.** Outgrowing Chainlit, or needing turn-level fields
+that do not fit in step metadata.
+
+---
+
+## 14. UI is Chainlit over a FastAPI `/ask` endpoint
 
 **Date** 2026-08-01 · **Status** active
+
+**Why.** Chainlit is purpose-built for chat and `cl.Step` renders the pipeline as
+a collapsible tree natively — retrieval with per-chunk scores, then generation
+with the assembled prompt, tokens and cost. That *is* the debug view, with no
+custom layout. Streamlit would need it hand-built from expanders, and its
+rerun-everything model fights chat.
+
+FastAPI sits underneath as the only entry point. The UI and the eval harness both
+call `/ask` over HTTP rather than importing the pipeline, so the eval exercises
+the same code path a user does — scripts that import internals drift and then
+pass while the real path is broken.
+
+**Alternatives rejected.**
+- **Streamlit** — better for non-chat dashboards (corpus stats, eval tables), and
+  still the right choice if those appear. Worse for this.
+- **Open WebUI** — zero UI code and a polished product, but it treats a custom
+  backend as a black-box chat model and *cannot* display sources or scores
+  structurally; citations would have to be markdown baked into the answer text.
+  That deletes the debug half. Its licence also changed in April 2025 (branding
+  clause, binding only above 50 users). Still the best option later if a
+  polished demo matters more than introspection.
+- **Chainlit's maintenance risk** was weighed and found overstated: the founders
+  stepped back in May 2025, but it is maintained under a formal Maintainer
+  Agreement and shipped v2.11.1 in April 2026.
+
+**What would change this.** Wanting dashboards alongside chat (add Streamlit
+beside it, both on the same API), or wanting a public polished demo (add Open
+WebUI against an OpenAI-compatible shim).
+
+---
+
+## 13. Sessions, turns and feedback persist to Neon Postgres
+
+**Date** 2026-08-01 · **Status** **superseded by #15**
 
 **Why.** Three tables, mirroring the shape the Washington project settled on and
 adapted from text-to-SQL to document retrieval. The JSONL ledger
