@@ -10,8 +10,8 @@ pipeline; `src/` holds everything load-bearing:
 | archive | *(none yet)* | nothing has become dead weight so far |
 
 Every script here still runs and is worth re-running when the underlying thing
-changes. Findings are written up in [`SITE_FINDINGS.md`](SITE_FINDINGS.md); raw
-artifacts land in `raw/`.
+changes. Prose findings live in [`_knowledge/`](../_knowledge/README.md) — this
+folder holds the tooling and its raw output (`raw/`), not the write-ups.
 
 ## Still-useful tools
 
@@ -27,7 +27,7 @@ artifacts land in `raw/`.
 
 ## Finished investigations (re-run to refresh the facts)
 
-These produced `SITE_FINDINGS.md`. The site keeps publishing, so the numbers in
+These produced [`_knowledge/01_site_structure.md`](../_knowledge/01_site_structure.md). The site keeps publishing, so the numbers in
 that document drift; re-run these to refresh rather than trusting the write-up
 indefinitely.
 

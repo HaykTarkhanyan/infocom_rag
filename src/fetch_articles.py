@@ -14,7 +14,7 @@ Output is JSONL, one article per line. Text is extracted from `content.rendered`
 with selectolax after deleting page-builder chrome; `## ` marks section headings
 so downstream chunking can split on them.
 
-Design notes (see research/SITE_FINDINGS.md for the evidence):
+Design notes (see _knowledge/01_site_structure.md for the evidence):
   - Bylines come from `authors`/`ppma_author`, NOT `author`. The `author` field
     resolves to a generic `adminfo_com` account on most posts.
   - `content.rendered` carries Elementor markup, so regex tag-stripping is not
@@ -226,7 +226,7 @@ def build_article(post: dict, category_names: dict[int, str],
     title = clean_title(post["title"]["rendered"])
     body, page_byline = extract_content(post["content"]["rendered"])
 
-    # Real bylines live here. `author` is the generic WP account -- see SITE_FINDINGS.
+    # Real bylines live here. `author` is the generic WP account -- see _knowledge/01_site_structure.md.
     authors = [a["display_name"] for a in (post.get("authors") or [])
                if a.get("display_name")]
 

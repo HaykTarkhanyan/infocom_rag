@@ -10,7 +10,7 @@ done = [
   "Measured the truncation bug with the real tokenizer: an 835-word Armenian article is 2,340 tokens, so 78% of it never reached the vector while the full text still went to the LLM. Armenian is ~2.2-2.8 tokens/word through XLM-R, making 512 tokens only ~185-230 words.",
   "Checked AUDIT.md's claims rather than trusting them; found one wrong (return_metadata=['distance'] IS valid weaviate-client 4.9 API — METADATA is typed Union[List[Literal[...]], MetadataQuery]).",
   "Archived the entire prototype to attic/ with git mv (all 23 files registered as renames, history preserved). Wrote attic/ATTIC_NOTES.md covering what to salvage and what not to reintroduce.",
-  "Surveyed infocom.am with Playwright + the WP REST API. Wrote research/SITE_FINDINGS.md and saved raw artifacts to research/raw/.",
+  "Surveyed infocom.am with Playwright + the WP REST API. Wrote _knowledge/01_site_structure.md and saved raw artifacts to research/raw/.",
 ]
 
 pending = [
@@ -20,12 +20,12 @@ pending = [
 ]
 
 next = [
-  "Answer the five open questions at the end of research/SITE_FINDINGS.md — chiefly: index indepth only (5,836 articles) or add a rolling news window?",
+  "Answer the five open questions at the end of _knowledge/01_site_structure.md — chiefly: index indepth only (5,836 articles) or add a rolling news window?",
   "Then resume the from-scratch design and write it to a spec before any code.",
 ]
 
 files = [
-  "research/SITE_FINDINGS.md — the survey writeup, main deliverable",
+  "_knowledge/01_site_structure.md — the survey writeup, main deliverable",
   "research/fetch_sitemaps.py — sitemap discovery",
   "research/probe_api.py — REST API structure, types, taxonomies, authors, languages",
   "research/probe_corpus.py — per-category content quality and data-quality checks",
