@@ -20,6 +20,8 @@ dependencies = [
     "sqlalchemy==2.0.51",
     "rank-bm25==0.2.2",
     "httpx==0.28.1",
+    "torch==2.13.0",
+    "numpy==2.5.1",
 ]
 
 [dependency-groups]

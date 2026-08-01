@@ -331,21 +331,43 @@ eval evidence that heading boundaries hurt retrieval versus fixed windows.
 
 ---
 
-## 6. Embeddings are ATE-2; base vs large is still undecided
+## 6. Embeddings are ATE-2; **large** strongly indicated, pending formal eval
 
-**Date** 2026-08-01 · **Status** **open — not yet decided**
+**Date** 2026-08-01 · **Status** measured, awaiting the eval set to confirm
 
-**Why.** `Metric-AI/armenian-text-embeddings-2` is Armenian-specific, MIT, and
-the same lab's ATE-1 was already in use. Base and large share one `tokenizer.json`
-(verified by sha256), so chunk boundaries are identical between them and
-`data/chunks.jsonl` survives a switch — only the vectors and the store's
-dimension change (768 vs 1024).
+**Why ATE-2.** Armenian-specific, MIT, same lab as ATE-1. Base and large share
+one `tokenizer.json` (verified by sha256), so chunk boundaries are identical and
+`data/chunks.jsonl` survives a switch — only the vectors and the store dimension
+change (768 vs 1024).
 
-**Open because** weights are not downloaded (bandwidth) and neither has been
-benchmarked on this machine.
+**Evidence for large**, measured 2026-08-01 on the real corpus:
 
-**What would decide it.** A speed benchmark on this CPU plus retrieval quality on
-our eval set. Large is ~2x slower on CPU; if quality is a wash, base wins.
+| | base (768d) | large (1024d) |
+|---|---|---|
+| discrimination margin, 12 Armenian pairs | +0.116 | **+0.226** |
+| unrelated-topic similarity | 0.644 (too high) | 0.425 |
+| relevant chunks in top-5, real query | 2 | **5** |
+| score spread on a real query | 0.294 | **0.420** |
+| CPU index speed | 1.1 chunks/s | 0.4 chunks/s |
+| GPU (T4) index, 969 chunks | seconds | seconds |
+
+On a real question about road-accident data, **large returned all five top hits
+from the correct article; base pulled in airport queues, EV tax and passports
+from rank 3**. Base's 0.644 similarity between unrelated Armenian topics means a
+compressed space — and no downstream reranker can recover a chunk that never
+made top-k.
+
+**Cost of large is one-time, not per-query.** 3.3x slower to index, but a query
+embeds in ~0.4s vs ~0.2s, both irrelevant interactively. On a T4 the whole index
+build is seconds either way.
+
+**Both indexes are built and kept** (`data/vectors_base.npz`,
+`data/vectors_large.npz`) so the eval can measure recall@k rather than infer from
+spot checks. That is what would formally settle this.
+
+**Also settled by measuring:** `max_distance = 0.75` in config.toml filters
+nothing. Unrelated content sits at cosine distance 0.356 (base) / 0.575 (large).
+Realistic cutoffs are ~0.30 and ~0.45. Do not trust that config value.
 
 ---
 
