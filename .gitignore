@@ -211,3 +211,6 @@ __marimo__/
 data/
 research/raw/extractor_comparison.json
 research/raw/category_samples.json
+
+# Playwright MCP scratch snapshots
+.playwright-mcp/
