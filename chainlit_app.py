@@ -18,6 +18,7 @@ own.
 
 import json
 import os
+import secrets
 import sys
 from pathlib import Path
 
@@ -31,6 +32,26 @@ from db import async_dsn  # noqa: E402
 
 API_URL = os.environ.get("RAG_API_URL", "http://localhost:8000")
 REQUEST_TIMEOUT = 120
+
+
+@cl.password_auth_callback
+def auth(username: str, password: str) -> cl.User | None:
+    """Gate the UI behind a shared password when APP_PASSWORD is set.
+
+    Deployed publicly without this, anyone who finds the URL spends the
+    OpenRouter key -- there is no per-user cap or rate limit yet. Chainlit only
+    registers this callback if the env var exists, so local development stays
+    frictionless.
+
+    Compared with `secrets.compare_digest` rather than `==` so the check does not
+    leak the password's length through timing.
+    """
+    expected = os.environ.get("APP_PASSWORD")
+    if not expected:
+        return None
+    if secrets.compare_digest(password, expected):
+        return cl.User(identifier=username or "user")
+    return None
 
 
 @cl.data_layer

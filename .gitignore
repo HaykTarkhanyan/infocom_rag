@@ -206,9 +206,14 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Scraped corpus — regenerate with `python src/fetch_articles.py`.
-# 94 articles is 2.6 MB; the full indepth corpus would be ~160 MB.
-data/
+# Scraped corpus. Most of it regenerates with `python src/fetch_articles.py`,
+# but the two files the DEPLOYED service needs are committed: Render builds from
+# git, and the vectors cannot be rebuilt there (no GPU, and CPU indexing would
+# take ~46 min inside a build). `data/*` rather than `data/` because git does not
+# descend into an ignored directory, so a negation inside one never matches.
+data/*
+!data/chunks.jsonl
+!data/vectors_large.npz
 research/raw/extractor_comparison.json
 research/raw/category_samples.json
 

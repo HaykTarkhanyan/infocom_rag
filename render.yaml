@@ -1,0 +1,50 @@
+# Render Blueprint.
+#
+# SECRETS ARE NOT DECLARED HERE. Render rejects `sync: false` inside an
+# envVarGroups block, so after the first Blueprint sync open the
+# "infocom-rag-shared" group in the dashboard and add these ONCE:
+#
+#   OPENROUTER_API_KEY   generation + eval judge
+#   NEON_DB_STRING       Chainlit's data layer (threads, steps, feedback)
+#   CHAINLIT_AUTH_SECRET any long random string; signs session cookies
+#   APP_PASSWORD         gates the UI (see chainlit_app.py). Without it the
+#                        service is public and anyone can spend the OpenRouter key.
+#
+# HF_TOKEN is NOT needed at runtime: the ATE-2 models are public, and the
+# weights are pulled during build.
+#
+# PLAN: `standard` (2 GB) is the minimum that fits the embedding model.
+# Measured peak RSS, sustained after the first query:
+#     ATE-2-large  1793 MB   -> 90% of a 2 GB instance; OOM risk
+#     ATE-2-base    958 MB   -> comfortable on 2 GB
+#     bm25 only    ~250 MB   -> fits the 512 MB free/starter tier
+# Free tier also spins down after 15 minutes, and a cold start has to reload the
+# model, so the first visitor after idle would wait minutes. See DEPLOY.md.
+
+envVarGroups:
+  - name: infocom-rag-shared
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.11"
+      # Where transformers caches the model inside the container.
+      - key: HF_HOME
+        value: "/opt/render/project/.hf"
+      - key: HF_HUB_DISABLE_SYMLINKS
+        value: "1"
+      - key: TOKENIZERS_PARALLELISM
+        value: "false"
+      - key: OMP_NUM_THREADS
+        value: "1"
+
+services:
+  - type: web
+    name: infocom-rag
+    runtime: python
+    plan: standard          # see PLAN note above; free/starter cannot hold the model
+    healthCheckPath: /
+    buildCommand: |
+      pip install -r requirements.txt
+      python scripts/prefetch_model.py
+    startCommand: bash start.sh
+    envVars:
+      - fromGroup: infocom-rag-shared
