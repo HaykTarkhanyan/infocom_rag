@@ -91,8 +91,9 @@ HEADING_TAGS = {"h1", "h2", "h3", "h4", "h5"}
 DROP_LINE_PATTERNS = [
     re.compile(r"^\s*Կարդացեք նաև"),           # "Read also ..."
     re.compile(r"^\s*Կիսվել\s*$"),             # "Share"
-    re.compile(r"^\s*(Facebook|Twitter|Telegram|LinkedIn)\s*$", re.I),
+    re.compile(r"^\s*(Facebook|Twitter|Telegram|LinkedIn)\s*$", re.IGNORECASE),
     re.compile(r"^\s*https?://\S+\s*$"),       # a line that is only a bare URL
+    re.compile(r"^\s*[⇑↑▲⬆]\s*$"),  # back-to-top arrow
 ]
 
 

@@ -1,0 +1,96 @@
+title = "uv venv, article fetcher, extractor bake-off, ATE-2 tokenizer, chunker"
+date = "2026-08-01"
+time = "20:05"
+areas = ["src/", "research/", "data/", "_work_sessions/"]
+
+done = [
+  "Set up the venv with uv (Python 3.12.11) and pyproject.toml with exact == pins; trafilatura sits in a separate `research` dependency group since only the benchmark needs it.",
+  "Benchmarked three HTML-to-text extractors on 12 real articles (research/compare_extractors.py): regex (the archived approach), selectolax, trafilatura. Chose selectolax.",
+  "Wrote src/fetch_articles.py and pulled the research + data-driven categories: 94 articles, median 1,552 words, 2022-01-13..2026-07-16, zero empty bodies and zero markup leakage.",
+  "Created .env (gitignored) + .env.example holding HF_TOKEN, EMBEDDING_MODEL and HF_HOME; every script reads from there, nothing hardcoded.",
+  "Wrote src/download_model.py with a --tokenizer-only mode and fetched both ATE-2 tokenizers (~40 MB instead of ~3.2 GB of weights).",
+  "Wrote src/chunking.py -- heading-aware, token-budgeted chunking against ATE-2's real tokenizer. 94 articles -> 969 chunks, median 452 tokens, max 510, ZERO over the 512 budget, 82% budget utilisation.",
+  "Verified the chunker loses nothing: 4,318 of 4,318 source paragraphs are present in the chunk set.",
+]
+
+pending = [
+  "Download ATE-2 weights -- deferred, user is on a mobile hotspot. `python src/download_model.py --both` (3.2 GB) or drop --both for base only (1.1 GB).",
+  "Install torch (~200 MB) -- also deferred for bandwidth. Nothing can be embedded until then.",
+  "Decide base vs large once both can be benchmarked on this machine.",
+  "Still no evaluation harness. Every retrieval knob remains unmeasured.",
+  "The from-scratch design/spec was never written -- we went straight to building the acquisition layer.",
+]
+
+next = [
+  "On a real connection: download weights + torch, then write the embedding module (mean-pool + L2 normalise, `query:`/`passage:` prefixes) and benchmark base vs large for speed and quality.",
+  "Then pick the vector store and build the eval set before tuning anything.",
+]
+
+files = [
+  "pyproject.toml -- uv project, exact pins",
+  "src/fetch_articles.py -- WP REST API -> data/articles.jsonl",
+  "src/download_model.py -- ATE-2 weights or tokenizer-only",
+  "src/chunking.py -- article -> 512-token chunks",
+  "research/compare_extractors.py -- the extractor bake-off",
+  ".env / .env.example -- HF_TOKEN, EMBEDDING_MODEL, HF_HOME",
+]
+
+commits = ["51abf38 Add uv project and article fetcher for research + data-driven categories"]
+
+notes = """
+Extractor choice, measured rather than assumed. Public benchmarks (trafilatura
+~0.95 F1) score extractors on whole web pages, where the work is finding the
+article among nav and footer. We pull `content.rendered` from the REST API,
+which is already the body -- the real job is stripping Elementor widgets from
+inside it. Different problem. On 12 real articles all three recovered the same
+text; selectolax won on being ~12x faster than trafilatura and on preserving
+<h2> boundaries as "## " markers, which the chunker now depends on.
+
+I initially misread the diff as selectolax recovering 12% more content. After
+normalising whitespace that difference vanished -- it was segmentation artifacts.
+Worth remembering: diff extractor outputs only after normalising whitespace.
+
+Two extraction details that only surfaced by measuring:
+  - selectolax needs separator="", strip=False. strip=True eats the meaningful
+    space inside <span>s and glues words ("բախում։Ըստ"); separator=" " detaches
+    Armenian punctuation ("օրենքի ՝" instead of "օրենքի՝"). Either corrupts
+    tokenisation on every chunk.
+  - li.elementor-icon-list-item is the post-info widget; it was leaking time,
+    date and byline into the top of every article.
+
+The tokenizer-only trick is the useful idea from this session. Chunking depends
+on token counts, not on weights, so ~40 MB of tokenizer let the entire chunker be
+built and verified while the 3.2 GB of weights waits for a better connection.
+
+Hard numbers from ATE-2's real tokenizer on our corpus (both variants share one
+tokenizer; base is 768-dim/12-layer, large 1024-dim/24-layer, both capped at 512):
+  - 1.99 tokens/word for Armenian, so 512 tokens is ~257 words
+  - median article 3,001 tokens, max 18,400, total 344,389
+  - 90 of 94 articles (96%) exceed 512 tokens
+That last number is the retrospective justification for the rewrite: the archived
+prototype embedded whole articles with truncation=True, so 96% of this corpus
+would have been silently cut.
+
+Verification lesson: my first coverage check reported 117 "lost" sentences. It
+was wrong -- I concatenated chunks including their `passage: title/heading`
+headers, which interrupts the text. Re-checked at paragraph level against chunk
+bodies only: 4,318/4,318 preserved. Check the checker before believing a
+regression.
+
+Windows gotchas hit this session:
+  - huggingface_hub symlinks blobs into snapshots and dies with WinError 1314
+    without admin or Developer Mode. Fix: HF_HUB_DISABLE_SYMLINKS=1 (set in the
+    scripts before the hf import).
+  - HF_HOME must be in os.environ BEFORE importing huggingface_hub/transformers;
+    it is read at import time.
+  - PYTHONIOENCODING=utf-8 is still needed for any script printing Armenian.
+
+Data quality: 47 of 94 articles report the generic adminfo_com in the API's
+`authors`. For 6 the page credits a real journalist via an /author/ link, now
+captured as `page_byline`. 41 remain genuinely unattributed -- a gap in the
+source, not something the scraper can fix.
+
+Also untracked research/raw/category_samples.json (7.9 MB) which I had wrongly
+committed earlier, and gitignored data/. Commit f9f5361 still carries that blob
+and is unpushed, so it can be squashed away if we want the repo clean.
+"""
