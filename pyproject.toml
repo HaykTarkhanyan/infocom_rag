@@ -1,0 +1,22 @@
+[project]
+name = "infocom-rag"
+version = "0.1.0"
+description = "RAG over infocom.am Armenian long-form journalism"
+requires-python = "==3.12.*"
+
+# Versions are pinned exactly to what is installed and verified working
+# (`uv pip list`), so a fresh `uv sync` reproduces this environment.
+dependencies = [
+    "requests==2.34.2",
+    "selectolax==0.4.11",
+]
+
+[dependency-groups]
+# Only needed by research/compare_extractors.py, which benchmarks trafilatura
+# against selectolax. Not needed to run the pipeline.
+research = [
+    "trafilatura==2.2.0",
+]
+
+[tool.uv]
+default-groups = ["research"]
