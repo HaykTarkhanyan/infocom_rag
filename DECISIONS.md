@@ -8,6 +8,46 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
+## 13. Sessions, turns and feedback persist to Neon Postgres
+
+**Date** 2026-08-01 · **Status** active
+
+**Why.** Three tables, mirroring the shape the Washington project settled on and
+adapted from text-to-SQL to document retrieval. The JSONL ledger
+(`logs/llm_calls.jsonl`) records *calls* and is per-machine and append-only;
+Postgres records *turns* — question, answer, which chunks were retrieved, and the
+feedback on them — which is what makes quality reviewable rather than just
+countable.
+
+Choices inside the schema, each deliberate:
+- **`cost_usd` is `NUMERIC(12,6)`, not float.** Costs are thousands of
+  ~$0.002 charges; binary float accumulates error across that many additions.
+  Verified it reads back as `Decimal('0.002152')`.
+- **`retrieved` is a JSONB snapshot**, not foreign keys into a chunk table. The
+  corpus gets re-chunked, and history has to replay what was actually used, not
+  what a chunk id points at today.
+- **`config_snapshot` per turn.** Records the model, temperature and retrieval
+  settings that produced the answer. Without it a stored answer cannot be
+  reproduced or fairly compared against a later run — which matters precisely
+  because those settings are now pinned and will change.
+- **Timestamps are `TIMESTAMPTZ`**, never naive.
+- Identity is `(session_id, turn_idx)`; feedback cascades from turns, turns from
+  sessions.
+
+**Alternatives rejected.** SQLite (no shared access, and Neon is already
+available); the JSONL ledger alone (no join between an answer and the feedback on
+it, and no place for retrieval detail); a chunk foreign key (breaks on
+re-chunking).
+
+**Deliberately not built yet.** Eval-run tables. `_knowledge/02` recommends a
+compact results store instead of loose JSON files, and Postgres is the obvious
+home — but no eval harness exists, so the schema would be guesswork.
+
+**What would change this.** Needing concurrent writers (would want a pool rather
+than a connection per call), or eval results outgrowing files.
+
+---
+
 ## 12. Generation model is `openai/gpt-5.4-mini`
 
 **Date** 2026-08-01 · **Status** active (supersedes #11)
