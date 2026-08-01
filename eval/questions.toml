@@ -1,0 +1,483 @@
+# Evaluation question set.
+#
+# HAND-MAINTAINED. eval/curate.py bootstrapped the generated cases once;
+# do not re-run it, it would discard the hand-written ones.
+#
+# Ground truth is `expected_post_ids` (stable) rather than chunk ids
+# (which change whenever chunking parameters change).
+#
+# holdout = true marks cases that must NEVER be tuned against. Report them
+# separately; if held-out accuracy drifts below the tuned set, the tuning
+# has started fitting the eval rather than improving the system.
+#
+# priority: 5 = must pass, 1 = nice to have. Used to run a subset when short
+# on time or budget.
+#
+# type:
+#   factual      answerable from one article
+#   multi_source needs more than one article
+#   unanswerable NOT in the corpus -- the system must decline, not invent.
+#                expected_post_ids is empty and answer_must_contain is a
+#                refusal marker.
+
+[[question]]
+id = "q-51999-spec"
+priority = 4
+type = "factual"
+text = "Ի՞նչ հիմքով է նախարարությունը ճանաչել հանրային գերակա շահը այս դեպքում։"
+expected_post_ids = [51999]
+answer_must_contain = ["մեկ ընկերության", "տրամադրած տեղեկատվության"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = true
+source_overlap = 0.45   # question/source token overlap
+source_url = "https://infocom.am/70095/"
+
+[[question]]
+id = "q-88380-broa"
+priority = 3
+type = "factual"
+text = "Ի՞նչ հիմնավորում է նա տալիս այն մտքին, որ մասնավոր մեղադրանքով վարույթը որոշ հանցանքների դեպքում կարող է գործնականում արդյունավետ լինել։"
+expected_post_ids = [88380]
+answer_must_contain = ["մասնավոր մեղադրանքով վարույթ", "խարդախություն"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = true
+source_overlap = 0.63   # question/source token overlap
+source_url = "https://infocom.am/124279/"
+
+[[question]]
+id = "2021-52370-spec"
+priority = 4
+type = "factual"
+text = "2021 թվականի հոկտեմբերի դրությամբ թրաֆիքինգի դեպքերով հարուցված գործերում քանի՞ մարդ էր ճանաչվել տուժող, և նրանցից քանի՞ն էին անչափահասներ։"
+expected_post_ids = [52370]
+answer_must_contain = ["13", "4", "անչափահաս"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = true
+source_overlap = 0.56   # question/source token overlap
+source_url = "https://infocom.am/70466/"
+
+[[question]]
+id = "q-66400-broa"
+priority = 3
+type = "factual"
+text = "Ինչու՞ էր Կարինե Հարությունյանը պնդում, որ Բրյուսովի անվան համալսարանը չի կարելի նույն չափանիշներով համեմատել այլ բուհերի հետ։"
+expected_post_ids = [66400]
+answer_must_contain = ["հումանիտար", "բնագիտական", "արդարացի չէ"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = true
+source_overlap = 0.41   # question/source token overlap
+source_url = "https://infocom.am/90373/"
+
+[[question]]
+id = "q-55222-spec"
+priority = 4
+type = "factual"
+text = "«Ինքնիշխան Հայաստան» կուսակցությունը ինչպիսի՞ վերաբերմունք է արտահայտում Հայաստանի վրա դրսից պարտադրվող միութենական նախաձեռնությունների նկատմամբ։"
+expected_post_ids = [55222]
+answer_must_contain = ["Ինքնիշխան Հայաստան", "մերժում"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = true
+source_overlap = 0.57   # question/source token overlap
+source_url = "https://infocom.am/77246/"
+
+[[question]]
+id = "8-1079728-broa"
+priority = 3
+type = "factual"
+text = "Ո՞րն է այն հիմնական պատճառը, որ խորհրդարան մտած օրենսդրական նախագծերի մեծ մասը ներկայացրել է կառավարությունը։"
+expected_post_ids = [1079728]
+answer_must_contain = ["Կառավարությունը", "87%"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = true
+source_overlap = 0.33   # question/source token overlap
+source_url = "https://infocom.am/10027231/"
+
+[[question]]
+id = "q-1159469-broa"
+priority = 3
+type = "factual"
+text = "ԲՀԿ-ի և նրան համակրող ուժերի կարծիքով՝ ինչո՞ւ է վիճարկվում այդ տեղամասերի արդյունքների չեղարկումը, և ինչ են նրանք առաջարկում դրա փոխարեն։"
+expected_post_ids = [1159469]
+answer_must_contain = ["անվավեր", "նորից քվեարկություն"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.43   # question/source token overlap
+source_url = "https://infocom.am/10038664/"
+
+[[question]]
+id = "3-806341-broa"
+priority = 3
+type = "factual"
+text = "Ինչո՞ւ էին համայնքը նույն ընկերությանը լրացուցիչ գումարներ վճարում այս պայմանագրերի դեպքում։"
+expected_post_ids = [806341]
+answer_must_contain = ["աշխատանքների ծավալների ավելացման", "հավելյալ վճարել"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.33   # question/source token overlap
+source_url = "https://infocom.am/156352/"
+
+[[question]]
+id = "q-78316-broa"
+priority = 3
+type = "factual"
+text = "Ինչո՞ւ է անհրաժեշտ նոր փոփոխություններ անել զենքի շրջանառությունը կարգավորող օրենքում՝ ըստ հատվածի։"
+expected_post_ids = [78316]
+answer_must_contain = ["ռազմամարզական", "քննություն"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.46   # question/source token overlap
+source_url = "https://infocom.am/106254/"
+
+[[question]]
+id = "q-57714-broa"
+priority = 3
+type = "factual"
+text = "Ինչո՞վ է ոստիկանության ներկայացրած թվերի ու ԱԱԾ-ի թվերի տարբերությունը բացատրում Արա Պողոսյանը։"
+expected_post_ids = [57714]
+answer_must_contain = ["նախաքննության գաղտնիությամբ", "Արա Պողոսյան"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.54   # question/source token overlap
+source_url = "https://infocom.am/80698/"
+
+[[question]]
+id = "q-806535-broa"
+priority = 3
+type = "factual"
+text = "Ո՞ր պետական մարմինն է այս հարցում ներկայացվում որպես լիազոր մարմին, որին պետք է ուղղել կապված հարցերը։"
+expected_post_ids = [806535]
+answer_must_contain = ["ՏԿԵ նախարարություն", "լիազոր մարմինը"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.50   # question/source token overlap
+source_url = "https://infocom.am/156530/"
+
+[[question]]
+id = "q-59476-broa"
+priority = 3
+type = "factual"
+text = "Ինչի հետ էր նախկինում հայկական կողմը կապում սահմանների ճշգրտման և հետո սահմանազատման գործընթացը, բայց հետո այդ մոտեցումը փոխվեց?"
+expected_post_ids = [59476]
+answer_must_contain = ["Արցախի", "համապարփակ խաղաղ կարգավորման", "պաշտոնական դիրքորոշումը"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.53   # question/source token overlap
+source_url = "https://infocom.am/82459/"
+
+[[question]]
+id = "2021-52370-broa"
+priority = 3
+type = "factual"
+text = "Ի՞նչ պատճառով կարող է լինել, որ ոստիկանության և նախարարության տվյալները նույն թրաֆիքինգի դեպքի վերաբերյալ չեն համընկնում։"
+expected_post_ids = [52370]
+answer_must_contain = ["դեպքը", "բացահայտված", "նույնացման գործընթացը"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.47   # question/source token overlap
+source_url = "https://infocom.am/70466/"
+
+[[question]]
+id = "3-806341-spec"
+priority = 4
+type = "factual"
+text = "2024 թվականի սեպտեմբերին կնքված պայմանագրով քանի՞ մասնակցի միջեւ էր մրցույթը, և ով՞ էր ճանաչվել հաղթող։"
+expected_post_ids = [806341]
+answer_must_contain = ["2024", "5", "Ավանգարդ Շին"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.57   # question/source token overlap
+source_url = "https://infocom.am/156352/"
+
+[[question]]
+id = "q-55222-broa"
+priority = 3
+type = "factual"
+text = "Ըստ հատվածում ներկայացված կուսակցությունների դիրքորոշման՝ ինչո՞ւ է վտանգավոր մեծ տերություններից մեկին առանց հաշվարկի միանալը Հայաստանի նման երկրի համար։"
+expected_post_ids = [55222]
+answer_must_contain = ["բեւեռացման", "մեծ կորուստներ", "ինքնիշխանություն"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.32   # question/source token overlap
+source_url = "https://infocom.am/77246/"
+
+[[question]]
+id = "q-80156-spec"
+priority = 4
+type = "factual"
+text = "2019 թվականի հայտարարագրում Վահե Խաչատրյանը ինչքա՞ն գումարով է վաճառել իր մեքենան և ո՞ր մակնիշի էր այն։"
+expected_post_ids = [80156]
+answer_must_contain = ["2019", "3 միլիոն դրամ", "INFINITI FX 35"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.61   # question/source token overlap
+source_url = "https://infocom.am/110089/"
+
+[[question]]
+id = "q-90980-broa"
+priority = 3
+type = "factual"
+text = "Ըստ ՄԻՊ աշխատակազմի ներկայացուցչի՝ ինչու է լինում, որ մարդկանց ազատ տեղաշարժը շարունակում է սահմանափակվել, թեև նրանց գործով արդեն սահմանափակումը պետք է վերացված լինի՞"
+expected_post_ids = [90980]
+answer_must_contain = ["սահմանափակում", "վարույթն իրականացնող մարմին"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.43   # question/source token overlap
+source_url = "https://infocom.am/126884/"
+
+[[question]]
+id = "q-805830-spec"
+priority = 4
+type = "factual"
+text = "Քանի՞ հայ և քանի՞ իտալացի գիտնականներ են ընդգրկվել այդ համեմատական ուսումնասիրության մեջ։"
+expected_post_ids = [805830]
+answer_must_contain = ["3617", "27 034"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.64   # question/source token overlap
+source_url = "https://infocom.am/154881/"
+
+[[question]]
+id = "q-90980-spec"
+priority = 4
+type = "factual"
+text = "Արամ Մինասյանի խոսքով՝ դատական որոշման մասին տեղեկությունն իրավասու մարմնին սովորաբար որքան ժամանակում է հասնում, մինչև սահմանափակումը հանվի՞"
+expected_post_ids = [90980]
+answer_must_contain = ["4-5 օր", "1 շաբաթ", "Արամ Մինասյան"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.47   # question/source token overlap
+source_url = "https://infocom.am/126884/"
+
+[[question]]
+id = "q-805830-broa"
+priority = 3
+type = "factual"
+text = "Ինչո՞ւ էին հեղինակները Հայաստանի գիտական համակարգը համեմատում Իտալիայի հետ՝ այդ երկրի օրինակը վերցնելով։"
+expected_post_ids = [805830]
+answer_must_contain = ["Իտալիան", "եվրոպական գիտական տարածքին"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.57   # question/source token overlap
+source_url = "https://infocom.am/154881/"
+
+[[question]]
+id = "q-51999-broa"
+priority = 3
+type = "factual"
+text = "Ինչո՞ւ էր նախարարությունը կարծում, որ այս որոշումը դրական ազդեցություն կունենա բնակավայրի վրա։"
+expected_post_ids = [51999]
+answer_must_contain = ["նոր աշխատատեղեր", "ներդրումներ"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.46   # question/source token overlap
+source_url = "https://infocom.am/70095/"
+
+[[question]]
+id = "4-44-625820-broa"
+priority = 3
+type = "factual"
+text = "Ինչի՞ հետ էր կապված այդ քրեական գործերի հարուցումը՝ միայն ադրբեջանական կողմի գործողությունների՞, թե նաև հայկական բանակի որոշ զինծառայողների վարքի հետ։"
+expected_post_ids = [625820]
+answer_must_contain = ["ադրբեջանական զինված ուժերի", "հայկական զինված ուժերի", "դասալքությանը"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.32   # question/source token overlap
+source_url = "https://infocom.am/141227/"
+
+[[question]]
+id = "q-627756-spec"
+priority = 4
+type = "factual"
+text = "ԿԿՀ-ն օրենքով ո՞ւմից կարող է անհրաժեշտության դեպքում պահանջել իրավիճակային հայտարարագիր, եթե նա հենց հայտարարատու չէ։"
+# 53468 added after grading: it answers this question just as well as the article
+# the question was generated from. Single-source ground truth undercounts recall
+# whenever the corpus covers a topic more than once.
+expected_post_ids = [627756, 53468]
+answer_must_contain = ["ԿԿՀ", "իրավիճակային հայտարարագիր", "նվիրատուներից"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.65   # question/source token overlap
+source_url = "https://infocom.am/145157/"
+
+[[question]]
+id = "q-627756-broa"
+priority = 3
+type = "factual"
+text = "Ի՞նչ ռիսկեր կարող են կապված լինել նվիրատվությունների հետ՝ ըստ Խուդավերդյանի, և ինչո՞ւ է նա կարևորում դրանց մանրակրկիտ ստուգումը։"
+expected_post_ids = [627756]
+answer_must_contain = ["հարկերից", "կանխիկ դրամական միջոցների աղբյուրը", "մանրամասն ուսումնասիրությունների"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.30   # question/source token overlap
+source_url = "https://infocom.am/145157/"
+
+[[question]]
+id = "q-80156-broa"
+priority = 3
+type = "factual"
+text = "Ի՞նչն է թույլ տալիս կասկածել, որ Վահե Խաչատրյանի հայտարարագրերում մեքենայի մասին տվյալները ամբողջական չեն եղել։"
+expected_post_ids = [80156]
+answer_must_contain = ["հայտարարագրել", "INFINITI FX 35", "INFINITI FX 45"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.56   # question/source token overlap
+source_url = "https://infocom.am/110089/"
+
+[[question]]
+id = "q-806535-spec"
+priority = 4
+type = "factual"
+text = "Ի՞նչն էր փոխանցվել ռուսական կողմին հանձնման-ընդունման ակտով, որի մեջ նաև նշվում էր՝ ինչ գույք է հանձնել Հայաստանը «Հարավկովկասյան երկաթուղուն»։"
+expected_post_ids = [806535]
+answer_must_contain = ["հանձնման-ընդունման ակտ", "«Հարավկովկասյան երկաթուղուն»", "ռուսական կողմին"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.55   # question/source token overlap
+source_url = "https://infocom.am/156530/"
+
+[[question]]
+id = "q-66400-spec"
+priority = 4
+type = "factual"
+text = "Վեբոմետրիքսում մոտավորապես որ հորիզոնականներում էին նշվում Բրյուսովի անվան համալսարանն ու Մանկավարժական համալսարանը՝ ըստ Կարեն Թռչունյանի բերած օրինակի՞"
+expected_post_ids = [66400]
+answer_must_contain = ["Webometrics", "12 873", "8845"]
+answer_must_not_contain = []
+grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
+holdout = false
+source_overlap = 0.41   # question/source token overlap
+source_url = "https://infocom.am/90373/"
+# ---------------------------------------------------------------------------
+# HAND-WRITTEN cases below. A generator cannot produce these: unanswerable
+# questions are defined by ABSENCE from the corpus, and multi-source ones need
+# ground truth spanning articles.
+# ---------------------------------------------------------------------------
+
+# --- multi_source: entities that genuinely appear across several articles ---
+
+[[question]]
+id = "kkh-multi"
+priority = 5
+type = "multi_source"
+text = "Ի՞նչ խնդիրներ են բարձրաձայնվել Կոռուպցիայի կանխարգելման հանձնաժողովի աշխատանքի վերաբերյալ։"
+expected_post_ids = [53468, 83767, 83850]
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "Should draw on more than one article about the Corruption Prevention Commission and cite them. Partial credit if only one relevant article is used."
+holdout = false
+source_overlap = 0.0
+
+[[question]]
+id = "kgmsn-multi"
+priority = 5
+type = "multi_source"
+text = "Ի՞նչ է գրել Ինֆոքոմը բարձրագույն կրթության և գիտության ֆինանսավորման խնդիրների մասին։"
+expected_post_ids = [66400, 80015, 85248]
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "Should synthesise across more than one education/science article and cite them."
+holdout = false
+source_overlap = 0.0
+
+# --- unanswerable: the system MUST decline rather than invent ---
+# These are the only cases that can detect hallucination. Several are
+# deliberately adjacent to real corpus topics, so retrieval WILL return
+# plausible-looking chunks and the model has to decline anyway.
+
+[[question]]
+id = "unans-state-debt"
+priority = 5
+type = "partial_coverage"
+text = "Որքա՞ն է Հայաստանի պետական պարտքը 2026 թվականի վերջի դրությամբ։"
+expected_post_ids = []
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "PARTIAL COVERAGE, not unanswerable: the corpus does contain state debt as of 2026-03-31 ($14.5bn). Correct behaviour is to give that figure WITH its date and say the end-of-2026 figure is not covered. FAIL if it presents the March figure as the year-end one."
+holdout = false
+source_overlap = 0.0
+
+[[question]]
+id = "unans-football"
+priority = 4
+type = "unanswerable"
+text = "Ո՞վ է Հայաստանի ֆուտբոլի ազգային հավաքականի գլխավոր մարզիչը։"
+expected_post_ids = []
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "Clearly outside the corpus. MUST decline. FAIL if it names anyone."
+holdout = false
+source_overlap = 0.0
+
+[[question]]
+id = "unans-yerevan-sevan-road"
+priority = 5
+type = "unanswerable"
+text = "Ի՞նչ է նախատեսում Երևան-Սևան նոր ավտոմայրուղու շինարարական նախագիծը։"
+expected_post_ids = []
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "TRAP: topically adjacent to the road-safety articles, so retrieval will surface road chunks. MUST still decline. FAIL if it describes any highway project."
+holdout = true
+source_overlap = 0.0
+
+[[question]]
+id = "unans-gyumri-population"
+priority = 4
+type = "unanswerable"
+text = "Քանի՞ բնակիչ ունի Գյումրի քաղաքը վերջին մարդահամարի տվյալներով։"
+expected_post_ids = []
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "Answerable from general knowledge but NOT from the corpus. MUST decline rather than answer from parametric memory."
+holdout = true
+source_overlap = 0.0
+
+[[question]]
+id = "unans-gas-price"
+priority = 4
+type = "unanswerable"
+text = "Ի՞նչ գնով է Հայաստանը ներմուծում բնական գազ Ռուսաստանից։"
+expected_post_ids = []
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "MUST decline. FAIL if it states a price."
+holdout = false
+source_overlap = 0.0
+
+[[question]]
+id = "unans-future-court"
+priority = 5
+type = "unanswerable"
+text = "Ի՞նչ որոշում է կայացրել Սահմանադրական դատարանը 2026 թվականի օգոստոսին։"
+expected_post_ids = []
+answer_must_contain = []
+answer_must_not_contain = []
+grading_notes = "Dated AFTER the newest article in the corpus (2026-07-16). MUST decline. FAIL if it describes any ruling."
+holdout = false
+source_overlap = 0.0

@@ -73,17 +73,28 @@ top_k = 10
 # Dense only. Discard chunks whose cosine distance exceeds this
 # (distance = 1 - cosine; 0.0 = identical, 2.0 = opposite).
 #
-# Measured on ATE-2-large over this corpus, not guessed:
-#   relevant hits      ~0.29 - 0.37
-#   unrelated content   up to 0.71
-# 0.50 sits in the gap with room to spare. It is deliberately loose rather than
-# tuned to one query -- the eval set should tighten it. The old 0.75 default
-# filtered nothing at all.
+# TUNED ON THE EVAL SET (2026-08-02), non-holdout questions only, then verified
+# against the held-out ones:
+#
+#   max_dist   recall@10 (tuned)   recall@10 (held out)
+#     0.45         20/23                  -
+#     0.50         21/23                6/6
+#     0.55         22/23  <- chosen     6/6
+#     0.60         22/23                  -
+#
+# 0.55 gains a retrieval hit over 0.50 and does not degrade the held-out set.
+# Below 0.55 the loss is real: at 0.40 recall drops to 18/23.
+#
+# The cost of loosening is that fewer unanswerable questions get declined at the
+# retrieval stage (2/6 at 0.50, 0/6 at 0.55). That turned out NOT to be a
+# correctness cost -- the model declined correctly on all 6 either way -- only a
+# saved-LLM-call optimisation. Revisit if a weaker generation model is used,
+# where the retrieval-stage decline is a real safety net.
 #
 # NOTE: this number is model-specific. ATE-2-base compresses the space (unrelated
 # topics score 0.644 cosine = 0.356 distance), so ~0.30 would be its equivalent.
 # Changing [embedding] model without revisiting this silently disables filtering.
-max_distance = 0.50
+max_distance = 0.55
 
 [embedding]
 # ATE-2 = Armenian Text Embeddings 2 (Metric-AI, MIT, arXiv 2603.22290).
