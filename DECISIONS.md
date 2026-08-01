@@ -47,9 +47,48 @@ or streaming responses (would want SSE through the API to the UI).
 
 ---
 
+## 18. Retrieval is dense (ATE-2-large); BM25 kept behind the same interface
+
+**Date** 2026-08-01 · **Status** active (supersedes #16)
+
+**Why.** Measured through the API on the same question, same model, same prompt:
+
+| | relevant in top-5 | answer |
+|---|---|---|
+| dense | **5/5**, distances 0.29-0.37 | substantive, cited |
+| bm25 | 3/5 plus two unrelated articles | **declined to answer** |
+
+The second row is the important one. With BM25's noisier context the model
+correctly said "Պատասխանելու համար բավարար տվյալներ չեն տրված" — insufficient
+data — rather than hallucinating from junk. Retrieval quality shows up directly
+as answer quality, and the grounding instruction did its job.
+
+**BM25 is kept, not deleted.** It is the lexical half of eventual hybrid
+retrieval, it needs no model to run, and having both behind one `search()` makes
+them comparable on the eval set. Selectable via `[retrieval] retriever` in
+config.toml or per-request on `/ask`.
+
+**Design notes.**
+- `search(query, top_k) -> list[Hit]` was deliberately the only public surface
+  (decision #16), so this swap touched `retrieval.py` and nothing else in the
+  pipeline.
+- Scores are NOT comparable across retrievers — BM25 is unbounded and
+  corpus-relative, dense is cosine. `Hit.retriever` says which produced a hit and
+  `Hit.distance` is dense-only, so the UI labels them rather than printing a bare
+  number that means different things.
+- The index refuses to load if it was built with a different model than
+  config.toml names, or if it references chunk ids the corpus no longer has.
+  Both would otherwise silently degrade retrieval instead of erroring.
+- Retrieval latency: dense 703ms (mostly the CPU query embedding) vs bm25 188ms.
+
+**What would change this.** Hybrid (BM25 + dense fused) is the intended
+destination; the eval set should decide whether it beats dense alone.
+
+---
+
 ## 16. Retrieval is BM25 for now, explicitly as a stopgap
 
-**Date** 2026-08-01 · **Status** active, **temporary by design**
+**Date** 2026-08-01 · **Status** **superseded by #18**
 
 **Why.** Dense retrieval is blocked on downloading ATE-2 weights. BM25 over the
 969 chunks works today with no model and no vector store, and it is not throwaway:

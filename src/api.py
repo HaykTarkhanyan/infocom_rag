@@ -36,14 +36,15 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    """Warm the BM25 index at startup, and close the shared HTTP client at shutdown.
+    """Warm the retriever at startup, close the shared HTTP client at shutdown.
 
-    Building the index takes a second or two; doing it on the first request would
-    make one unlucky user pay for it, and under concurrency several requests
-    would race to build it at once.
+    Doing this on the first request would make one unlucky user wait, and under
+    concurrency several requests would race to build the same index.
     """
-    await asyncio.to_thread(retrieval.corpus_stats)
-    logger.info("Retrieval index warmed")
+    # Dense warm-up loads a ~2 GB model, so it must not happen on a request.
+    await asyncio.to_thread(retrieval.warm)
+    logger.info("Retrieval warmed (%s, %s)",
+                settings.retrieval.retriever, settings.embedding.model)
     yield
     await llm.close_client()
     logger.info("HTTP client closed")
@@ -62,7 +63,9 @@ class AskRequest(BaseModel):
     # Overrides are explicit and echoed back in `config`, so a stored answer
     # still explains which settings produced it.
     top_k: int | None = Field(default=None, ge=1, le=50)
-    min_score: float = 0.0
+    min_score: float = 0.0                       # bm25 only
+    max_distance: float | None = Field(default=None, ge=0.0, le=2.0)  # dense only
+    retriever: str | None = None                 # override the configured default
 
 
 class Source(BaseModel):
@@ -76,6 +79,8 @@ class Source(BaseModel):
     authors: list[str]
     infotags: list[str]
     score: float
+    distance: float | None
+    retriever: str
     n_tokens: int
     text: str
 
@@ -110,7 +115,9 @@ async def health() -> dict:
         "status": "ok",
         "corpus": stats,
         "model": settings.generation.model,
-        "retriever": "bm25",
+        "retriever": settings.retrieval.retriever,
+        "embedding_model": settings.embedding.model,
+        "max_distance": settings.retrieval.max_distance,
     }
 
 
@@ -119,17 +126,21 @@ async def ask(req: AskRequest) -> AskResponse:
     top_k = req.top_k or settings.retrieval.top_k
 
     start = time.monotonic_ns()
-    # BM25 scoring is CPU-bound and blocking, so it goes to a worker thread
-    # rather than stalling the event loop for every other in-flight request.
+    # Retrieval is CPU-bound and blocking either way -- BM25 scoring, or a torch
+    # forward pass to embed the query -- so it goes to a worker thread rather
+    # than stalling the event loop for every other in-flight request.
     hits = await asyncio.to_thread(
-        retrieval.search, req.question, top_k, req.min_score
+        retrieval.search, req.question, top_k, req.min_score,
+        req.retriever, req.max_distance,
     )
     retrieval_ms = (time.monotonic_ns() - start) // 1_000_000
 
     if not hits:
         raise HTTPException(
             status_code=404,
-            detail="No chunks matched the query. Try different wording.",
+            detail=("No chunks passed the retrieval threshold "
+                    f"(max_distance={req.max_distance if req.max_distance is not None else settings.retrieval.max_distance}). "
+                    "Try different wording, or loosen the threshold."),
         )
 
     context = retrieval.format_context(hits)
@@ -160,8 +171,10 @@ async def ask(req: AskRequest) -> AskResponse:
             "model": settings.generation.model,
             "temperature": settings.generation.temperature,
             "top_k_retrieval": top_k,
-            "min_score": req.min_score,
-            "retriever": "bm25",
+            "retriever": req.retriever or settings.retrieval.retriever,
+            "embedding_model": settings.embedding.model,
+            "max_distance": (req.max_distance if req.max_distance is not None
+                             else settings.retrieval.max_distance),
         },
         retrieval_ms=retrieval_ms,
         generation_ms=response.latency_ms,

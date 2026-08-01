@@ -62,22 +62,43 @@ fallback = ["google/gemini-3-flash-preview"]
 pin_provider = "openai"
 
 [retrieval]
-# How many chunks to pull from the vector store per question.
+# "dense" = ATE-2 vectors from data/vectors_<model>.npz
+# "bm25"  = keyword search, the pre-embedding stopgap; still useful for
+#           comparison and as the lexical half of eventual hybrid retrieval.
+retriever = "dense"
+
+# How many chunks to pull per question.
 top_k = 10
 
-# Discard chunks whose cosine distance exceeds this. 0.0 = identical,
-# 2.0 = opposite. NOTE: e5-family similarities cluster tightly in ~0.7-0.95, so a
-# threshold near 1.0 filters essentially nothing -- it is a placeholder until the
-# eval tells us where the real cutoff is. Do not trust this number yet.
-max_distance = 0.75
+# Dense only. Discard chunks whose cosine distance exceeds this
+# (distance = 1 - cosine; 0.0 = identical, 2.0 = opposite).
+#
+# Measured on ATE-2-large over this corpus, not guessed:
+#   relevant hits      ~0.29 - 0.37
+#   unrelated content   up to 0.71
+# 0.50 sits in the gap with room to spare. It is deliberately loose rather than
+# tuned to one query -- the eval set should tighten it. The old 0.75 default
+# filtered nothing at all.
+#
+# NOTE: this number is model-specific. ATE-2-base compresses the space (unrelated
+# topics score 0.644 cosine = 0.356 distance), so ~0.30 would be its equivalent.
+# Changing [embedding] model without revisiting this silently disables filtering.
+max_distance = 0.50
 
 [embedding]
 # ATE-2 = Armenian Text Embeddings 2 (Metric-AI, MIT, arXiv 2603.22290).
 #   -base  278M params,  768-dim
-#   -large 560M params, 1024-dim, ~2x slower on CPU
-# Both share one tokenizer, so chunk boundaries are identical across them;
-# switching only invalidates the vectors, not data/chunks.jsonl.
-model = "Metric-AI/armenian-text-embeddings-2-base"
+#   -large 560M params, 1024-dim  <- in use
+#
+# Both share one tokenizer (verified by sha256), so chunk boundaries are
+# identical and data/chunks.jsonl survives a switch -- only the vectors and the
+# index dimension change. Re-run the Colab job after changing this.
+#
+# large chosen on measurement: discrimination margin +0.226 vs +0.116 over 12
+# Armenian pairs, and 5/5 vs 2/5 relevant hits in top-5 on a real question. Its
+# 3.3x indexing cost is one-time; a query embeds in ~0.4s either way.
+# See _knowledge/03 and DECISIONS.md #6.
+model = "Metric-AI/armenian-text-embeddings-2-large"
 
 # Hard ceiling per chunk. Architectural, not tunable: XLM-R caps at 512
 # (max_position_embeddings=514). Armenian runs ~1.99 tokens/word, so this is

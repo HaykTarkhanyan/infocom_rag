@@ -46,6 +46,7 @@ class Generation:
 
 @dataclass(frozen=True)
 class Retrieval:
+    retriever: str
     top_k: int
     max_distance: float
 
@@ -93,6 +94,7 @@ def _build() -> Settings:
             pin_provider=_require(gen, "pin_provider", "generation"),
         ),
         retrieval=Retrieval(
+            retriever=_require(ret, "retriever", "retrieval"),
             top_k=int(_require(ret, "top_k", "retrieval")),
             max_distance=float(_require(ret, "max_distance", "retrieval")),
         ),
@@ -112,6 +114,15 @@ def _build() -> Settings:
         raise ValueError(f"temperature must be 0.0-2.0, got {settings.generation.temperature}")
     if settings.retrieval.top_k < 1:
         raise ValueError(f"retrieval.top_k must be >= 1, got {settings.retrieval.top_k}")
+    if settings.retrieval.retriever not in ("dense", "bm25"):
+        raise ValueError(
+            f"retrieval.retriever must be 'dense' or 'bm25', "
+            f"got {settings.retrieval.retriever!r}"
+        )
+    if not 0.0 <= settings.retrieval.max_distance <= 2.0:
+        raise ValueError(
+            f"retrieval.max_distance must be 0.0-2.0, got {settings.retrieval.max_distance}"
+        )
     if settings.embedding.max_tokens > 512:
         raise ValueError(
             f"embedding.max_tokens is {settings.embedding.max_tokens}, but ATE-2 "

@@ -65,7 +65,9 @@ async def on_chat_start() -> None:
         content=(
             f"Ask me about **{corpus['articles']} infocom.am articles** "
             f"({corpus['chunks']:,} chunks). Questions in Armenian, English or Russian.\n\n"
-            f"- model `{health['model']}` · retriever `{health['retriever']}`\n"
+            f"- model `{health['model']}` · retriever `{health['retriever']}`"
+            + (f" (`{health['embedding_model'].rsplit('/', 1)[-1]}`)"
+               if health.get("embedding_model") else "") + "\n"
             f"- expand **Retrieval** / **Generation** under any answer to see "
             f"which chunks were used, their scores, the assembled prompt and the cost."
         )
@@ -131,10 +133,16 @@ async def on_message(message: cl.Message) -> None:
 
         data = response.json()
         sources = data["sources"]
+        def score_label(src: dict) -> str:
+            # BM25 and cosine are unrelated scales, so name which one this is
+            # rather than printing a bare number that means different things.
+            if src.get("distance") is not None:
+                return f"cos {src['score']:.4f} dist {src['distance']:.4f}"
+            return f"bm25 {src['score']:>7.2f}"
+
         retrieval_step.output = "\n".join(
-            f"[{s['n']}] score {s['score']:>7.2f}  {s['n_tokens']:>3} tok  "
-            f"{s['title'][:60]}"
-            + (f"\n      § {s['heading'][:60]}" if s.get("heading") else "")
+            f"[{s['n']}] {score_label(s)}  {s['n_tokens']:>3} tok  {s['title'][:52]}"
+            + (f"\n      § {s['heading'][:56]}" if s.get("heading") else "")
             for s in sources
         ) or "no hits"
         retrieval_step.metadata = {
@@ -142,6 +150,8 @@ async def on_message(message: cl.Message) -> None:
             "retrieval_ms": data["retrieval_ms"],
             "chunk_ids": [s["chunk_id"] for s in sources],
             "retriever": data["config"]["retriever"],
+            "embedding_model": data["config"].get("embedding_model"),
+            "max_distance": data["config"].get("max_distance"),
         }
 
     usage = data["usage"]
