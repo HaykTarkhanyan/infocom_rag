@@ -1,0 +1,1930 @@
+{
+  "namespace": "wpml/v1",
+  "routes": {
+    "/wpml/v1": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "namespace": {
+              "default": "wpml/v1",
+              "required": false
+            },
+            "context": {
+              "default": "view",
+              "required": false
+            },
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/custom-xml-config": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        },
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/custom-xml-config"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/custom-xml-config/validate": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/custom-xml-config/validate"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/updates": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/updates"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/troubleshooting/posthog": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/troubleshooting/posthog"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/troubleshooting/enable-alias-domain": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/troubleshooting/enable-alias-domain"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/troubleshooting/register-alias-domain": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/troubleshooting/register-alias-domain"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/troubleshooting/reset-alias-domain": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/troubleshooting/reset-alias-domain"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/item-sections/populated": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/item-sections/populated"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/posts": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/posts"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/posts/count": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/posts/count"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/send-to-translation/validate-translation-options": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/send-to-translation/validate-translation-options"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/send-to-translation/default-batch-name": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/send-to-translation/default-batch-name"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/send-to-translation/validate-batch-name": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/send-to-translation/validate-batch-name"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/set-review-translation-option": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/set-review-translation-option"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/posts/hierarchical": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/posts/hierarchical"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/posts/taxonomies": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/posts/taxonomies"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/posts/terms": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/posts/terms"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/translate-everything/enable": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/translate-everything/enable"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/translate-everything/disable": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/translate-everything/disable"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/cancelallautomaticjobs": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/cancelallautomaticjobs"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/getuntranslatedtypescount": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/getuntranslatedtypescount"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/save-translator-note": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/save-translator-note"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/credits": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/credits"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/translation-proxy/commit-batch": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/translation-proxy/commit-batch"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/tranlsation-proxy/getlastpickedup": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/tranlsation-proxy/getlastpickedup"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/translation-proxy/getRemoteJobsCount": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/translation-proxy/getRemoteJobsCount"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/gettranslationstatus": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/gettranslationstatus"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/getlocaltranslatorbyid": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/getlocaltranslatorbyid"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/reloadremotetranslationservice": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/reloadremotetranslationservice"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/gettranslationeditortype": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/gettranslationeditortype"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/translate-existing-content": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/translate-existing-content"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/get-needs-update-count-created-in-cte": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/get-needs-update-count-created-in-cte"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/get-engines": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET",
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        },
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/get-engines"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/website-contexts": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/website-contexts"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/has-posts-using-native-editor": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/has-posts-using-native-editor"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/get-credits-per-word": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/get-credits-per-word"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/get-words-to-translate-for-items": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/get-words-to-translate-for-items"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/get-words-to-translate-for-types": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/get-words-to-translate-for-types"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/save-automatic-translation-settings": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/save-automatic-translation-settings"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/getlocaltranslators": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/getlocaltranslators"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/account-balances": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/account-balances"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/glossary-count": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/glossary-count"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/enable-ate": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/enable-ate"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/get-dismissed-notices": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/get-dismissed-notices"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/minimum-requirements": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/minimum-requirements"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/rest/status": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/rest/status"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/posthog/refresh-cache": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/posthog/refresh-cache"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/dismiss-notice": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/dismiss-notice"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/dismiss-notice-per-user": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/dismiss-notice-per-user"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/cancel-jobs": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/cancel-jobs"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/unsolvable-jobs": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/unsolvable-jobs"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/resend-unsolvable-jobs": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/resend-unsolvable-jobs"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/wpml/posthog/capture-event": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/wpml/posthog/capture-event"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/capture/event": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/capture/event"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/wpml-proxy/status": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        },
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/wpml-proxy/status"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/wpml-content-stats": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/wpml-content-stats"
+          }
+        ]
+      }
+    },
+    "/wpml/v1/wpml-ph-make-external-request": {
+      "namespace": "wpml/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/wpml/v1/wpml-ph-make-external-request"
+          }
+        ]
+      }
+    }
+  },
+  "_links": {
+    "up": [
+      {
+        "href": "https://infocom.am/wp-json/"
+      }
+    ]
+  }
+}

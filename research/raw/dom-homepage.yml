@@ -1,0 +1,862 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#content"
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link [ref=e8] [cursor=pointer]:
+        - /url: https://infocom.am
+        - img "Vector-2" [ref=e9]
+      - link "Դեպի լրահոս" [ref=e12] [cursor=pointer]:
+        - /url: /news/
+      - generic [ref=e20]:
+        - link "Open search" [ref=e38] [cursor=pointer]:
+          - /url: "#elementor-action%3Aaction%3Dpopup%3Aopen%26settings%3DeyJpZCI6OTQ0NjUsInRvZ2dsZSI6ZmFsc2V9"
+        - link "Open menu" [ref=e44] [cursor=pointer]:
+          - /url: "#elementor-action%3Aaction%3Dpopup%3Aopen%26settings%3DeyJpZCI6NTY3Njc3LCJ0b2dnbGUiOmZhbHNlfQ%3D%3D"
+    - navigation "Menu" [ref=e53]:
+      - list [ref=e55]:
+        - listitem [ref=e56]:
+          - link "Ինֆոքարտեր" [ref=e58] [cursor=pointer]:
+            - /url: https://infocom.am/infocards/
+        - listitem [ref=e60]:
+          - link "Հետաքննություն" [ref=e62] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/investigation/
+        - listitem [ref=e64]:
+          - link "Հետազոտություն" [ref=e66] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/research/
+        - listitem [ref=e68]:
+          - link "Տվյալահեն" [ref=e70] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/data-driven-content/
+        - listitem [ref=e72]:
+          - link "Գիտություն" [ref=e74] [cursor=pointer]:
+            - /url: https://infocom.am/infotag/828/
+        - listitem [ref=e76]:
+          - link "Իրավական" [ref=e78] [cursor=pointer]:
+            - /url: https://infocom.am/infotag/legal/
+        - listitem [ref=e80]:
+          - link "Մի ռիլով" [ref=e82] [cursor=pointer]:
+            - /url: https://infocom.am/category/reels/
+        - listitem [ref=e84]:
+          - link "Տեսանյութեր" [ref=e86] [cursor=pointer]:
+            - /url: /infotag/869/
+        - listitem [ref=e88]:
+          - link "Հաղորդաշարեր" [ref=e90] [cursor=pointer]:
+            - /url: https://www.youtube.com/@infocomam/playlists
+  - main [ref=e92]:
+    - generic [ref=e94]:
+      - generic [ref=e97]:
+        - generic [ref=e99]:
+          - generic [ref=e101]:
+            - generic [ref=e102]:
+              - list [ref=e106]:
+                - listitem [ref=e107]:
+                  - time [ref=e114]: 20:20
+                - listitem [ref=e115]:
+                  - time [ref=e117]: 23 հուլիս, 2026
+              - heading [level=2] [ref=e120]:
+                - link "«Ինֆոքոմը» փնտրում է խմբագրի" [ref=e121] [cursor=pointer]:
+                  - /url: https://infocom.am/10043941/
+            - link "Open article" [ref=e124] [cursor=pointer]:
+              - /url: https://infocom.am/10043941/
+              - img "«Ինֆոքոմը» փնտրում է խմբագրի" [ref=e125]
+          - generic [ref=e127]:
+            - generic [ref=e128]:
+              - list [ref=e132]:
+                - listitem [ref=e133]:
+                  - time [ref=e140]: 19:39
+                - listitem [ref=e141]:
+                  - time [ref=e143]: 20 հուլիս, 2026
+              - heading [level=2] [ref=e146]:
+                - link "Ոսկե դարաշրջանի վերջին ակորդը․ 2026 թվականի ֆուտբոլային ամառը" [ref=e147] [cursor=pointer]:
+                  - /url: https://infocom.am/10043460/
+            - link "Open article" [ref=e150] [cursor=pointer]:
+              - /url: https://infocom.am/10043460/
+              - img "Ոսկե դարաշրջանի վերջին ակորդը․ 2026 թվականի ֆուտբոլային ամառը" [ref=e151]
+          - generic [ref=e153]:
+            - generic [ref=e154]:
+              - list [ref=e158]:
+                - listitem [ref=e159]:
+                  - time [ref=e166]: 21:45
+                - listitem [ref=e167]:
+                  - time [ref=e169]: 16 հուլիս, 2026
+              - heading [level=2] [ref=e172]:
+                - link "Հայկական ակադեմիական սփյուռքը․ Scopus-ում հրապարակումների վերլուծություն՝ հիմնված հայկական ազգանունների վրա" [ref=e173] [cursor=pointer]:
+                  - /url: https://infocom.am/10042888/
+            - link "Open article" [ref=e176] [cursor=pointer]:
+              - /url: https://infocom.am/10042888/
+              - img "Հայկական ակադեմիական սփյուռքը․ Scopus-ում հրապարակումների վերլուծություն՝ հիմնված հայկական ազգանունների վրա" [ref=e177]
+          - generic [ref=e179]:
+            - generic [ref=e180]:
+              - list [ref=e184]:
+                - listitem [ref=e185]:
+                  - time [ref=e192]: 20:01
+                - listitem [ref=e193]:
+                  - time [ref=e195]: 16 հուլիս, 2026
+              - heading [level=2] [ref=e198]:
+                - link "Մեկ օրում միջինում 12 ՃՏՊ․ Հայաստանի ճանապարհային թվաբանությունը" [ref=e199] [cursor=pointer]:
+                  - /url: https://infocom.am/10042996/
+            - link "Open article" [ref=e202] [cursor=pointer]:
+              - /url: https://infocom.am/10042996/
+              - img "Մեկ օրում միջինում 12 ՃՏՊ․ Հայաստանի ճանապարհային թվաբանությունը" [ref=e203]
+          - generic [ref=e205]:
+            - generic [ref=e206]:
+              - list [ref=e210]:
+                - listitem [ref=e211]:
+                  - time [ref=e218]: 17:13
+                - listitem [ref=e219]:
+                  - time [ref=e221]: 8 հուլիս, 2026
+              - heading [level=2] [ref=e224]:
+                - link "100 հազար ընտրողների ժամանման սպասելիքն ու իրականությունը․ ինչ է ասում վիճակագրությունը" [ref=e225] [cursor=pointer]:
+                  - /url: https://infocom.am/10042014/
+            - link "Open article" [ref=e228] [cursor=pointer]:
+              - /url: https://infocom.am/10042014/
+              - img "100 հազար ընտրողների ժամանման սպասելիքն ու իրականությունը․ ինչ է ասում վիճակագրությունը" [ref=e229]
+          - generic [ref=e231]:
+            - generic [ref=e232]:
+              - list [ref=e236]:
+                - listitem [ref=e237]:
+                  - time [ref=e244]: 15:57
+                - listitem [ref=e245]:
+                  - time [ref=e247]: 2 հուլիս, 2026
+              - heading [level=2] [ref=e250]:
+                - link "78 բացակայություն 83 նիստից․ համայնքային ավագանիների բացակայության պատկերը" [ref=e251] [cursor=pointer]:
+                  - /url: https://infocom.am/10040915/
+            - link "Open article" [ref=e254] [cursor=pointer]:
+              - /url: https://infocom.am/10040915/
+              - img "78 բացակայություն 83 նիստից․ համայնքային ավագանիների բացակայության պատկերը" [ref=e255]
+        - button "Previous" [ref=e256] [cursor=pointer]
+        - button "Next" [ref=e260] [cursor=pointer]
+      - generic [ref=e265]:
+        - heading "Ինֆոկոմ" [level=1] [ref=e267]
+        - generic [ref=e268]:
+          - heading "Արժե կարդալ" [level=2] [ref=e270]
+          - link "Ավելին" [ref=e272] [cursor=pointer]:
+            - /url: https://infocom.am/infotag/%d5%af%d5%a1%d6%80%d5%a4%d5%a1%d5%ac%d5%ab%d6%84/
+        - generic [ref=e278]:
+          - generic [ref=e280]:
+            - generic [ref=e282]:
+              - link "Open article" [ref=e285] [cursor=pointer]:
+                - /url: https://infocom.am/10037444/
+                - img "IMG_1901" [ref=e286]
+              - generic [ref=e287]:
+                - heading [level=2] [ref=e290]:
+                  - link "Գործարարների աշխատակիցներն ու համակարգված նվիրատվությունները․ ովքեր և ինչպես ֆինանսավորեցին ՔՊ-ին 2025-ին" [ref=e291] [cursor=pointer]:
+                    - /url: https://infocom.am/10037444/
+                - list [ref=e294]:
+                  - listitem [ref=e295]:
+                    - time [ref=e302]: 19:04
+                  - listitem [ref=e303]:
+                    - time [ref=e305]: 5 հունիս, 2026
+            - generic [ref=e307]:
+              - link "Open article" [ref=e310] [cursor=pointer]:
+                - /url: https://infocom.am/10035403/
+              - generic [ref=e311]:
+                - heading [level=2] [ref=e314]:
+                  - link "Սինքրոն նվիրատվություններ ՔՊ-ին․ 5 օրում՝ առնվազն 23 բժշկական կենտրոնի տնօրեն" [ref=e315] [cursor=pointer]:
+                    - /url: https://infocom.am/10035403/
+                - list [ref=e318]:
+                  - listitem [ref=e319]:
+                    - time [ref=e326]: 19:23
+                  - listitem [ref=e327]:
+                    - time [ref=e329]: 20 մայիս, 2026
+            - generic [ref=e331]:
+              - link "Open article" [ref=e334] [cursor=pointer]:
+                - /url: https://infocom.am/10034589/
+              - generic [ref=e335]:
+                - heading [level=2] [ref=e338]:
+                  - link "Ընդդիմությանն աջակցող էջերի անհետագծելի գովազդները. Ֆեյսբուքից թաքուն, Ֆեյսբուքի քթի տակ | մաս 2" [ref=e339] [cursor=pointer]:
+                    - /url: https://infocom.am/10034589/
+                - list [ref=e342]:
+                  - listitem [ref=e343]:
+                    - time [ref=e350]: 17:06
+                  - listitem [ref=e351]:
+                    - time [ref=e353]: 15 մայիս, 2026
+            - generic [ref=e355]:
+              - link "Open article" [ref=e358] [cursor=pointer]:
+                - /url: https://infocom.am/10033404/
+              - generic [ref=e359]:
+                - heading [level=2] [ref=e362]:
+                  - link "Իշխանամետ էջերի անհետագծելի գովազդները․ Ֆեյսբուքից թաքուն, Ֆեյսբուքի քթի տակ | մաս 1" [ref=e363] [cursor=pointer]:
+                    - /url: https://infocom.am/10033404/
+                - list [ref=e366]:
+                  - listitem [ref=e367]:
+                    - time [ref=e374]: 22:19
+                  - listitem [ref=e375]:
+                    - time [ref=e377]: 7 մայիս, 2026
+            - generic [ref=e379]:
+              - link "Open article" [ref=e382] [cursor=pointer]:
+                - /url: https://infocom.am/10020066/
+              - generic [ref=e383]:
+                - heading [level=2] [ref=e386]:
+                  - link "Առաջին կուրսից արդեն աշխատանքի. քիմիայի ոչ քիմիական խնդիրները Հայաստանում" [ref=e387] [cursor=pointer]:
+                    - /url: https://infocom.am/10020066/
+                - list [ref=e390]:
+                  - listitem [ref=e391]:
+                    - time [ref=e398]: 13:21
+                  - listitem [ref=e399]:
+                    - time [ref=e401]: 26 հունվար, 2026
+            - generic [ref=e403]:
+              - link "Open article" [ref=e406] [cursor=pointer]:
+                - /url: https://infocom.am/10016346/
+              - generic [ref=e407]:
+                - heading [level=2] [ref=e410]:
+                  - link "Ընտանեկան տեխհսկողություն պետական գնումներում․ որդին վերահսկում է հոր շինարարությունը" [ref=e411] [cursor=pointer]:
+                    - /url: https://infocom.am/10016346/
+                - list [ref=e414]:
+                  - listitem [ref=e415]:
+                    - time [ref=e422]: 14:20
+                  - listitem [ref=e423]:
+                    - time [ref=e425]: 22 դեկտեմբեր, 2025
+          - button "Previous" [ref=e426] [cursor=pointer]
+          - button "Next" [ref=e430] [cursor=pointer]
+      - generic [ref=e435]:
+        - generic [ref=e436]:
+          - heading "Ինֆոքարտեր" [level=2] [ref=e438]
+          - link "Ավելին" [ref=e440] [cursor=pointer]:
+            - /url: /infocards/
+        - generic [ref=e449]:
+          - link "Open section" [ref=e454] [cursor=pointer]:
+            - /url: "#link-worldcupresults"
+            - img "Ֆուտբոլի աշխարհի 2026թ․ առաջնություն" [ref=e455]
+          - link "Open section" [ref=e460] [cursor=pointer]:
+            - /url: "#link-worldcup"
+            - img "Ֆուտբոլի աշխարհի 2026 թվականի առաջնության եզրափակիչ" [ref=e461]
+          - link "Open section" [ref=e466] [cursor=pointer]:
+            - /url: "#link-electionresults2026"
+            - img "ԱԺ ընտրությունների արդյունքներ․ 2026" [ref=e467]
+          - link "Open section" [ref=e472] [cursor=pointer]:
+            - /url: "#link-elections2026"
+            - img "ԱԺ ընտրություններ 2026" [ref=e473]
+          - link "Open section" [ref=e478] [cursor=pointer]:
+            - /url: "#link-dokparty"
+            - img "«Դեմոկրատիա, օրենք, կարգապահություն» կուսակցություն" [ref=e479]
+          - link "Open section" [ref=e484] [cursor=pointer]:
+            - /url: "#link-ArmenianNationalCongress"
+            - img "«Հայ ազգային կոնգրես» կուսակցություն" [ref=e485]
+          - link "Open section" [ref=e490] [cursor=pointer]:
+            - /url: "#link-MeritocraticParty"
+            - img "Հայաստանի շնորհապետական կուսակցություն" [ref=e491]
+          - link "Open section" [ref=e496] [cursor=pointer]:
+            - /url: "#link-bolorindemem"
+            - img "«Բոլորին դեմ եմ» կուսակցություն" [ref=e497]
+          - link "Open section" [ref=e502] [cursor=pointer]:
+            - /url: "#link-KochariParty"
+            - img "«Քոչարի ազգային վերածնունդ և ազգի զարթոնք» կուսակցություն" [ref=e503]
+          - link "Open section" [ref=e508] [cursor=pointer]:
+            - /url: "#link-ForTheRepublic"
+            - img "«Հանուն հանրապետության» կուսակցություն" [ref=e509]
+      - generic [ref=e511]:
+        - generic [ref=e512]:
+          - heading "Հետաքննություն" [level=2] [ref=e514]
+          - link "Ավելին" [ref=e516] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/hetaqnnutyun/
+        - generic [ref=e525]:
+          - generic [ref=e527]:
+            - link "Open article" [ref=e529] [cursor=pointer]:
+              - /url: https://infocom.am/10038964/
+              - img "Մեկ շինարարություն, մեկ անձ․ համաժամանակյա մասնակցություն շինարարության և տեխհսկողության մեջ" [ref=e530]
+            - generic [ref=e531]:
+              - list [ref=e534]:
+                - listitem [ref=e535]:
+                  - time [ref=e542]: 17:21
+                - listitem [ref=e543]:
+                  - time [ref=e545]: 15 հունիս, 2026
+              - heading [level=2] [ref=e547]:
+                - link "Մեկ շինարարություն, մեկ անձ․ համաժամանակյա մասնակցություն շինարարության և տեխհսկողության մեջ" [ref=e548] [cursor=pointer]:
+                  - /url: https://infocom.am/10038964/
+          - generic [ref=e550]:
+            - link "Open article" [ref=e552] [cursor=pointer]:
+              - /url: https://infocom.am/10037427/
+              - img "Փաշինյանի արտերկրյա այցերի աշխարհագրությունը" [ref=e553]
+            - generic [ref=e554]:
+              - list [ref=e557]:
+                - listitem [ref=e558]:
+                  - time [ref=e565]: 11:36
+                - listitem [ref=e566]:
+                  - time [ref=e568]: 5 հունիս, 2026
+              - heading [level=2] [ref=e570]:
+                - link "Փաշինյանի արտերկրյա այցերի աշխարհագրությունը" [ref=e571] [cursor=pointer]:
+                  - /url: https://infocom.am/10037427/
+          - generic [ref=e573]:
+            - link "Open article" [ref=e575] [cursor=pointer]:
+              - /url: https://infocom.am/10021797/
+              - img "Դուք՝ մեզ, մենք՝ ձեզ. մաքսատուրքից ազատված գործարարների նվիրատվությունները ՔՊ-ին և «Իմ քայլը» հիմնադրամին" [ref=e576]
+            - generic [ref=e577]:
+              - list [ref=e580]:
+                - listitem [ref=e581]:
+                  - time [ref=e588]: 13:25
+                - listitem [ref=e589]:
+                  - time [ref=e591]: 6 փետրվար, 2026
+              - heading [level=2] [ref=e593]:
+                - link "Դուք՝ մեզ, մենք՝ ձեզ. մաքսատուրքից ազատված գործարարների նվիրատվությունները ՔՊ-ին և «Իմ քայլը» հիմնադրամին" [ref=e594] [cursor=pointer]:
+                  - /url: https://infocom.am/10021797/
+          - generic [ref=e596]:
+            - link "Open article" [ref=e598] [cursor=pointer]:
+              - /url: https://infocom.am/10016406/
+              - img "Թուղթ ու հավելյալ ճնշում՝ կյանքի դիմաց․ մեքենաներում գազաբալոնների պայթյունների թիվը շարունակում է աճել" [ref=e599]
+            - generic [ref=e600]:
+              - list [ref=e603]:
+                - listitem [ref=e604]:
+                  - time [ref=e611]: 15:55
+                - listitem [ref=e612]:
+                  - time [ref=e614]: 24 դեկտեմբեր, 2025
+              - heading [level=2] [ref=e616]:
+                - link "Թուղթ ու հավելյալ ճնշում՝ կյանքի դիմաց․ մեքենաներում գազաբալոնների պայթյունների թիվը շարունակում է աճել" [ref=e617] [cursor=pointer]:
+                  - /url: https://infocom.am/10016406/
+          - generic [ref=e619]:
+            - link "Open article" [ref=e621] [cursor=pointer]:
+              - /url: https://infocom.am/10016236/
+              - img "Երևանի քաղաքապետարանը 32 մլն դրամի պայմանագրեր է կնքել ավագանու անդամի ընկերության հետ" [ref=e622]
+            - generic [ref=e623]:
+              - list [ref=e626]:
+                - listitem [ref=e627]:
+                  - time [ref=e634]: 21:49
+                - listitem [ref=e635]:
+                  - time [ref=e637]: 19 դեկտեմբեր, 2025
+              - heading [level=2] [ref=e639]:
+                - link "Երևանի քաղաքապետարանը 32 մլն դրամի պայմանագրեր է կնքել ավագանու անդամի ընկերության հետ" [ref=e640] [cursor=pointer]:
+                  - /url: https://infocom.am/10016236/
+          - generic [ref=e642]:
+            - link "Open article" [ref=e644] [cursor=pointer]:
+              - /url: https://infocom.am/10015270/
+              - img "ՊԵԿ-ի նախկին պաշտոնյաների ընկերությունը՝ ՊԵԿ-ի գնումների անփոխարինելի մասնակից" [ref=e645]
+            - generic [ref=e646]:
+              - list [ref=e649]:
+                - listitem [ref=e650]:
+                  - time [ref=e657]: 17:48
+                - listitem [ref=e658]:
+                  - time [ref=e660]: 12 դեկտեմբեր, 2025
+              - heading [level=2] [ref=e662]:
+                - link "ՊԵԿ-ի նախկին պաշտոնյաների ընկերությունը՝ ՊԵԿ-ի գնումների անփոխարինելի մասնակից" [ref=e663] [cursor=pointer]:
+                  - /url: https://infocom.am/10015270/
+      - generic [ref=e665]:
+        - generic [ref=e666]:
+          - heading "Հետազոտություն" [level=2] [ref=e668]
+          - link "Ավելին" [ref=e670] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/hetazotutyun/
+        - generic [ref=e679]:
+          - generic [ref=e681]:
+            - link "Open article" [ref=e683] [cursor=pointer]:
+              - /url: https://infocom.am/10041163/
+              - img "Փոխկապակցվածությունների բացառում՝ առանց ստուգման մեխանիզմների․ «Գնումների մասին» օրենքի փոփոխությունները" [ref=e684]
+            - generic [ref=e685]:
+              - list [ref=e688]:
+                - listitem [ref=e689]:
+                  - time [ref=e696]: 18:30
+                - listitem [ref=e697]:
+                  - time [ref=e699]: 1 հուլիս, 2026
+              - heading [level=2] [ref=e701]:
+                - link "Փոխկապակցվածությունների բացառում՝ առանց ստուգման մեխանիզմների․ «Գնումների մասին» օրենքի փոփոխությունները" [ref=e702] [cursor=pointer]:
+                  - /url: https://infocom.am/10041163/
+          - generic [ref=e704]:
+            - link "Open article" [ref=e706] [cursor=pointer]:
+              - /url: https://infocom.am/10041173/
+              - img "IMEI համակարգի մասին Կառավարության պարզաբանումները չեն հստակեցնում անորոշությունները" [ref=e707]
+            - generic [ref=e708]:
+              - list [ref=e711]:
+                - listitem [ref=e712]:
+                  - time [ref=e719]: 17:22
+                - listitem [ref=e720]:
+                  - time [ref=e722]: 1 հուլիս, 2026
+              - heading [level=2] [ref=e724]:
+                - link "IMEI համակարգի մասին Կառավարության պարզաբանումները չեն հստակեցնում անորոշությունները" [ref=e725] [cursor=pointer]:
+                  - /url: https://infocom.am/10041173/
+          - generic [ref=e727]:
+            - link "Open article" [ref=e729] [cursor=pointer]:
+              - /url: https://infocom.am/10040902/
+              - img "Բջջային ու անձնական տվյալները՝ պետության ձեռքում․ ինչ է նախատեսում IMEI միասնական համակարգը" [ref=e730]
+            - generic [ref=e731]:
+              - list [ref=e734]:
+                - listitem [ref=e735]:
+                  - time [ref=e742]: 16:34
+                - listitem [ref=e743]:
+                  - time [ref=e745]: 29 հունիս, 2026
+              - heading [level=2] [ref=e747]:
+                - link "Բջջային ու անձնական տվյալները՝ պետության ձեռքում․ ինչ է նախատեսում IMEI միասնական համակարգը" [ref=e748] [cursor=pointer]:
+                  - /url: https://infocom.am/10040902/
+          - generic [ref=e750]:
+            - link "Open article" [ref=e752] [cursor=pointer]:
+              - /url: https://infocom.am/10040447/
+              - img "Էժան ծաղիկների թանկ գինը. ինչ է սպասում հայ արտադրողին" [ref=e753]
+            - generic [ref=e754]:
+              - list [ref=e757]:
+                - listitem [ref=e758]:
+                  - time [ref=e765]: 20:08
+                - listitem [ref=e766]:
+                  - time [ref=e768]: 25 հունիս, 2026
+              - heading [level=2] [ref=e770]:
+                - link "Էժան ծաղիկների թանկ գինը. ինչ է սպասում հայ արտադրողին" [ref=e771] [cursor=pointer]:
+                  - /url: https://infocom.am/10040447/
+          - generic [ref=e773]:
+            - link "Open article" [ref=e775] [cursor=pointer]:
+              - /url: https://infocom.am/10038664/
+              - img "Երկու տեղամասերում քվեարկության արդյունքների չեղարկումն անորոշ է դարձնում ԲՀԿ-ի ճակատագիրը" [ref=e776]
+            - generic [ref=e777]:
+              - list [ref=e780]:
+                - listitem [ref=e781]:
+                  - time [ref=e788]: 15:16
+                - listitem [ref=e789]:
+                  - time [ref=e791]: 12 հունիս, 2026
+              - heading [level=2] [ref=e793]:
+                - link "Երկու տեղամասերում քվեարկության արդյունքների չեղարկումն անորոշ է դարձնում ԲՀԿ-ի ճակատագիրը" [ref=e794] [cursor=pointer]:
+                  - /url: https://infocom.am/10038664/
+          - generic [ref=e796]:
+            - link "Open article" [ref=e798] [cursor=pointer]:
+              - /url: https://infocom.am/10038246/
+              - img "Ինչպես անցան խորհրդարանական ընտրությունները և ինչ պատկեր է սպասվում․ ամփոփ" [ref=e799]
+            - generic [ref=e800]:
+              - list [ref=e803]:
+                - listitem [ref=e804]:
+                  - time [ref=e811]: 21:11
+                - listitem [ref=e812]:
+                  - time [ref=e814]: 9 հունիս, 2026
+              - heading [level=2] [ref=e816]:
+                - link "Ինչպես անցան խորհրդարանական ընտրությունները և ինչ պատկեր է սպասվում․ ամփոփ" [ref=e817] [cursor=pointer]:
+                  - /url: https://infocom.am/10038246/
+      - generic [ref=e819]:
+        - generic [ref=e820]:
+          - heading "Տվյալահեն բովանդակություն" [level=2] [ref=e822]
+          - link "Ավելին" [ref=e824] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/tvyalahen-bovandakutyun/
+        - generic [ref=e833]:
+          - generic [ref=e835]:
+            - link "Open article" [ref=e837] [cursor=pointer]:
+              - /url: https://infocom.am/10037553/
+              - img "«Հանրայինի» լրատվական ալիքի բալանսավորված և բալանսավորման լուսաբանումը նախընտրական շրջանում" [ref=e838]
+            - generic [ref=e839]:
+              - list [ref=e842]:
+                - listitem [ref=e843]:
+                  - time [ref=e850]: 00:29
+                - listitem [ref=e851]:
+                  - time [ref=e853]: 6 հունիս, 2026
+              - heading [level=2] [ref=e855]:
+                - link "«Հանրայինի» լրատվական ալիքի բալանսավորված և բալանսավորման լուսաբանումը նախընտրական շրջանում" [ref=e856] [cursor=pointer]:
+                  - /url: https://infocom.am/10037553/
+          - generic [ref=e858]:
+            - link "Open article" [ref=e860] [cursor=pointer]:
+              - /url: https://infocom.am/10027231/
+              - img "ԱԺ 8-րդ գումարման օրենսդրական ճանապարհը․ ովքեր ձեռնպահ մնացին նախագծեր ներկայացնելուց" [ref=e861]
+            - generic [ref=e862]:
+              - list [ref=e865]:
+                - listitem [ref=e866]:
+                  - time [ref=e873]: 23:24
+                - listitem [ref=e874]:
+                  - time [ref=e876]: 23 մարտ, 2026
+              - heading [level=2] [ref=e878]:
+                - link "ԱԺ 8-րդ գումարման օրենսդրական ճանապարհը․ ովքեր ձեռնպահ մնացին նախագծեր ներկայացնելուց" [ref=e879] [cursor=pointer]:
+                  - /url: https://infocom.am/10027231/
+          - generic [ref=e881]:
+            - link "Open article" [ref=e883] [cursor=pointer]:
+              - /url: https://infocom.am/10022554/
+              - img "Ակտիվ գիտություն և մայրություն. ֆինանսական և ենթակառուցվածքային խնդիրներ" [ref=e884]
+            - generic [ref=e885]:
+              - list [ref=e888]:
+                - listitem [ref=e889]:
+                  - time [ref=e896]: 19:20
+                - listitem [ref=e897]:
+                  - time [ref=e899]: 11 փետրվար, 2026
+              - heading [level=2] [ref=e901]:
+                - link "Ակտիվ գիտություն և մայրություն. ֆինանսական և ենթակառուցվածքային խնդիրներ" [ref=e902] [cursor=pointer]:
+                  - /url: https://infocom.am/10022554/
+          - generic [ref=e904]:
+            - link "Open article" [ref=e906] [cursor=pointer]:
+              - /url: https://infocom.am/10019012/
+              - img "Հետազոտական դրամաշնորհներն ու գիտասարքերի ձեռքբերումը՝ վտանգված․ կառավարությունը նվազեցրել է գիտության ֆինանսավորումը" [ref=e907]
+            - generic [ref=e908]:
+              - list [ref=e911]:
+                - listitem [ref=e912]:
+                  - time [ref=e919]: 17:32
+                - listitem [ref=e920]:
+                  - time [ref=e922]: 13 հունվար, 2026
+              - heading [level=2] [ref=e924]:
+                - link "Հետազոտական դրամաշնորհներն ու գիտասարքերի ձեռքբերումը՝ վտանգված․ կառավարությունը նվազեցրել է գիտության ֆինանսավորումը" [ref=e925] [cursor=pointer]:
+                  - /url: https://infocom.am/10019012/
+          - generic [ref=e927]:
+            - link "Open article" [ref=e929] [cursor=pointer]:
+              - /url: https://infocom.am/9610606/
+              - img "Աստղագիտությունը, ազգագրությունն ու քիչ դիմորդներ ունեցող մասնագիտությունները" [ref=e930]
+            - generic [ref=e931]:
+              - list [ref=e934]:
+                - listitem [ref=e935]:
+                  - time [ref=e942]: 19:58
+                - listitem [ref=e943]:
+                  - time [ref=e945]: 28 նոյեմբեր, 2025
+              - heading [level=2] [ref=e947]:
+                - link "Աստղագիտությունը, ազգագրությունն ու քիչ դիմորդներ ունեցող մասնագիտությունները" [ref=e948] [cursor=pointer]:
+                  - /url: https://infocom.am/9610606/
+          - generic [ref=e950]:
+            - link "Open article" [ref=e952] [cursor=pointer]:
+              - /url: https://infocom.am/1608605/
+              - img "Ջուրը, արևն ու ուրանը՝ ընդդեմ գազի ու նավթամթերքի․ Հայաստանի էներգետիկ կախվածությունը՝ թվերով" [ref=e953]
+            - generic [ref=e954]:
+              - list [ref=e957]:
+                - listitem [ref=e958]:
+                  - time [ref=e965]: 17:06
+                - listitem [ref=e966]:
+                  - time [ref=e968]: 14 օգոստոս, 2025
+              - heading [level=2] [ref=e970]:
+                - link "Ջուրը, արևն ու ուրանը՝ ընդդեմ գազի ու նավթամթերքի․ Հայաստանի էներգետիկ կախվածությունը՝ թվերով" [ref=e971] [cursor=pointer]:
+                  - /url: https://infocom.am/1608605/
+      - generic [ref=e973]:
+        - generic [ref=e974]:
+          - heading "Գիտություն" [level=2] [ref=e976]
+          - link "Ավելին" [ref=e978] [cursor=pointer]:
+            - /url: https://infocom.am/infotag/828/
+        - generic [ref=e987]:
+          - generic [ref=e989]:
+            - link "Open article" [ref=e991] [cursor=pointer]:
+              - /url: https://infocom.am/10033788/
+              - img "Հայկական խաղողի սորտերի խայտաբղետ գենոմիկան․ հազարամյակների պատմություն խաղողի ողկույզներում | Հանրագիտ" [ref=e992]
+            - generic [ref=e993]:
+              - list [ref=e996]:
+                - listitem [ref=e997]:
+                  - time [ref=e1004]: 20:33
+                - listitem [ref=e1005]:
+                  - time [ref=e1007]: 10 մայիս, 2026
+              - heading [level=2] [ref=e1009]:
+                - link "Հայկական խաղողի սորտերի խայտաբղետ գենոմիկան․ հազարամյակների պատմություն խաղողի ողկույզներում | Հանրագիտ" [ref=e1010] [cursor=pointer]:
+                  - /url: https://infocom.am/10033788/
+          - generic [ref=e1012]:
+            - link "Open article" [ref=e1014] [cursor=pointer]:
+              - /url: https://infocom.am/10030495/
+              - img "Հայաստանի գիտության և տեխնոլոգիաների գերակայությունները. միջազգային թրենդների և տեղական կարիքների բախումը" [ref=e1015]
+            - generic [ref=e1016]:
+              - list [ref=e1019]:
+                - listitem [ref=e1020]:
+                  - time [ref=e1027]: 20:27
+                - listitem [ref=e1028]:
+                  - time [ref=e1030]: 16 ապրիլ, 2026
+              - heading [level=2] [ref=e1032]:
+                - link "Հայաստանի գիտության և տեխնոլոգիաների գերակայությունները. միջազգային թրենդների և տեղական կարիքների բախումը" [ref=e1033] [cursor=pointer]:
+                  - /url: https://infocom.am/10030495/
+          - generic [ref=e1035]:
+            - link "Open article" [ref=e1037] [cursor=pointer]:
+              - /url: https://infocom.am/10029456/
+              - img "«Գնումների մասին» օրենքում սպասվող փոփոխությունները և գիտասարքերի գնումները" [ref=e1038]
+            - generic [ref=e1039]:
+              - list [ref=e1042]:
+                - listitem [ref=e1043]:
+                  - time [ref=e1050]: 19:35
+                - listitem [ref=e1051]:
+                  - time [ref=e1053]: 8 ապրիլ, 2026
+              - heading [level=2] [ref=e1055]:
+                - link "«Գնումների մասին» օրենքում սպասվող փոփոխությունները և գիտասարքերի գնումները" [ref=e1056] [cursor=pointer]:
+                  - /url: https://infocom.am/10029456/
+          - generic [ref=e1058]:
+            - link "Open article" [ref=e1060] [cursor=pointer]:
+              - /url: https://infocom.am/10028763/
+              - img "Վիրտուալ պայքար գրիպի վիրուսների ու քիմիական միացությունների միջև. հաղթողը 10 քիմիական միացություններ են | Հանրագիտ" [ref=e1061]
+            - generic [ref=e1062]:
+              - list [ref=e1065]:
+                - listitem [ref=e1066]:
+                  - time [ref=e1073]: 20:48
+                - listitem [ref=e1074]:
+                  - time [ref=e1076]: 3 ապրիլ, 2026
+              - heading [level=2] [ref=e1078]:
+                - link "Վիրտուալ պայքար գրիպի վիրուսների ու քիմիական միացությունների միջև. հաղթողը 10 քիմիական միացություններ են | Հանրագիտ" [ref=e1079] [cursor=pointer]:
+                  - /url: https://infocom.am/10028763/
+          - generic [ref=e1081]:
+            - link "Open article" [ref=e1083] [cursor=pointer]:
+              - /url: https://infocom.am/10026912/
+              - img "Գիտության և տեխնոլոգիաների ոլորտների զարգացման գերակա ուղղություններն ապագայի մասին են․ Սարգիս Հայոցյան" [ref=e1084]
+            - generic [ref=e1085]:
+              - list [ref=e1088]:
+                - listitem [ref=e1089]:
+                  - time [ref=e1096]: 21:31
+                - listitem [ref=e1097]:
+                  - time [ref=e1099]: 20 մարտ, 2026
+              - heading [level=2] [ref=e1101]:
+                - link "Գիտության և տեխնոլոգիաների ոլորտների զարգացման գերակա ուղղություններն ապագայի մասին են․ Սարգիս Հայոցյան" [ref=e1102] [cursor=pointer]:
+                  - /url: https://infocom.am/10026912/
+          - generic [ref=e1104]:
+            - link "Open article" [ref=e1106] [cursor=pointer]:
+              - /url: https://infocom.am/10026127/
+              - img "Բրոնզեդարյան տեխնոլոգիաները ժամանակակից մարդու ձեռքերում․ Փորձարարական հնագիտության լաբորատորիայից ներս" [ref=e1107]
+            - generic [ref=e1108]:
+              - list [ref=e1111]:
+                - listitem [ref=e1112]:
+                  - time [ref=e1119]: 20:30
+                - listitem [ref=e1120]:
+                  - time [ref=e1122]: 14 մարտ, 2026
+              - heading [level=2] [ref=e1124]:
+                - link "Բրոնզեդարյան տեխնոլոգիաները ժամանակակից մարդու ձեռքերում․ Փորձարարական հնագիտության լաբորատորիայից ներս" [ref=e1125] [cursor=pointer]:
+                  - /url: https://infocom.am/10026127/
+      - generic [ref=e1127]:
+        - generic [ref=e1128]:
+          - heading "Իրավական" [level=2] [ref=e1130]
+          - link "Ավելին" [ref=e1132] [cursor=pointer]:
+            - /url: https://infocom.am/infotag/legal/
+        - generic [ref=e1141]:
+          - generic [ref=e1143]:
+            - link "Open article" [ref=e1145] [cursor=pointer]:
+              - /url: https://infocom.am/10032094/
+              - 'img "Արդարադատության սպասումով․ Սոնա Մնացականյանի գործը` 4 տարի անց" [ref=e1146]'
+            - generic [ref=e1147]:
+              - list [ref=e1150]:
+                - listitem [ref=e1151]:
+                  - time [ref=e1158]: 18:56
+                - listitem [ref=e1159]:
+                  - time [ref=e1161]: 28 ապրիլ, 2026
+              - heading [level=2] [ref=e1163]:
+                - 'link "Արդարադատության սպասումով․ Սոնա Մնացականյանի գործը` 4 տարի անց" [ref=e1164] [cursor=pointer]':
+                  - /url: https://infocom.am/10032094/
+          - generic [ref=e1166]:
+            - link "Open article" [ref=e1168] [cursor=pointer]:
+              - /url: https://infocom.am/10023265/
+              - img "ԻՍՎ անձնակազմի զոհվելու գործով հարցաքննված վկաներից միայն մեկն է պնդում՝ հարվածից առաջ օդում ԱԹՍ չի տեսել" [ref=e1169]
+            - generic [ref=e1170]:
+              - list [ref=e1173]:
+                - listitem [ref=e1174]:
+                  - time [ref=e1181]: 16:43
+                - listitem [ref=e1182]:
+                  - time [ref=e1184]: 18 փետրվար, 2026
+              - heading [level=2] [ref=e1186]:
+                - link "ԻՍՎ անձնակազմի զոհվելու գործով հարցաքննված վկաներից միայն մեկն է պնդում՝ հարվածից առաջ օդում ԱԹՍ չի տեսել" [ref=e1187] [cursor=pointer]:
+                  - /url: https://infocom.am/10023265/
+          - generic [ref=e1189]:
+            - link "Open article" [ref=e1191] [cursor=pointer]:
+              - /url: https://infocom.am/10020296/
+              - img "Վկան չի հիշում՝ որ սպան է ԱԹՍ-ի պայմաններում զինվորներին հրամայել շարունակել երթը" [ref=e1192]
+            - generic [ref=e1193]:
+              - list [ref=e1196]:
+                - listitem [ref=e1197]:
+                  - time [ref=e1204]: 20:29
+                - listitem [ref=e1205]:
+                  - time [ref=e1207]: 22 հունվար, 2026
+              - heading [level=2] [ref=e1209]:
+                - link "Վկան չի հիշում՝ որ սպան է ԱԹՍ-ի պայմաններում զինվորներին հրամայել շարունակել երթը" [ref=e1210] [cursor=pointer]:
+                  - /url: https://infocom.am/10020296/
+          - generic [ref=e1212]:
+            - link "Open article" [ref=e1214] [cursor=pointer]:
+              - /url: https://infocom.am/10016939/
+              - img "«Ասացին՝ հետ ենք գնում զորամաս»․ վկան չգիտեր՝ ինչու քիմիկներին օգնության հասնելու որոշում չի կայացվել" [ref=e1215]
+            - generic [ref=e1216]:
+              - list [ref=e1219]:
+                - listitem [ref=e1220]:
+                  - time [ref=e1227]: 16:22
+                - listitem [ref=e1228]:
+                  - time [ref=e1230]: 26 դեկտեմբեր, 2025
+              - heading [level=2] [ref=e1232]:
+                - link "«Ասացին՝ հետ ենք գնում զորամաս»․ վկան չգիտեր՝ ինչու քիմիկներին օգնության հասնելու որոշում չի կայացվել" [ref=e1233] [cursor=pointer]:
+                  - /url: https://infocom.am/10016939/
+          - generic [ref=e1235]:
+            - link "Open article" [ref=e1237] [cursor=pointer]:
+              - /url: https://infocom.am/10016876/
+              - img "Էլլադա Հարությունյան" [ref=e1238]
+            - generic [ref=e1239]:
+              - list [ref=e1242]:
+                - listitem [ref=e1243]:
+                  - time [ref=e1250]: 22:33
+                - listitem [ref=e1251]:
+                  - time [ref=e1253]: 25 դեկտեմբեր, 2025
+              - heading [level=2] [ref=e1255]:
+                - link "Քիմիկների զորամասի գործով մեղադրյալ Էլլադա Հարությունյանի նկատմամբ քրեական հետապնդումը դադարեցվեց" [ref=e1256] [cursor=pointer]:
+                  - /url: https://infocom.am/10016876/
+          - generic [ref=e1258]:
+            - link "Open article" [ref=e1260] [cursor=pointer]:
+              - /url: https://infocom.am/10016410/
+              - img "Հետախուզվող եվ դատապարտված անձանց հանձնումներ․ ինչ խնդիրներ կան ոլորտում" [ref=e1261]
+            - generic [ref=e1262]:
+              - list [ref=e1265]:
+                - listitem [ref=e1266]:
+                  - time [ref=e1273]: 18:33
+                - listitem [ref=e1274]:
+                  - time [ref=e1276]: 23 դեկտեմբեր, 2025
+              - heading [level=2] [ref=e1278]:
+                - link "Հետախուզվող եվ դատապարտված անձանց հանձնումներ․ ինչ խնդիրներ կան ոլորտում" [ref=e1279] [cursor=pointer]:
+                  - /url: https://infocom.am/10016410/
+      - generic [ref=e1281]:
+        - generic [ref=e1282]:
+          - heading "Մի ռիլով" [level=2] [ref=e1284]
+          - link "Ավելին" [ref=e1286] [cursor=pointer]:
+            - /url: https://infocom.am/category/reels/
+        - generic [ref=e1293]:
+          - generic [ref=e1295]:
+            - generic [ref=e1297]:
+              - button "Play Video" [ref=e1301] [cursor=pointer]
+              - link "Կարդալ հոդվածը" [ref=e1307] [cursor=pointer]:
+                - /url: https://infocom.am/10032424/
+            - generic [ref=e1314]:
+              - button "Play Video" [ref=e1318] [cursor=pointer]
+              - link "Կարդալ հոդվածը" [ref=e1324] [cursor=pointer]:
+                - /url: https://infocom.am/10029609/
+            - generic [ref=e1331]:
+              - button "Play Video" [ref=e1335] [cursor=pointer]
+              - link "Կարդալ հոդվածը" [ref=e1341] [cursor=pointer]:
+                - /url: https://infocom.am/10034589/
+            - generic [ref=e1348]:
+              - button "Play Video" [ref=e1352] [cursor=pointer]
+              - link "Կարդալ հոդվածը" [ref=e1358] [cursor=pointer]:
+                - /url: https://infocom.am/10033404/
+            - generic [ref=e1365]:
+              - button "Play Video" [ref=e1369] [cursor=pointer]
+              - link "Կարդալ հոդվածը" [ref=e1375] [cursor=pointer]:
+                - /url: https://infocom.am/10027231/
+            - button "Play Video" [ref=e1386] [cursor=pointer]
+            - button "Play Video" [ref=e1396] [cursor=pointer]
+            - button "Play Video" [ref=e1406] [cursor=pointer]
+            - button "Play Video" [ref=e1416] [cursor=pointer]
+          - button "Previous" [ref=e1421] [cursor=pointer]
+          - button "Next" [ref=e1424] [cursor=pointer]
+      - generic [ref=e1428]:
+        - generic [ref=e1429]:
+          - heading "Տեսանյութեր" [level=2] [ref=e1431]
+          - link "Ավելին" [ref=e1433] [cursor=pointer]:
+            - /url: /infotag/869/
+        - generic [ref=e1442]:
+          - generic [ref=e1445]:
+            - link "Open article" [ref=e1446] [cursor=pointer]:
+              - /url: https://infocom.am/147715/
+            - list [ref=e1456]:
+              - listitem [ref=e1457]:
+                - time [ref=e1464]: 12:20
+              - listitem [ref=e1465]:
+                - time [ref=e1467]: 18 հունվար, 2025
+            - heading [level=3] [ref=e1469]:
+              - link "Հավակնություն չունենք, որ համակարգի միջոցով բոլոր կոռուպցիոն դեպքերը պետք է բացահայտվեն. ԿԿՀ անդամ" [ref=e1470] [cursor=pointer]:
+                - /url: https://infocom.am/147715/
+          - generic [ref=e1473]:
+            - link "Open article" [ref=e1474] [cursor=pointer]:
+              - /url: https://infocom.am/147714/
+            - list [ref=e1484]:
+              - listitem [ref=e1485]:
+                - time [ref=e1492]: 19:36
+              - listitem [ref=e1493]:
+                - time [ref=e1495]: 9 հունվար, 2025
+            - heading [level=3] [ref=e1497]:
+              - link "«Գրեթե 15 տարի է՝ պայքարում եմ որդուս սպանության բացահայտման համար»․ սպանված զինվորի մայր" [ref=e1498] [cursor=pointer]:
+                - /url: https://infocom.am/147714/
+          - generic [ref=e1501]:
+            - link "Open article" [ref=e1502] [cursor=pointer]:
+              - /url: https://infocom.am/147713/
+            - list [ref=e1512]:
+              - listitem [ref=e1513]:
+                - time [ref=e1520]: 13:35
+              - listitem [ref=e1521]:
+                - time [ref=e1523]: 29 դեկտեմբեր, 2024
+            - heading [level=3] [ref=e1525]:
+              - link "FAST-ի ADVANCE հետազոտական դրամաշնորհային ծրագիրը կշարունակվի պետական ֆինանսավորմամբ" [ref=e1526] [cursor=pointer]:
+                - /url: https://infocom.am/147713/
+          - generic [ref=e1529]:
+            - link "Open article" [ref=e1530] [cursor=pointer]:
+              - /url: https://infocom.am/147712/
+            - list [ref=e1540]:
+              - listitem [ref=e1541]:
+                - time [ref=e1548]: 20:48
+              - listitem [ref=e1549]:
+                - time [ref=e1551]: 27 դեկտեմբեր, 2024
+            - heading [level=3] [ref=e1553]:
+              - link "Կան գումարներ քաղաքականության մեջ, որոնք չկան հաշվետվություններում. ԿԿՀ անդամ Լիլիթ Ալեքսանյան" [ref=e1554] [cursor=pointer]:
+                - /url: https://infocom.am/147712/
+          - generic [ref=e1557]:
+            - link "Open article" [ref=e1558] [cursor=pointer]:
+              - /url: https://infocom.am/147711/
+            - list [ref=e1568]:
+              - listitem [ref=e1569]:
+                - time [ref=e1576]: 16:31
+              - listitem [ref=e1577]:
+                - time [ref=e1579]: 5 դեկտեմբեր, 2024
+            - heading [level=3] [ref=e1581]:
+              - link "Տեղի է ունեցել Մեծահասակների մաթեմատիկայի 2-րդ օլիմպիադան․ հայտնի են այս տարվա հաղթողները" [ref=e1582] [cursor=pointer]:
+                - /url: https://infocom.am/147711/
+          - generic [ref=e1585]:
+            - link "Open article" [ref=e1586] [cursor=pointer]:
+              - /url: https://infocom.am/143628/
+            - list [ref=e1596]:
+              - listitem [ref=e1597]:
+                - time [ref=e1604]: 10:37
+              - listitem [ref=e1605]:
+                - time [ref=e1607]: 21 նոյեմբեր, 2024
+            - heading [level=3] [ref=e1609]:
+              - link "Փոքր պետությունների, Վրաստանի թեմայով ուսումնասիրությունները․ քաղաքագետ Էրիկ Դավթյան" [ref=e1610] [cursor=pointer]:
+                - /url: https://infocom.am/143628/
+      - generic [ref=e1612]:
+        - generic [ref=e1613]:
+          - heading "Հաղորդաշարեր" [level=2] [ref=e1615]
+          - link "Ավելին" [ref=e1617] [cursor=pointer]:
+            - /url: https://www.youtube.com/@infocomam/playlists
+        - generic [ref=e1623]:
+          - generic [ref=e1624]:
+            - heading "Գիտարբուք" [level=3] [ref=e1626]
+            - iframe [ref=e1628]:
+              
+          - generic [ref=e1629]:
+            - heading "Երեկոյան Հոթ Դոգ" [level=3] [ref=e1631]
+            - iframe [ref=e1633]:
+              
+  - contentinfo [ref=e1634]:
+    - generic [ref=e1641]:
+      - generic [ref=e1642]:
+        - link [ref=e1644] [cursor=pointer]:
+          - /url: https://infocom.am
+          - img "Vector" [ref=e1645]
+        - heading "Բաժանորդագրվել տեղեկագրին" [level=3] [ref=e1647]
+        - form "New Form" [ref=e1649]:
+          - generic [ref=e1650]:
+            - generic [ref=e1651]:
+              - generic [ref=e1652] [cursor=pointer]: Էլ հասցե
+              - textbox "Էլ հասցե" [ref=e1653]:
+                - /placeholder: Ձեր Էլ հասցեն
+            - button "Բաժանորդագրվել" [ref=e1655] [cursor=pointer]
+      - list [ref=e1663]:
+        - listitem [ref=e1664]:
+          - link "Մեր մասին" [ref=e1665] [cursor=pointer]:
+            - /url: https://infocom.am/about-us/
+        - listitem [ref=e1667]:
+          - link "Ինֆոթեգեր" [ref=e1668] [cursor=pointer]:
+            - /url: /indept/infotag/
+        - listitem [ref=e1670]:
+          - link "Infocom Production" [ref=e1671] [cursor=pointer]:
+            - /url: https://production.infocom.am/
+        - listitem [ref=e1673]:
+          - link "Հետաքննություն" [ref=e1674] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/hetaqnnutyun/
+        - listitem [ref=e1676]:
+          - link "Հետազոտություն" [ref=e1677] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/hetazotutyun/
+        - listitem [ref=e1679]:
+          - link "Տվյալահեն բովանդակություն" [ref=e1680] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/tvyalahen-bovandakutyun/
+        - listitem [ref=e1682]:
+          - link "Ինֆոքարտ" [ref=e1683] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/infocart/
+      - generic [ref=e1685]:
+        - list [ref=e1687]:
+          - listitem [ref=e1688]:
+            - link "+374 41 46 36 26" [ref=e1689] [cursor=pointer]:
+              - /url: tel:+374%2041%2046%2036%2026
+          - listitem [ref=e1694]:
+            - link "press@infocom.am" [ref=e1695] [cursor=pointer]:
+              - /url: mailto:press@infocom.am
+          - listitem [ref=e1701]:
+            - link "ՀՀ, ք․ Երևան, Բաղրամյան 28" [ref=e1702] [cursor=pointer]:
+              - /url: https://www.google.com/maps/place/28+Marshal+Baghramyan+Ave,+Yerevan/@40.1947441,44.4955365,18.74z/data=!4m5!3m4!1s0x406abd13ea70bb0d:0x6d376e47883e4cac!8m2!3d40.1947831!4d44.4960417?entry=ttu&g_ep=EgoyMDI1MDYwOS4wIKXMDSoASAFQAw%3D%3D
+        - generic [ref=e1709]:
+          - heading "Հետևեք մեզ" [level=3] [ref=e1711]
+          - list [ref=e1713]:
+            - listitem [ref=e1714]:
+              - link "Open Facebook page" [ref=e1715] [cursor=pointer]:
+                - /url: https://www.facebook.com/infocomm
+            - listitem [ref=e1719]:
+              - link "Open Instagram page" [ref=e1720] [cursor=pointer]:
+                - /url: https://www.instagram.com/infocom.am
+            - listitem [ref=e1726]:
+              - link "Open Telegram page" [ref=e1727] [cursor=pointer]:
+                - /url: https://t.me/infocomm
+            - listitem [ref=e1731]:
+              - link "Open YouTube page" [ref=e1732] [cursor=pointer]:
+                - /url: https://www.youtube.com/channel/UC5XszYyC_a09pXFoqlkRznQ
+            - listitem [ref=e1736]:
+              - link "Open X page" [ref=e1737] [cursor=pointer]:
+                - /url: https://twitter.com/infocom_am
+            - listitem [ref=e1741]:
+              - link "Open TikTok page" [ref=e1742] [cursor=pointer]:
+                - /url: https://www.tiktok.com/@infocom.am
+                - generic [ref=e1743]: Tiktok
+    - generic [ref=e1752]:
+      - heading "Copyright © 2025 Infocom" [level=4] [ref=e1754]
+      - link [ref=e1756] [cursor=pointer]:
+        - /url: https://vecto.digital
+        - img "Group 997" [ref=e1757]
+  - tooltip "Tooltip content"
+  - generic [ref=e1758]: desktop

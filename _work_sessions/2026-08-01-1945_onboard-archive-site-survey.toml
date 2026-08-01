@@ -1,0 +1,70 @@
+title = "Onboard on old prototype, archive it, survey infocom.am"
+date = "2026-08-01"
+time = "19:45"
+areas = ["attic/", "research/", "_work_sessions/", "logs/"]
+
+done = [
+  "Read the whole prototype (bot/ui/rag/ingest/embeddings/scraper/web_scraper) and both docs.",
+  "Ran the existing test suite: 71 passed in 11s — but every test mocks torch/transformers/weaviate/genai at sys.modules level, so nothing numerical or I/O was ever exercised.",
+  "Established the prototype's RAG half had never run: no HF cache, torch is 2.5.1+cpu, Docker daemon down.",
+  "Measured the truncation bug with the real tokenizer: an 835-word Armenian article is 2,340 tokens, so 78% of it never reached the vector while the full text still went to the LLM. Armenian is ~2.2-2.8 tokens/word through XLM-R, making 512 tokens only ~185-230 words.",
+  "Checked AUDIT.md's claims rather than trusting them; found one wrong (return_metadata=['distance'] IS valid weaviate-client 4.9 API — METADATA is typed Union[List[Literal[...]], MetadataQuery]).",
+  "Archived the entire prototype to attic/ with git mv (all 23 files registered as renames, history preserved). Wrote attic/ATTIC_NOTES.md covering what to salvage and what not to reintroduce.",
+  "Surveyed infocom.am with Playwright + the WP REST API. Wrote research/SITE_FINDINGS.md and saved raw artifacts to research/raw/.",
+]
+
+pending = [
+  "Design the new system from scratch — brainstorming was started and set aside when the site survey was prioritised.",
+  "Decide the exact corpus slice (see 'next').",
+  "Benchmark the embedding model on this machine; the ~1hr figure for the indepth corpus is an estimate, not a measurement.",
+]
+
+next = [
+  "Answer the five open questions at the end of research/SITE_FINDINGS.md — chiefly: index indepth only (5,836 articles) or add a rolling news window?",
+  "Then resume the from-scratch design and write it to a spec before any code.",
+]
+
+files = [
+  "research/SITE_FINDINGS.md — the survey writeup, main deliverable",
+  "research/fetch_sitemaps.py — sitemap discovery",
+  "research/probe_api.py — REST API structure, types, taxonomies, authors, languages",
+  "research/probe_corpus.py — per-category content quality and data-quality checks",
+  "research/raw/ — sitemaps, category dump, sample post, DOM snapshots, screenshot",
+  "attic/ATTIC_NOTES.md — what the old prototype got right and wrong",
+]
+
+commits = []
+
+notes = """
+Decisions locked this session (user's call): news-only project (Telegram path dropped),
+index a 2-5k article subset first, and start the code over from scratch rather than
+refactoring the prototype.
+
+Biggest survey findings, in the order they change the design:
+
+1. The corpus to index is `indepth` (category 51): 5,836 articles, median 1,016 words,
+   real bylines. The 146,936 `news` posts are 72-word wire stubs authored by a generic
+   `adminfo_com` account — indexing them would swamp retrieval with near-duplicates.
+2. The site runs PublishPress Authors. Real bylines are in `authors`/`ppma_author`, NOT
+   the `author` field the old scraper read. That's why the old scrape's authors were
+   useless.
+3. `content.rendered` is stuffed with Elementor page-builder markup (301 elementor-element
+   classes, 526 spans, SVG icons in a 10-article sample). The old regex tag-strip is not
+   adequate — needs a real HTML parser with class-based removal.
+4. Article URL slug != post ID. Post 1174257 lives at /10045113/.
+5. `infotag` is a 1,074-term hand-curated entity taxonomy (people, countries, institutions).
+   Strong candidate for a retrieval filter — nothing like it existed in the old design.
+6. Indepth articles have real <h2> section structure, so heading-aware chunking beats
+   fixed-size windows.
+7. Data quality gotchas: 17 posts dated 2000-01-01 (placeholder), duplicate slugs
+   (/19427/ and /19427-2/), `excerpt` is just a truncated body prefix not a summary,
+   `reels` category is 30/30 empty (video only), `acf` is empty.
+8. robots.txt lists AI-crawler blocks (GPTBot, ClaudeBot, CCBot) but they are ALL
+   commented out — scraping is not disallowed. Still keep concurrency low.
+9. Scale relief: indepth is ~16M tokens / ~35-40k chunks, versus 204,581 posts for the
+   full archive. CPU-only embedding is plausible here where it wasn't before.
+
+Windows gotcha hit repeatedly: python printing Armenian text dies with cp1252
+UnicodeEncodeError. Fix is PYTHONIOENCODING=utf-8 on the command, and explicit
+encoding='utf-8' on every FileHandler and open().
+"""

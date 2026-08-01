@@ -1,0 +1,185 @@
+- generic [active] [ref=f5e1]:
+  - link "Skip to content" [ref=f5e2] [cursor=pointer]:
+    - /url: "#content"
+  - banner [ref=f5e3]:
+    - generic [ref=f5e5]:
+      - link [ref=f5e8] [cursor=pointer]:
+        - /url: https://infocom.am/lrahos/
+        - img "Vector" [ref=f5e9]
+      - link "Դեպի հեղինակային" [ref=f5e12] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f5e20]:
+        - link "Open search" [ref=f5e38] [cursor=pointer]:
+          - /url: "#elementor-action%3Aaction%3Dpopup%3Aopen%26settings%3DeyJpZCI6OTQ0NjUsInRvZ2dsZSI6ZmFsc2V9"
+        - link "Open menu" [ref=f5e44] [cursor=pointer]:
+          - /url: "#elementor-action%3Aaction%3Dpopup%3Aopen%26settings%3DeyJpZCI6NTY3Njc3LCJ0b2dnbGUiOmZhbHNlfQ%3D%3D"
+  - generic [ref=f5e50]:
+    - generic [ref=f5e52]:
+      - img "ԱԺ «Ուժեղ Հայաստան» խմբակցության ղեկավար է ընտրվել Նարեկ Կարապետյանը | azatutyun.am" [ref=f5e55]
+      - list [ref=f5e57]:
+        - listitem [ref=f5e58]:
+          - time [ref=f5e65]: 20:17
+        - listitem [ref=f5e66]:
+          - time [ref=f5e68]: 1 օգոստոս, 2026
+      - heading "ԱԺ «Ուժեղ Հայաստան» խմբակցության ղեկավար է ընտրվել Նարեկ Կարապետյանը" [level=1] [ref=f5e71]
+    - generic [ref=f5e73]:
+      - generic [ref=f5e75]:
+        - paragraph [ref=f5e76]: "Ազգային ժողովի «Ուժեղ Հայաստան» խմբակցության ղեկավար է ընտրվել Նարեկ Կարապետյանը, խմբակցության քարտուղար՝ Տիգրան Աբրահամյանը: Այս մասին հաղորդում է ընդդիմադիր դաշինքը իր ֆեյսբուքյան էջում:"
+        - paragraph [ref=f5e77]: "Այդ ընտրություններով ձևավորված 9-րդ գումարման Ազգային ժողովն աշխատանքները սկսում է վաղը:"
+        - paragraph [ref=f5e78]: «Ուժեղ Հայաստան» դաշինքը ընտրությունների արդյունքում ստացել է 29 մանդատ։
+        - paragraph [ref=f5e79]: Ավելի վաղ՝ դաշինքը հրապարակել էր պատգամավորների ցուցակը, որում հայտնվել էին՝ Նարեկ Կարապետյանը, Արամ Վարդևանյանը,Դավիթ Ղազինյանը, Ռուբեն Մխիթարյանը, Արեգա Հովսեփյանը, Մամիկոն Ասլանյանը, Մարիաննա Ղահրամանյանը, Հայկ Սուքիասյանը, Արգիշտի Դարբինյանը, Իրինա Յոլյանը, Էդգար Ղազարյանը, Տիգրան Աբրահամյանը, Լենա Մաթևոսյանը, Անդրանիկ Գևորգյանը, Հայկ Ֆարմանյանը, Գրիշա Թամրազյանը, Լիանա Գասպարյանը, Վաղինակ Վարդանովը, Գառնիկ Դավթյանը, Լիանա Մանուկյանը, Հարություն Մնացականյանը, Վրույր Այվազյանը, Սյուզաննա Ավետիսյանը, Հարություն Հարությունյանը, Շիրազ Մանուկյանը Անուշ Միրզոյանը, Անուշավան Մանուչարյանը, Հասմիկ Ենգորյանը և Արման Ավչյանը։
+      - list [ref=f5e82]:
+        - listitem [ref=f5e83]:
+          - generic [ref=f5e85]:
+            - link "«Ուժեղ Հայաստան» կուսակցություն" [ref=f5e86] [cursor=pointer]:
+              - /url: https://infocom.am/infotag/%d5%b8%d6%82%d5%aa%d5%a5%d5%b2-%d5%b0%d5%a1%d5%b5%d5%a1%d5%bd%d5%bf%d5%a1%d5%b6-%d5%af%d5%b8%d6%82%d5%bd%d5%a1%d5%af%d6%81%d5%b8%d6%82%d5%a9%d5%b5%d5%b8%d6%82%d5%b6/
+            - text: ","
+            - link "Ազգային ժողով" [ref=f5e87] [cursor=pointer]:
+              - /url: https://infocom.am/infotag/286/
+            - text: ","
+            - link "Սամվել Կարապետյան" [ref=f5e88] [cursor=pointer]:
+              - /url: https://infocom.am/infotag/%d5%bd%d5%a1%d5%b4%d5%be%d5%a5%d5%ac-%d5%af%d5%a1%d6%80%d5%a1%d5%ba%d5%a5%d5%bf%d5%b5%d5%a1%d5%b6/
+    - generic [ref=f5e91]:
+      - list [ref=f5e96]:
+        - listitem [ref=f5e97]:
+          - button "Share on facebook" [ref=f5e98] [cursor=pointer]
+        - listitem [ref=f5e102]:
+          - button "Share on telegram" [ref=f5e103] [cursor=pointer]
+        - listitem [ref=f5e107]:
+          - button "Share on x-twitter" [ref=f5e108] [cursor=pointer]
+        - listitem [ref=f5e112]:
+          - button "Share on linkedin" [ref=f5e113] [cursor=pointer]
+        - listitem [ref=f5e117]:
+          - button "Share on whatsapp" [ref=f5e118] [cursor=pointer]
+      - generic [ref=f5e126]:
+        - generic [ref=f5e127]: Եթե գտել եք վրիպակ, ապա այն կարող եք ուղարկել մեզ՝ ընտրելով վրիպակը և սեղմելով CTRL+Enter
+        - separator [ref=f5e128]
+    - generic [ref=f5e133]:
+      - heading "Կարդալ նաև" [level=2] [ref=f5e135]
+      - generic [ref=f5e139]:
+        - generic [ref=f5e140]:
+          - link "Open article" [ref=f5e142] [cursor=pointer]:
+            - /url: https://infocom.am/10045110/
+            - img "Վանաձորում, Գյումրիում և Հրազդանում օդում փոշու պարունակությունը գերազանցել է թույլատրելի կոնցենտրացիան | factor.am" [ref=f5e143]
+          - generic [ref=f5e144]:
+            - heading [level=3] [ref=f5e145]:
+              - link "Վանաձորում, Գյումրիում և Հրազդանում օդում փոշու պարունակությունը գերազանցել է թույլատրելի կոնցենտրացիան" [ref=f5e146] [cursor=pointer]:
+                - /url: https://infocom.am/10045110/
+            - list [ref=f5e147]:
+              - listitem [ref=f5e148]:
+                - time [ref=f5e155]: 19:45
+              - listitem [ref=f5e156]:
+                - time [ref=f5e158]: 1 օգոստոս, 2026
+        - generic [ref=f5e159]:
+          - link "Open article" [ref=f5e161] [cursor=pointer]:
+            - /url: https://infocom.am/10045106/
+            - img "Ֆոն դեր Լայեն․ Սեուտայից ոչ մի միգրանտ չի կարողացել հայտնվել մայրցամաքային Իսպանիայում | news.am" [ref=f5e162]
+          - generic [ref=f5e163]:
+            - heading [level=3] [ref=f5e164]:
+              - link "Ֆոն դեր Լայեն․ Սեուտայից ոչ մի միգրանտ չի կարողացել հայտնվել մայրցամաքային Իսպանիայում | news.am" [ref=f5e165] [cursor=pointer]:
+                - /url: https://infocom.am/10045106/
+            - list [ref=f5e166]:
+              - listitem [ref=f5e167]:
+                - time [ref=f5e174]: 18:52
+              - listitem [ref=f5e175]:
+                - time [ref=f5e177]: 1 օգոստոս, 2026
+        - generic [ref=f5e178]:
+          - link "Open article" [ref=f5e180] [cursor=pointer]:
+            - /url: https://infocom.am/10045102/
+            - img "Իրանցի գեներալը սպառնում է ԱՄՆ-ի «վահան» երկրներին՝ «կայրվեն պատերազմի կրակում» | azatutyun.am" [ref=f5e181]
+          - generic [ref=f5e182]:
+            - heading [level=3] [ref=f5e183]:
+              - link "Իրանցի գեներալը սպառնում է ԱՄՆ-ի «վահան» երկրներին՝ «կայրվեն պատերազմի կրակում» | azatutyun.am" [ref=f5e184] [cursor=pointer]:
+                - /url: https://infocom.am/10045102/
+            - list [ref=f5e185]:
+              - listitem [ref=f5e186]:
+                - time [ref=f5e193]: 17:55
+              - listitem [ref=f5e194]:
+                - time [ref=f5e196]: 1 օգոստոս, 2026
+    - generic [ref=f5e198]:
+      - generic [ref=f5e201]:
+        - heading "Թողնել մեկնաբանություն" [level=2] [ref=f5e202]
+        - paragraph [ref=f5e203]:
+          - text: Մեկնաբանություն տեղադրելու համար պետք է
+          - link "մուտք գործել" [ref=f5e204] [cursor=pointer]:
+            - /url: https://infocom.am/my-account/
+          - text: ։
+      - generic [ref=f5e206]:
+        - generic:
+          - iframe
+  - contentinfo [ref=f5e207]:
+    - generic [ref=f5e214]:
+      - generic [ref=f5e215]:
+        - link [ref=f5e217] [cursor=pointer]:
+          - /url: https://infocom.am
+          - img "Vector" [ref=f5e218]
+        - heading "Բաժանորդագրվել տեղեկագրին" [level=3] [ref=f5e220]
+        - form "New Form" [ref=f5e222]:
+          - generic [ref=f5e223]:
+            - generic [ref=f5e224]:
+              - generic [ref=f5e225] [cursor=pointer]: Էլ հասցե
+              - textbox "Էլ հասցե" [ref=f5e226]:
+                - /placeholder: Ձեր Էլ հասցեն
+            - button "Բաժանորդագրվել" [ref=f5e228] [cursor=pointer]
+      - list [ref=f5e236]:
+        - listitem [ref=f5e237]:
+          - link "Մեր մասին" [ref=f5e238] [cursor=pointer]:
+            - /url: https://infocom.am/about-us/
+        - listitem [ref=f5e240]:
+          - link "Ինֆոթեգեր" [ref=f5e241] [cursor=pointer]:
+            - /url: /indept/infotag/
+        - listitem [ref=f5e243]:
+          - link "Infocom Production" [ref=f5e244] [cursor=pointer]:
+            - /url: https://production.infocom.am/
+        - listitem [ref=f5e246]:
+          - link "Հետաքննություն" [ref=f5e247] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/hetaqnnutyun/
+        - listitem [ref=f5e249]:
+          - link "Հետազոտություն" [ref=f5e250] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/hetazotutyun/
+        - listitem [ref=f5e252]:
+          - link "Տվյալահեն բովանդակություն" [ref=f5e253] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/tvyalahen-bovandakutyun/
+        - listitem [ref=f5e255]:
+          - link "Ինֆոքարտ" [ref=f5e256] [cursor=pointer]:
+            - /url: https://infocom.am/category/indepth/infocart/
+      - generic [ref=f5e258]:
+        - list [ref=f5e260]:
+          - listitem [ref=f5e261]:
+            - link "+374 41 46 36 26" [ref=f5e262] [cursor=pointer]:
+              - /url: tel:+374%2041%2046%2036%2026
+          - listitem [ref=f5e267]:
+            - link "press@infocom.am" [ref=f5e268] [cursor=pointer]:
+              - /url: mailto:press@infocom.am
+          - listitem [ref=f5e274]:
+            - link "ՀՀ, ք․ Երևան, Բաղրամյան 28" [ref=f5e275] [cursor=pointer]:
+              - /url: https://www.google.com/maps/place/28+Marshal+Baghramyan+Ave,+Yerevan/@40.1947441,44.4955365,18.74z/data=!4m5!3m4!1s0x406abd13ea70bb0d:0x6d376e47883e4cac!8m2!3d40.1947831!4d44.4960417?entry=ttu&g_ep=EgoyMDI1MDYwOS4wIKXMDSoASAFQAw%3D%3D
+        - generic [ref=f5e282]:
+          - heading "Հետևեք մեզ" [level=3] [ref=f5e284]
+          - list [ref=f5e286]:
+            - listitem [ref=f5e287]:
+              - link "Open Facebook page" [ref=f5e288] [cursor=pointer]:
+                - /url: https://www.facebook.com/infocomm
+            - listitem [ref=f5e292]:
+              - link "Open Instagram page" [ref=f5e293] [cursor=pointer]:
+                - /url: https://www.instagram.com/infocom.am
+            - listitem [ref=f5e299]:
+              - link "Open Telegram page" [ref=f5e300] [cursor=pointer]:
+                - /url: https://t.me/infocomm
+            - listitem [ref=f5e304]:
+              - link "Open YouTube page" [ref=f5e305] [cursor=pointer]:
+                - /url: https://www.youtube.com/channel/UC5XszYyC_a09pXFoqlkRznQ
+            - listitem [ref=f5e309]:
+              - link "Open X page" [ref=f5e310] [cursor=pointer]:
+                - /url: https://twitter.com/infocom_am
+            - listitem [ref=f5e314]:
+              - link "Open TikTok page" [ref=f5e315] [cursor=pointer]:
+                - /url: https://www.tiktok.com/@infocom.am
+                - generic [ref=f5e316]: Tiktok
+    - generic [ref=f5e325]:
+      - heading "Copyright © 2025 Infocom" [level=4] [ref=f5e327]
+      - link [ref=f5e329] [cursor=pointer]:
+        - /url: https://vecto.digital
+        - img "Group 997" [ref=f5e330]
+  - tooltip "Tooltip content"
+  - generic [ref=f5e331]: desktop

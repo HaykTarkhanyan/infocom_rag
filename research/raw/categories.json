@@ -1,0 +1,79 @@
+[
+  {
+    "id": 49,
+    "count": 146936,
+    "name": "Լուրեր",
+    "slug": "news",
+    "parent": 0
+  },
+  {
+    "id": 1,
+    "count": 59751,
+    "name": "Uncategorized @hy",
+    "slug": "uncategorized-hy",
+    "parent": 0
+  },
+  {
+    "id": 51,
+    "count": 5836,
+    "name": "Հեղինակային",
+    "slug": "indepth",
+    "parent": 0
+  },
+  {
+    "id": 1084,
+    "count": 71,
+    "name": "Հետաքննություն",
+    "slug": "investigation",
+    "parent": 51
+  },
+  {
+    "id": 1085,
+    "count": 63,
+    "name": "Հետազոտություն",
+    "slug": "research",
+    "parent": 51
+  },
+  {
+    "id": 1087,
+    "count": 50,
+    "name": "Մի ռիլով",
+    "slug": "reels",
+    "parent": 0
+  },
+  {
+    "id": 1086,
+    "count": 41,
+    "name": "Ինֆոքարտ",
+    "slug": "infocart",
+    "parent": 51
+  },
+  {
+    "id": 1083,
+    "count": 41,
+    "name": "Տվյալահեն բովանդակություն",
+    "slug": "data-driven-content",
+    "parent": 51
+  },
+  {
+    "id": 52,
+    "count": 4,
+    "name": "Հրատապ",
+    "slug": "hratap",
+    "parent": 0
+  },
+  {
+    "id": 1225,
+    "count": 3,
+    "name": "#վճարովի_բովանդակություն",
+    "slug": "%d5%be%d5%b3%d5%a1%d6%80%d5%b8%d5%be%d5%ab_%d5%a2%d5%b8%d5%be%d5%a1%d5%b6%d5%a4%d5%a1%d5%af%d5%b8%d6%82%d5%a9%d5%b5%d5%b8%d6%82%d5%b6",
+    "parent": 0
+  },
+  {
+    "id": 1063,
+    "count": 1,
+    "name": "Անորոշ",
+    "slug": "%d5%a1%d5%b6%d5%b8%d6%80%d5%b8%d5%b7",
+    "parent": 0
+  }
+]

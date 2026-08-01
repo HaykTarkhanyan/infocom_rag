@@ -1,0 +1,130 @@
+{
+  "namespace": "custom-api/v1",
+  "routes": {
+    "/custom-api/v1": {
+      "namespace": "custom-api/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "namespace": {
+              "default": "custom-api/v1",
+              "required": false
+            },
+            "context": {
+              "default": "view",
+              "required": false
+            },
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/custom-api/v1"
+          }
+        ]
+      }
+    },
+    "/custom-api/v1/import-posts": {
+      "namespace": "custom-api/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "post_ids": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "required": true
+            },
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/custom-api/v1/import-posts"
+          }
+        ]
+      }
+    },
+    "/custom-api/v1/import-posts-publish": {
+      "namespace": "custom-api/v1",
+      "methods": [
+        "POST"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "args": {
+            "post_ids": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "required": true
+            },
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/custom-api/v1/import-posts-publish"
+          }
+        ]
+      }
+    }
+  },
+  "_links": {
+    "up": [
+      {
+        "href": "https://infocom.am/wp-json/"
+      }
+    ]
+  }
+}

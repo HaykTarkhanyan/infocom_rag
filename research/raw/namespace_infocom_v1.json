@@ -1,0 +1,96 @@
+{
+  "namespace": "infocom/v1",
+  "routes": {
+    "/infocom/v1": {
+      "namespace": "infocom/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "namespace": {
+              "default": "infocom/v1",
+              "required": false
+            },
+            "context": {
+              "default": "view",
+              "required": false
+            },
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/infocom/v1"
+          }
+        ]
+      }
+    },
+    "/infocom/v1/news": {
+      "namespace": "infocom/v1",
+      "methods": [
+        "GET"
+      ],
+      "endpoints": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "args": {
+            "paged": {
+              "default": 1,
+              "required": false
+            },
+            "posts_per_page": {
+              "default": 24,
+              "required": false
+            },
+            "date": {
+              "default": "",
+              "required": false
+            },
+            "wpml_language": {
+              "type": "string",
+              "description": "WPML's language code",
+              "enum": [
+                "hy",
+                "en",
+                "ru"
+              ],
+              "required": false
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": [
+          {
+            "href": "https://infocom.am/wp-json/infocom/v1/news"
+          }
+        ]
+      }
+    }
+  },
+  "_links": {
+    "up": [
+      {
+        "href": "https://infocom.am/wp-json/"
+      }
+    ]
+  }
+}
