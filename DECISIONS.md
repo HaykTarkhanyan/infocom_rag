@@ -8,6 +8,45 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
+## 17. The API and LLM client are async, converted together
+
+**Date** 2026-08-01 · **Status** active · **Driver:** concurrent users are expected
+
+**Why.** A request spends ~5 seconds waiting on OpenRouter. Sync handlers were
+*correct* — FastAPI runs `def` endpoints in a threadpool, verified at 3
+concurrent requests — but each one holds an OS thread for the whole wait, and
+anyio's default limit is **40**. That caps sustained throughput near 8 req/s and
+queues everything after. Async makes the wait cost a coroutine instead.
+
+**Converted as one unit, deliberately.** `async def` handlers around a blocking
+`requests.post` would be *worse* than staying sync: it parks the whole event loop
+for 5 seconds per request. That is precisely the archived prototype's bug (sync
+`rag.answer()` inside `async def handle_message`). So the client moved to
+`httpx.AsyncClient` in the same change, and it is now shared process-wide — which
+also removes the TCP + TLS handshake that `requests` was paying on every call.
+
+BM25 scoring is CPU-bound, so it goes through `asyncio.to_thread` rather than
+blocking the loop. The index is warmed in the lifespan, so no unlucky first
+request pays to build it and concurrent requests cannot race to build it at once.
+
+**Verified:** 6 concurrent requests, 50.67s of work in 9.48s wall clock, all 200.
+
+**Fixed alongside — a live data-loss bug.** The cost ledger did an unguarded
+`open(path, "a")` per call and lost **~10% of rows** under 8 threads, with zero
+corrupt lines. It was already happening, since sync handlers were already
+concurrent. Now guarded by a `threading.Lock`, with a 200-write regression test.
+
+**Still open for real concurrent users.** Authentication, per-user cost caps and
+rate limiting do not exist. A shared API key with no ceiling is an unbounded
+spend risk the moment the UI is reachable by anyone else. Also, the ledger lock
+is per-process — multiple uvicorn workers would race again, and at that point
+cost accounting should move to Postgres.
+
+**What would change this.** Multi-worker deployment (move the ledger to the DB),
+or streaming responses (would want SSE through the API to the UI).
+
+---
+
 ## 16. Retrieval is BM25 for now, explicitly as a stopgap
 
 **Date** 2026-08-01 · **Status** active, **temporary by design**

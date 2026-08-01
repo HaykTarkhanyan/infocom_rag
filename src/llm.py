@@ -1,4 +1,9 @@
-"""OpenRouter client for Gemini, with per-call token and cost accounting.
+"""Async OpenRouter client, with per-call token and cost accounting.
+
+Async on purpose: a request spends ~5 seconds waiting on OpenRouter, and under
+concurrent users that wait must cost a coroutine, not an OS thread. The client
+and the FastAPI handlers were converted together -- `async def` around a blocking
+call is strictly worse than staying sync, because it parks the whole event loop.
 
 Every call appends one JSON object to the ledger (`logs/llm_calls.jsonl`):
 model, role, token counts, cost, latency. Report over it with
@@ -12,13 +17,14 @@ pricing table would silently drift.
 
 import json
 import logging
+import threading
 import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-import requests
+import httpx
 
 from config import openrouter_key, settings
 
@@ -27,6 +33,36 @@ logger = logging.getLogger(__name__)
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 TIMEOUT_SECONDS = 120
 APP_TITLE = "infocom-rag"
+
+# One client for the process: an AsyncClient owns a connection pool, so reusing
+# it avoids a fresh TCP + TLS handshake on every call.
+_client: httpx.AsyncClient | None = None
+
+# Serialises ledger appends. Without it, concurrent writers each hold their own
+# file position and silently overwrite one another -- measured at ~10% of rows
+# lost with 8 threads. Correct within one process; multiple uvicorn workers would
+# still race, at which point the database becomes the source of truth.
+_LEDGER_LOCK = threading.Lock()
+
+
+def get_client() -> httpx.AsyncClient:
+    """Return the shared client, creating it on first use.
+
+    Self-healing if it was closed, so scripts that run their own event loop still
+    work. The API closes it explicitly in its lifespan.
+    """
+    global _client
+    if _client is None or _client.is_closed:
+        _client = httpx.AsyncClient(timeout=TIMEOUT_SECONDS)
+    return _client
+
+
+async def close_client() -> None:
+    """Close the shared client. Called from the FastAPI lifespan shutdown."""
+    global _client
+    if _client is not None and not _client.is_closed:
+        await _client.aclose()
+    _client = None
 
 
 @dataclass(frozen=True)
@@ -114,14 +150,15 @@ def _record(response: LLMResponse) -> None:
     }
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("a", encoding="utf-8") as handle:
+        # The lock is the whole point: see _LEDGER_LOCK above.
+        with _LEDGER_LOCK, path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
     except OSError as exc:
         logger.error("Could not write LLM ledger to %s: %s", path, exc)
 
 
-def call(messages: list[dict[str, str]], role: str = "answer",
-         model: str | None = None, temperature: float | None = None) -> LLMResponse:
+async def call(messages: list[dict[str, str]], role: str = "answer",
+               model: str | None = None, temperature: float | None = None) -> LLMResponse:
     """POST to OpenRouter and return content plus usage.
 
     `role` is local metadata only (it labels ledger rows, e.g. "answer",
@@ -139,9 +176,8 @@ def call(messages: list[dict[str, str]], role: str = "answer",
 
     start = time.monotonic_ns()
     try:
-        resp = requests.post(OPENROUTER_URL, json=payload, headers=headers,
-                             timeout=TIMEOUT_SECONDS)
-    except requests.RequestException as exc:
+        resp = await get_client().post(OPENROUTER_URL, json=payload, headers=headers)
+    except httpx.HTTPError as exc:
         raise LLMError(f"OpenRouter request failed: {exc}") from exc
     latency_ms = (time.monotonic_ns() - start) // 1_000_000
 
@@ -184,10 +220,10 @@ def call(messages: list[dict[str, str]], role: str = "answer",
     return response
 
 
-def answer(question: str, context: str, role: str = "answer") -> LLMResponse:
+async def answer(question: str, context: str, role: str = "answer") -> LLMResponse:
     """Run the pinned RAG system prompt over `context` and `question`."""
     messages = [
         {"role": "system", "content": settings.system_prompt},
         {"role": "user", "content": f"Excerpts:\n---\n{context}\n---\n\nQuestion: {question}"},
     ]
-    return call(messages, role=role)
+    return await call(messages, role=role)
