@@ -49,7 +49,11 @@ rollback button.
 Hetzner Cloud console → new project → **Add Server**:
 
 - **Image:** Ubuntu 24.04
-- **Type:** shared vCPU, **≥ 4 GB RAM** (CX-class)
+- **Type:** **CPX22** (2 vCPU / 4 GB) or **CPX21** (3 vCPU / 4 GB).
+  Checked 2026-08-02: the cheaper *cost-optimized* line (CX23, CAX11 and the
+  rest) shows **"not available"** across the board — that tier is periodically
+  sold out. CPX is available and has US/Singapore locations, not just EU.
+  Prices only render in the console, so confirm there. Requirement is ≥ 4 GB.
 - **SSH key:** add yours — do not use password auth
 - Location: whichever is nearest your users
 

@@ -31,14 +31,14 @@ import statistics
 import sys
 import tomllib
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-import llm  # noqa: E402
+import llm
 
 Path("logs").mkdir(exist_ok=True)
 logging.basicConfig(
@@ -177,11 +177,18 @@ def score_retrieval(question: dict, sources: list[dict]) -> dict:
     }
 
 
-async def judge(question: dict, result: dict) -> dict:
+async def judge(question: dict, result: dict, cache: dict[str, dict] | None = None) -> dict:
+    """Grade one answer, reusing a cached verdict when the answer is unchanged."""
+    cache = cache if cache is not None else {}
+    answer_text = result.get("answer") or ""
+    key = judge_key(question, answer_text, JUDGE_MODEL)
+    if key in cache:
+        return {**cache[key], "cost_usd": 0.0, "cached": True}
+
     excerpts = "\n\n".join(
         f"[{s['n']}] {s['title']}\n{s['text'][:900]}" for s in result.get("sources", [])
     ) or "(no excerpts were retrieved)"
-    answer = result.get("answer") or "(the system returned no answer)"
+    answer = answer_text or "(the system returned no answer)"
 
     response = await llm.call(
         [{"role": "user", "content": JUDGE_PROMPT % (
@@ -309,7 +316,7 @@ def report(rows: list[dict], meta: dict) -> None:
 
 async def main_async(args) -> None:
     questions = load_questions(args.smoke, args.limit)
-    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     logger.info("Running %d questions (run_id=%s)", len(questions), run_id)
 
     async with httpx.AsyncClient(timeout=180) as client:

@@ -118,7 +118,9 @@ def main() -> None:
         logger.warning("HF_TOKEN not set in .env -- proceeding anonymously "
                        "(fine for public repos like ATE-2)")
     else:
-        logger.info("Using HF_TOKEN from .env (%s...%s)", token[:6], token[-4:])
+        # Log only that a token exists, never any part of it. Partial tokens in
+        # logs are a needless leak, and logs get pasted into issues and chats.
+        logger.info("Using HF_TOKEN from .env (%d chars)", len(token))
 
     if HF_HOME:
         logger.info("HF_HOME = %s", HF_HOME)

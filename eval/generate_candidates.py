@@ -32,7 +32,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-import llm  # noqa: E402
+import llm
 
 Path("logs").mkdir(exist_ok=True)
 logging.basicConfig(
@@ -106,7 +106,7 @@ async def draft(chunk: dict) -> list[dict]:
         role="eval_generate",
     )
     raw = response.content.strip()
-    raw = re.sub(r"^```(?:json)?|```$", "", raw, flags=re.M).strip()
+    raw = re.sub(r"^```(?:json)?|```$", "", raw, flags=re.MULTILINE).strip()
     try:
         parsed = json.loads(raw)
     except json.JSONDecodeError:

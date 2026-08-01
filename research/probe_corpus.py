@@ -56,8 +56,8 @@ def get(path: str, params: dict | None = None) -> requests.Response:
 def html_to_text(raw: str) -> str:
     text = re.sub(r"<br\s*/?>", "\n", raw)
     text = re.sub(r"</p>", "\n\n", text)
-    text = re.sub(r"<script.*?</script>", "", text, flags=re.S)
-    text = re.sub(r"<style.*?</style>", "", text, flags=re.S)
+    text = re.sub(r"<script.*?</script>", "", text, flags=re.DOTALL)
+    text = re.sub(r"<style.*?</style>", "", text, flags=re.DOTALL)
     text = re.sub(r"<[^>]+>", "", text)
     text = html_lib.unescape(text)
     text = re.sub(r"[ \t]+", " ", text)

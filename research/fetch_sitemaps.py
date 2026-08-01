@@ -55,7 +55,7 @@ def main():
 
     # Expand any sitemap index into its child sitemaps
     for name, text in list(live.items()):
-        children = re.findall(r"<sitemap>.*?<loc>(.*?)</loc>", text, re.S)
+        children = re.findall(r"<sitemap>.*?<loc>(.*?)</loc>", text, re.DOTALL)
         if not children:
             continue
         logger.info("%s is an index with %d child sitemaps:", name, len(children))
@@ -64,7 +64,7 @@ def main():
 
     # Summarize URL counts per sitemap
     for name, text in live.items():
-        urls = re.findall(r"<url>.*?<loc>(.*?)</loc>", text, re.S)
+        urls = re.findall(r"<url>.*?<loc>(.*?)</loc>", text, re.DOTALL)
         logger.info("%s contains %d <url> entries", name, len(urls))
         for u in urls[:5]:
             logger.info("    sample: %s", u)

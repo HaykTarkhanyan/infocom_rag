@@ -21,13 +21,12 @@ Usage:
 """
 
 import argparse
-import json
 import logging
 import os
 import sys
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import psycopg

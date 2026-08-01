@@ -25,7 +25,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from embedding import Embedder  # noqa: E402
+from embedding import Embedder
 
 CHUNKS_PATH = Path("data/chunks.jsonl")
 REPOS = {

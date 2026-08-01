@@ -28,7 +28,7 @@ from chainlit.data.sql_alchemy import SQLAlchemyDataLayer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
-from db import async_dsn  # noqa: E402
+from db import async_dsn
 
 API_URL = os.environ.get("RAG_API_URL", "http://localhost:8000")
 REQUEST_TIMEOUT = 120
@@ -89,8 +89,8 @@ async def on_chat_start() -> None:
             f"- model `{health['model']}` · retriever `{health['retriever']}`"
             + (f" (`{health['embedding_model'].rsplit('/', 1)[-1]}`)"
                if health.get("embedding_model") else "") + "\n"
-            f"- expand **Retrieval** / **Generation** under any answer to see "
-            f"which chunks were used, their scores, the assembled prompt and the cost."
+            "- expand **Retrieval** / **Generation** under any answer to see "
+            "which chunks were used, their scores, the assembled prompt and the cost."
         )
     ).send()
 

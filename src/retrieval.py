@@ -159,24 +159,45 @@ def _hit(chunk: dict, score: float, retriever: str,
     )
 
 
+@lru_cache(maxsize=1)
+def _row_to_chunk() -> list[dict]:
+    """Row index -> chunk, aligned with the vector matrix.
+
+    Built once. Rebuilding these maps per query was ~2 dict constructions over
+    the whole corpus on every request -- unnoticeable at 969 chunks, wasteful at
+    the ~40k the full indepth corpus would produce, and pure garbage churn under
+    concurrency.
+    """
+    _, id_to_row = _dense_index()
+    by_id = {c["chunk_id"]: c for c in _chunks()}
+    ordered: list[dict] = [None] * len(id_to_row)  # type: ignore[list-item]
+    for chunk_id, row in id_to_row.items():
+        ordered[row] = by_id[chunk_id]
+    return ordered
+
+
 def search_dense(query: str, top_k: int, max_distance: float | None = None) -> list[Hit]:
     """Cosine similarity against the ATE-2 index."""
     max_distance = settings.retrieval.max_distance if max_distance is None else max_distance
-    matrix, id_to_row = _dense_index()
-    chunks = _chunks()
-    by_id = {c["chunk_id"]: c for c in chunks}
-    rows = {row: cid for cid, row in id_to_row.items()}
+    matrix, _ = _dense_index()
+    row_chunks = _row_to_chunk()
 
     query_vec = _embedder().embed_query(query).cpu().numpy()
     sims = matrix @ query_vec           # both sides are L2-normalised
 
+    # argpartition is O(n) and finds the top_k without ordering the rest;
+    # argsort would order all ~40k rows to return 10.
+    k = min(top_k, sims.shape[0])
+    candidates = np.argpartition(-sims, k - 1)[:k]
+    ranked = candidates[np.argsort(-sims[candidates])]
+
     hits: list[Hit] = []
-    for row in np.argsort(-sims)[:top_k]:
+    for row in ranked:
         similarity = float(sims[row])
         distance = 1.0 - similarity
         if distance > max_distance:
             continue
-        hits.append(_hit(by_id[rows[int(row)]], similarity, "dense", distance))
+        hits.append(_hit(row_chunks[int(row)], similarity, "dense", distance))
     return hits
 
 

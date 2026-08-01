@@ -20,7 +20,7 @@ import logging
 import threading
 import time
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -142,7 +142,7 @@ def _record(response: LLMResponse) -> None:
     """Append one line to the ledger. Never raises -- accounting must not break a call."""
     path = Path(settings.logging.llm_ledger)
     row = {
-        "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "ts": datetime.now(UTC).isoformat(timespec="seconds"),
         "role": response.role,
         "model": response.model,
         "latency_ms": response.latency_ms,
