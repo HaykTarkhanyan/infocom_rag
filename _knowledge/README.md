@@ -12,12 +12,17 @@ it live in [`research/`](../research/README.md), and raw artifacts in
 | 02 | [02_evaluation_design.md](02_evaluation_design.md) | How to evaluate this RAG | Question-set schema, metrics, LLM-as-judge recipe, runner design, and the specific mistakes to avoid — surveyed from a prior text-to-SQL project |
 | 03 | [03_armenian_llm_benchmarks.md](03_armenian_llm_benchmarks.md) | ArmBench-LLM 1.0 | Which LLM to pick for Armenian, read by reading-comprehension score rather than the headline Average; cost nuances; why several leaderboard zeros are harness failures |
 
-## How this differs from `_learnings/`
+## How this differs from the other note folders
 
 - **`_knowledge/`** — researched background on a *topic*. Longer, numbered,
   revisited and updated as understanding deepens. "What is true about X."
 - **`_learnings/`** — one gotcha or lesson per file, dated, discovered while
   working. "What bit us, and why."
+- **`DECISIONS.md`** (repo root) — the choices themselves, with alternatives
+  rejected and what would reopen them. "Why is it built this way."
+
+A finding that took an afternoon of investigation goes here; the choice it led to
+goes in `DECISIONS.md` with a link back.
 
 A finding that took an afternoon of investigation goes here. A trap that cost an
 hour of debugging goes in `_learnings/`.

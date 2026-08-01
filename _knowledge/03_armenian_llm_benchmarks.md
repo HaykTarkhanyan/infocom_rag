@@ -71,6 +71,85 @@ $0.0028 per query. It ran the whole benchmark cheaper because it used fewer
 tokens overall, not because its rate is lower. Both facts are true; do not quote
 the spend report as a per-token price.
 
+## 3b. Scoring on reading alone — and why it inverts the blog's headline
+
+In a RAG system the model never recalls facts; it reads supplied passages and
+writes an answer. So the knowledge columns (Exams, MMLU-Pro, History, Literature)
+are not merely less important, they are **irrelevant** — we have outsourced
+knowledge to the retriever. Ranking on only the three clean 0-1 reading
+sub-scores gives a different picture. (`mean` is our own composite, not the
+benchmark's.)
+
+| model | Belebele | DREAM | Hartak | mean | bench spend |
+|---|---|---|---|---|---|
+| openai/gpt-5.2-pro | 0.96 | 0.98 | 0.9778 | 0.973 | $160.20 |
+| openai/gpt-5.4-mini | 0.96 | 0.98 | 0.9556 | **0.965** | $1.82 |
+| anthropic/claude-3.7-sonnet | 0.86 | 1.00 | 0.9111 | 0.924 | $16.49 |
+| google/gemini-3-pro-preview | 0.90 | 0.94 | 0.8889 | 0.910 | $67.26 |
+| x-ai/grok-4-fast | 0.82 | 0.92 | 0.9556 | 0.899 | $2.71 |
+| qwen/qwen3.5-27b | 0.92 | 0.94 | 0.8222 | 0.894 | local |
+| openai/gpt-5.4-nano | 0.90 | 0.82 | 0.9111 | 0.877 | **$0.62** |
+| z-ai/glm-4.7-flash | 0.88 | 0.88 | 0.8444 | 0.868 | $2.98 |
+| anthropic/claude-sonnet-4 | 0.92 | 1.00 | 0.6000 | 0.840 | $18.66 |
+| google/gemini-3.1-pro-preview | 0.88 | 0.88 | 0.7556 | 0.839 | $44.60 |
+| **google/gemini-3-flash-preview** | **0.74** | 0.94 | 0.8000 | 0.827 | $3.28 |
+| google/gemini-2.5-flash | 0.76 | 0.92 | 0.4444 | 0.708 | $4.55 |
+| google/gemma-3-27b-it | 0.60 | 0.80 | 0.3111 | 0.570 | local |
+
+Two results matter:
+
+**On Belebele — the purest "read a passage, answer a question about it" test —
+both Gemini Flash models sit near the bottom.** 0.74 and 0.76, beaten by every
+listed model except Gemma-3-27B. `gpt-5.4-nano`, the cheapest entry in the whole
+spend report at $0.62, scores 0.90.
+
+**The blog's headline finding does not survive this reweighting.** It reports
+that Gemini 3 *Flash* beats Gemini 3 *Pro* on Armenian, contrary to global
+rankings, and treats that as evidence for language-specific benchmarking. But
+Flash's win is built on NER (0.7361 vs 0.5299), Text Processing (0.8357 vs
+0.7602) and MMLU (0.8679 vs 0.8078) — none of which a RAG synthesiser uses. On
+reading, Pro beats Flash cleanly (0.910 vs 0.827), the ordinary ordering. The
+"Flash > Pro for Armenian" result is an artifact of a knowledge-weighted
+composite, and it does not transfer to this project.
+
+### Why the default stays gemini-3-flash-preview anyway
+
+The best-reading Gemini, `gemini-3-pro-preview`, **is no longer offered on
+OpenRouter** — it is absent from the live model list (checked 2026-08-01),
+apparently superseded by 3.1-pro-preview. Among Gemini models actually
+purchasable today, `gemini-3.1-pro-preview` scores 0.839 against Flash's 0.827:
++0.012 for four times the price. Within the Gemini family we are already at the
+practical ceiling, so the remaining gap is to non-Gemini models, not to a better
+Gemini.
+
+### Cost is not a real constraint at this scale
+
+At roughly 5k input and 500 output tokens per question,
+`gemini-3-flash-preview` costs about **$0.0040 per query — ~$4 per 1,000
+questions**. A full eval sweep is pocket change, and the spread between the nano
+and pro tiers is a few dollars. Choose on answer quality; do not optimise this
+for price unless the system reaches production volume.
+
+### What these scores still do not measure
+
+Every task above is **multiple choice**. They test comprehension — recognising
+the right answer — not generation. None of them measures the failure modes this
+project actually fears:
+
+- inventing detail that is not in the excerpts,
+- misattributing who said what (news is largely "X asserted Y", and the system
+  prompt explicitly demands that distinction be preserved),
+- answering anyway instead of saying the context is insufficient,
+- citing `[3]` for a fact that came from `[1]`.
+
+A model can score 0.96 on Belebele and still do all four. There is a plausible
+but **untested** hypothesis worth keeping in mind: a more knowledgeable model may
+be *worse* for grounded RAG, because it can fill a gap from parametric memory
+convincingly instead of admitting the retrieved context does not cover it.
+
+The proxy narrows the field. It cannot pick the winner. That is what our own eval
+set is for.
+
 ## 4. Honest note: Gemini is not the best choice for this task
 
 You asked for Gemini and that is what is configured. But on the column that
