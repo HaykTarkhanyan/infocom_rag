@@ -1,0 +1,28 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - heading "Tiktokenizer" [level=1] [ref=e5]
+    - combobox [ref=e7] [cursor=pointer]:
+      - generic [ref=e8]: cl100k_base
+  - generic [ref=e14]:
+    - textbox [ref=e16]
+    - generic [ref=e17]:
+      - generic [ref=e19]:
+        - paragraph [ref=e20]: Token count
+        - paragraph [ref=e21]: "0"
+      - generic [ref=e24]:
+        - checkbox "Show whitespace" [ref=e25] [cursor=pointer]
+        - checkbox
+        - generic [ref=e26]: Show whitespace
+  - generic [ref=e27]:
+    - paragraph [ref=e28]:
+      - text: Built by
+      - link "dqbd" [ref=e29] [cursor=pointer]:
+        - /url: https://duong.dev
+      - text: . Created with the generous help from
+      - link "Diagram." [ref=e30] [cursor=pointer]:
+        - /url: https://diagram.com
+    - generic [ref=e33]:
+      - link [ref=e34] [cursor=pointer]:
+        - /url: https://github.com/dqbd/tiktokenizer
+      - link [ref=e38] [cursor=pointer]:
+        - /url: https://twitter.com/__dqbd

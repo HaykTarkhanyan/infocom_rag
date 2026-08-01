@@ -1,0 +1,79 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - heading "Spaces Hugging Face's logo Xenova / the-tokenizer-playground like 689 Running" [level=1] [ref=f1e7]:
+        - generic [ref=f1e8]:
+          - link "Spaces" [ref=f1e9] [cursor=pointer]:
+            - /url: /spaces
+          - link [ref=f1e10] [cursor=pointer]:
+            - /url: /
+            - img "Hugging Face's logo" [ref=f1e11]
+        - separator [ref=f1e12]
+        - generic [ref=f1e13]:
+          - link [ref=f1e17] [cursor=pointer]:
+            - /url: /Xenova
+          - link "Xenova" [ref=f1e21] [cursor=pointer]:
+            - /url: /Xenova
+          - generic [ref=f1e22]: /
+        - generic [ref=f1e23]:
+          - link "the-tokenizer-playground" [ref=f1e24] [cursor=pointer]:
+            - /url: /spaces/Xenova/the-tokenizer-playground
+          - button "Copy space name to clipboard" [ref=f1e25] [cursor=pointer]
+        - generic [ref=f1e30]:
+          - button "like" [ref=f1e33] [cursor=pointer]
+          - button "689" [ref=f1e37] [cursor=pointer]
+        - generic [ref=f1e38]: Running
+      - generic [ref=f1e43]:
+        - generic [ref=f1e44]:
+          - link "App" [ref=f1e45] [cursor=pointer]:
+            - /url: /spaces/Xenova/the-tokenizer-playground
+          - link "Files" [ref=f1e50] [cursor=pointer]:
+            - /url: /spaces/Xenova/the-tokenizer-playground/tree/main
+          - link "Community 16" [ref=f1e55] [cursor=pointer]:
+            - /url: /spaces/Xenova/the-tokenizer-playground/discussions
+            - text: Community
+            - generic [ref=f1e59]: "16"
+        - button [ref=f1e62] [cursor=pointer]
+  - main [ref=f1e69]:
+    - iframe [ref=f1e71]:
+      - generic [ref=f2e3]:
+        - generic [ref=f2e4]:
+          - heading "The Tokenizer Playground" [level=1] [ref=f2e5]
+          - heading [level=2] [ref=f2e6]:
+            - text: Experiment with different tokenizers (running
+            - link "locally" [ref=f2e7] [cursor=pointer]:
+              - /url: https://github.com/huggingface/transformers.js
+            - text: in your browser).
+        - combobox [ref=f2e9]:
+          - option "gpt-4 / gpt-3.5-turbo / text-embedding-ada-002" [selected]
+          - option "text-davinci-003 / text-davinci-002"
+          - option "gpt-3"
+          - option "Grok-1"
+          - option "Claude"
+          - option "Mistral v3"
+          - option "Mistral v1"
+          - option "Gemma"
+          - option "Llama 3"
+          - option "LLaMA / Llama 2"
+          - option "Cohere Command-R"
+          - option "T5"
+          - option "bert-base-cased"
+          - option "Custom"
+        - textbox "Enter some text" [ref=f2e10]
+        - generic [ref=f2e11]:
+          - generic [ref=f2e12]:
+            - heading "Tokens" [level=2] [ref=f2e13]
+            - heading "0" [level=3] [ref=f2e14]
+          - generic [ref=f2e15]:
+            - heading "Characters" [level=2] [ref=f2e16]
+            - heading "0" [level=3] [ref=f2e17]
+        - generic [ref=f2e19]:
+          - generic [ref=f2e20]:
+            - radio "Text" [checked] [ref=f2e21]
+            - generic [ref=f2e22]: Text
+          - generic [ref=f2e23]:
+            - radio "Token IDs" [ref=f2e24]
+            - generic [ref=f2e25]: Token IDs
+          - generic [ref=f2e26]:
+            - radio "Hide" [ref=f2e27]
+            - generic [ref=f2e28]: Hide
