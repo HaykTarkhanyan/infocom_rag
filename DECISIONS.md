@@ -8,9 +8,60 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
+## 12. Generation model is `openai/gpt-5.4-mini`
+
+**Date** 2026-08-01 · **Status** active (supersedes #11)
+
+**Why.** Two independent measurements both favour it, and the second was a
+surprise.
+
+1. **Reading comprehension.** This is a RAG system, so the model never recalls
+   facts — it reads supplied passages. On the ArmBench-LLM reading sub-scores
+   (not the knowledge-weighted Average), gpt-5.4-mini scores 0.965 against 0.827
+   for the best Gemini available on OpenRouter.
+2. **Armenian tokenizer efficiency.** Measured on five real chunks of our corpus
+   (784 words), gpt-5.4-mini used 1,952 prompt tokens (2.49 tok/word) against
+   Gemini's 3,189 (4.07 tok/word) — **63% more tokens for identical text**. That
+   cancels Gemini's lower headline rate: the same input cost $0.001486 via
+   gpt-5.4-mini and $0.001597 via gemini-3-flash-preview.
+
+So the model that reads Armenian better is also cheaper on Armenian, despite
+listing at a 50% higher per-token rate. Entry #11 assumed Gemini was the cheaper
+option; on a per-token basis that was true and on a per-Armenian-word basis it
+was wrong.
+
+**Verified live**, not just on paper: a real end-to-end call answered an Armenian
+question over four real chunks, in Armenian, with a correct `[3]` citation, and
+declined to invent limitations the excerpts did not contain. ~$0.002 per query at
+realistic context size.
+
+**Also settled by testing:** `openai/gpt-5.*` models are commonly reasoning
+models that reject a custom `temperature`, which would have broken our client.
+gpt-5.4-mini **accepts** `temperature=0.0` — confirmed by a live call — so no
+special-casing was needed.
+
+**Alternatives rejected.**
+- `google/gemini-3-flash-preview` (#11) — worse reading, worse Armenian
+  tokenization, kept as the cross-vendor fallback.
+- `openai/gpt-5.2-pro` — best reading (0.973) but roughly 50x the cost.
+- `openai/gpt-5.4-nano` — cheapest, reading 0.877; a real option if cost ever
+  matters, which at ~$2 per 1,000 questions it currently does not.
+- `openai/flex` provider tier — half price ($0.375/$2.25) for best-effort
+  latency. Not the default, but noted in `config.toml` as worthwhile for eval
+  sweeps where latency is irrelevant.
+
+**What would change this.** Our own eval showing weak grounding, or ArmBench
+adding the newer models. `pin_provider` must change with the primary model's
+vendor — it is now `openai`, and was `google-ai-studio`; a vendor switch that
+forgets this silently loses the determinism pin.
+
+See [`_learnings/2026-08-01-2127_armenian-tokenizer-efficiency-inverts-llm-prices.md`](_learnings/2026-08-01-2127_armenian-tokenizer-efficiency-inverts-llm-prices.md).
+
+---
+
 ## 11. Generation model is `google/gemini-3-flash-preview`
 
-**Date** 2026-08-01 · **Status** active (supersedes the initial `gemini-2.5-flash` default)
+**Date** 2026-08-01 · **Status** **superseded by #12** (itself superseded the initial `gemini-2.5-flash` default)
 
 **Why.** Chosen on ArmBench-LLM 1.0 *reading-comprehension* scores, not the
 headline Average. Because this is a RAG system the model never recalls facts, so

@@ -122,6 +122,28 @@ purchasable today, `gemini-3.1-pro-preview` scores 0.839 against Flash's 0.827:
 practical ceiling, so the remaining gap is to non-Gemini models, not to a better
 Gemini.
 
+### Measured: Armenian tokenizer efficiency reverses the price ranking
+
+The blog names tokenizer efficiency as a hidden cost factor for Armenian without
+quantifying it. We measured it on our own corpus (2026-08-01, five real chunks,
+784 words, sent to both models and reading back `usage.prompt_tokens`):
+
+| model | list price in/out per 1M | prompt tokens | tok/word | measured cost |
+|---|---|---|---|---|
+| openai/gpt-5.4-mini | $0.75 / $4.50 | 1,952 | **2.49** | **$0.001486** |
+| google/gemini-3-flash-preview | $0.50 / $3.00 | 3,189 | **4.07** | $0.001597 |
+
+Gemini needs **63% more tokens for identical Armenian text**, which more than
+cancels its 33% lower headline rate. The model that reads Armenian better is also
+the cheaper one on Armenian — the opposite of what the price page implies.
+
+This also explains the spend report: gpt-5.4-mini ran the whole benchmark for
+$1.82 against gemini-3-flash-preview's $3.28 despite the higher unit price.
+
+Practical rule: **compare USD per Armenian word, not per token**, and measure it
+with one API call per candidate rather than guessing — the provider returns the
+token count.
+
 ### Cost is not a real constraint at this scale
 
 At roughly 5k input and 500 output tokens per question,

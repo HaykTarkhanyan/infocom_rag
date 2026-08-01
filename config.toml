@@ -8,27 +8,30 @@
 # model name, temperature, or prompt.
 
 [generation]
-# Gemini via OpenRouter. Prices are USD per 1M tokens (input/output), read from
-# the live OpenRouter models API on 2026-08-01 -- they drift, re-check before
-# drawing cost conclusions.
+# Chosen on TWO measurements, both in _knowledge/03_armenian_llm_benchmarks.md:
 #
-#   google/gemini-2.5-flash-lite      0.10 /  0.40   cheapest, UNBENCHMARKED on hy
-#   google/gemini-3.1-flash-lite      0.25 /  1.50   UNBENCHMARKED on hy
-#   google/gemini-2.5-flash           0.30 /  2.50   weakest reading of the top 10
-#   google/gemini-3-flash-preview     0.50 /  3.00   <- default
-#   google/gemini-3.5-flash           1.50 /  9.00   UNBENCHMARKED on hy
-#   google/gemini-3.1-pro-preview     2.00 / 12.00
+# 1. Reading comprehension (ArmBench-LLM 1.0). This is a RAG system, so the model
+#    never recalls facts -- it reads supplied passages. Scoring on the reading
+#    sub-scores rather than the headline Average, gpt-5.4-mini leads at 0.965
+#    (Belebele 0.96 / DREAM 0.98 / Hartak 0.9556) against 0.827 for the best
+#    available Gemini.
 #
-# Chosen on ArmBench-LLM 1.0 reading-comprehension scores, not on the headline
-# Average (whose columns are on incompatible scales). gemini-3-flash-preview:
-# Reading 0.5254, Hartak 0.80, ranked #1 overall. gemini-2.5-flash was the
-# earlier default and scores Reading 0.4895 with Hartak 0.4444 -- the worst of
-# any capable model on the sub-task closest to ours.
+# 2. Armenian tokenizer efficiency, measured 2026-08-01 on five real chunks from
+#    our own corpus (784 words):
+#         gpt-5.4-mini           1,952 prompt tokens   2.49 tok/word
+#         gemini-3-flash-preview 3,189 prompt tokens   4.07 tok/word
+#    Gemini needs 63% more tokens for identical Armenian, which cancels its lower
+#    headline rate: same input cost $0.001486 via gpt-5.4-mini and $0.001597 via
+#    gemini-3-flash-preview. Compare USD per Armenian WORD, not per token.
 #
-# NOTE: openai/gpt-5.4-mini beats every Gemini on reading (0.6228) and is
-# cheaper. Gemini is a deliberate choice here, not the benchmark's verdict.
-# See _knowledge/03_armenian_llm_benchmarks.md.
-model = "google/gemini-3-flash-preview"
+# Prices are USD per 1M tokens (input/output), live from OpenRouter 2026-08-01.
+#
+#   openai/gpt-5.4-nano             0.15? /  ?      cheapest, reading 0.877
+#   openai/gpt-5.4-mini             0.75 /  4.50    <- default, reading 0.965
+#   google/gemini-3-flash-preview   0.50 /  3.00    reading 0.827, poor hy tokenizer
+#   x-ai/grok-4-fast                 -              reading 0.899
+#   openai/gpt-5.2-pro               -              reading 0.973, ~50x the price
+model = "openai/gpt-5.4-mini"
 
 # 0.0 = deterministic. A RAG answer should not vary run to run; variety here is
 # indistinguishable from unreliability, and it makes the eval unrepeatable.
@@ -41,18 +44,22 @@ top_k = 40
 
 max_output_tokens = 1024
 
-# Cross-vendor fallback chain, tried in order if the primary errors.
+# Cross-vendor fallback chain, tried in order if the primary errors. Deliberately
+# a different vendor, so an OpenAI-side outage does not take the system down.
 # Empty list disables failover.
-fallback = ["google/gemini-3.1-flash-lite"]
+fallback = ["google/gemini-3-flash-preview"]
 
 # Prefer ONE OpenRouter upstream so temperature-0 output is reproducible.
-# OpenRouter otherwise load-balances a single model id across backends (Google
-# Vertex vs Google AI Studio) whose greedy decoding diverges -- verified in a
-# prior project: 8 identical temp-0 calls produced 2 distinct outputs, split by
-# backend. This is a PREFERENCE (order + allow_fallbacks), so a real outage still
-# fails over; only the happy path is pinned.
-# "" = let OpenRouter load-balance. Slugs: google-ai-studio | google-vertex
-pin_provider = "google-ai-studio"
+# OpenRouter otherwise load-balances a single model id across backends whose
+# greedy decoding diverges -- verified in a prior project on Gemini: 8 identical
+# temp-0 calls produced 2 distinct outputs, split by backend. This is a
+# PREFERENCE (order + allow_fallbacks), so a real outage still fails over; only
+# the happy path is pinned. Must match the PRIMARY model's vendor.
+# "" = let OpenRouter load-balance.
+# Slugs for gpt-5.4-mini: openai (0.75/4.50) | azure (same) |
+#   openai/flex (0.375/2.25, best-effort latency -- worth it for eval sweeps) |
+#   openai/priority (1.50/9.00)
+pin_provider = "openai"
 
 [retrieval]
 # How many chunks to pull from the vector store per question.
