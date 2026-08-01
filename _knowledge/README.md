@@ -10,6 +10,7 @@ it live in [`research/`](../research/README.md), and raw artifacts in
 |---|------|-------|---------------|
 | 01 | [01_site_structure.md](01_site_structure.md) | infocom.am survey | Access surface (robots, sitemaps, WP REST API), URL patterns, category inventory with volumes, per-category content quality, data-quality problems, field mapping for ingestion |
 | 02 | [02_evaluation_design.md](02_evaluation_design.md) | How to evaluate this RAG | Question-set schema, metrics, LLM-as-judge recipe, runner design, and the specific mistakes to avoid — surveyed from a prior text-to-SQL project |
+| 03 | [03_armenian_llm_benchmarks.md](03_armenian_llm_benchmarks.md) | ArmBench-LLM 1.0 | Which LLM to pick for Armenian, read by reading-comprehension score rather than the headline Average; cost nuances; why several leaderboard zeros are harness failures |
 
 ## How this differs from `_learnings/`
 
@@ -50,3 +51,8 @@ Open, in rough dependency order:
   `Desktop/metric/Washington` by a subagent. Claims about that repo have not been
   independently verified file-by-file; treat the file paths as pointers to go
   read, not as established fact.
+- `03_armenian_llm_benchmarks.md` — read first-hand, 2026-08-01, from the
+  verbatim blog and leaderboard snapshots in
+  `Desktop/metric/ArmBench-LLM/references/` (captured 2026-06-15, published
+  2026-04-02). The live leaderboard moves and the newest Gemini models are not
+  on it, so re-check before treating the ranking as current.

@@ -12,13 +12,23 @@
 # the live OpenRouter models API on 2026-08-01 -- they drift, re-check before
 # drawing cost conclusions.
 #
-#   google/gemini-2.5-flash-lite      0.10 /  0.40   cheapest
-#   google/gemini-3.1-flash-lite      0.25 /  1.50   newer, cheaper than 2.5-flash
-#   google/gemini-2.5-flash           0.30 /  2.50   <- default
-#   google/gemini-3-flash-preview     0.50 /  3.00
-#   google/gemini-3.5-flash           1.50 /  9.00
-#   google/gemini-3.1-pro-preview     2.00 / 12.00   best quality
-model = "google/gemini-2.5-flash"
+#   google/gemini-2.5-flash-lite      0.10 /  0.40   cheapest, UNBENCHMARKED on hy
+#   google/gemini-3.1-flash-lite      0.25 /  1.50   UNBENCHMARKED on hy
+#   google/gemini-2.5-flash           0.30 /  2.50   weakest reading of the top 10
+#   google/gemini-3-flash-preview     0.50 /  3.00   <- default
+#   google/gemini-3.5-flash           1.50 /  9.00   UNBENCHMARKED on hy
+#   google/gemini-3.1-pro-preview     2.00 / 12.00
+#
+# Chosen on ArmBench-LLM 1.0 reading-comprehension scores, not on the headline
+# Average (whose columns are on incompatible scales). gemini-3-flash-preview:
+# Reading 0.5254, Hartak 0.80, ranked #1 overall. gemini-2.5-flash was the
+# earlier default and scores Reading 0.4895 with Hartak 0.4444 -- the worst of
+# any capable model on the sub-task closest to ours.
+#
+# NOTE: openai/gpt-5.4-mini beats every Gemini on reading (0.6228) and is
+# cheaper. Gemini is a deliberate choice here, not the benchmark's verdict.
+# See _knowledge/03_armenian_llm_benchmarks.md.
+model = "google/gemini-3-flash-preview"
 
 # 0.0 = deterministic. A RAG answer should not vary run to run; variety here is
 # indistinguishable from unreliability, and it makes the eval unrepeatable.
