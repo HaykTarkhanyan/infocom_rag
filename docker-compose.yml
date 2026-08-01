@@ -1,0 +1,53 @@
+# Hetzner deployment: the app plus Caddy for automatic TLS.
+#
+#   docker compose up -d --build
+#
+# Caddy obtains and renews Let's Encrypt certificates on its own, provided DOMAIN
+# resolves to this server and ports 80/443 are open.
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Chainlit binds here; Caddy is the only thing that talks to it.
+      PORT: "8001"
+    volumes:
+      # Model weights: ~2 GB, downloaded once on first boot and kept across
+      # rebuilds. Without this every `--build` re-downloads them.
+      - hf_models:/models
+      # Cost ledger. The container filesystem is disposable, so keep it outside.
+      # NOTE: this is per-container, not shared. Persistent cost telemetry lives
+      # in Neon (steps.metadata), written by the UI.
+      - app_logs:/app/logs
+    # The embedding model sits at ~1.8 GB resident. Capping the container keeps a
+    # runaway process from taking the whole 4 GB box down with it -- Docker kills
+    # the container instead, and `restart: unless-stopped` brings it back.
+    mem_limit: 3g
+    expose:
+      - "8001"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env, e.g. rag.example.com}
+      # Let's Encrypt uses this for expiry warnings.
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data      # certificates -- losing this re-issues them and
+      - caddy_config:/config  # can hit Let's Encrypt rate limits
+    mem_limit: 256m
+
+volumes:
+  hf_models:
+  app_logs:
+  caddy_data:
+  caddy_config:

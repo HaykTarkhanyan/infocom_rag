@@ -8,42 +8,50 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
-## 17. The API and LLM client are async, converted together
+## 19. Deploy to a Hetzner VPS with Docker + Caddy, not a PaaS
 
-**Date** 2026-08-01 · **Status** active · **Driver:** concurrent users are expected
+**Date** 2026-08-02 · **Status** active
 
-**Why.** A request spends ~5 seconds waiting on OpenRouter. Sync handlers were
-*correct* — FastAPI runs `def` endpoints in a threadpool, verified at 3
-concurrent requests — but each one holds an OS thread for the whole wait, and
-anyio's default limit is **40**. That caps sustained throughput near 8 req/s and
-queues everything after. Async makes the wait cost a coroutine instead.
+**Why.** The binding constraint is *resident memory*, not CPU, and almost every
+PaaS prices CPU generously and RAM stingily. Measured peak RSS is **sustained** --
+it plateaus after the first query and is never released:
 
-**Converted as one unit, deliberately.** `async def` handlers around a blocking
-`requests.post` would be *worse* than staying sync: it parks the whole event loop
-for 5 seconds per request. That is precisely the archived prototype's bug (sync
-`rag.answer()` inside `async def handle_message`). So the client moved to
-`httpx.AsyncClient` in the same change, and it is now shared process-wide — which
-also removes the TCP + TLS handshake that `requests` was paying on every call.
+    dense + ATE-2-large   1793 MB
+    dense + ATE-2-base     958 MB
+    bm25 (no torch)       ~250 MB
 
-BM25 scoring is CPU-bound, so it goes through `asyncio.to_thread` rather than
-blocking the loop. The index is warmed in the lifespan, so no unlucky first
-request pays to build it and concurrent requests cannot race to build it at once.
+Thread limits do not help (1791 MB at 1 thread vs 1792 at 4); the cost is torch's
+forward-pass arena, not the weights, which load in 630 MB.
 
-**Verified:** 6 concurrent requests, 50.67s of work in 9.48s wall clock, all 200.
+Against that, verified this session:
 
-**Fixed alongside — a live data-loss bug.** The cost ledger did an unguarded
-`open(path, "a")` per call and lost **~10% of rows** under 8 threads, with zero
-corrupt lines. It was already happening, since sync handlers were already
-concurrent. Now guarded by a `threading.Lock`, with a 200-write regression test.
+| provider | RAM | ~monthly | large fits | Neon reachable |
+|---|---|---|---|---|
+| **Hetzner VPS** | 4 GB | **~EUR 6** | yes, 2.2 GB spare | yes |
+| HF Spaces (PRO) | 16 GB | $9 | yes | **no** |
+| Fly.io | 2 GB | ~$10.70 | tight, 88% | yes |
+| Render Standard | 2 GB | $25 | tight, 88% | yes |
+| Railway | 2 GB | $30 | tight | yes |
 
-**Still open for real concurrent users.** Authentication, per-user cost caps and
-rate limiting do not exist. A shared API key with no ceiling is an unbounded
-spend risk the moment the UI is reachable by anyone else. Also, the ledger lock
-is per-process — multiple uvicorn workers would race again, and at that point
-cost accounting should move to Postgres.
+**Alternatives rejected.**
+- **Render** -- most expensive AND tightest. Was wired up first; kept as an
+  appendix in DEPLOY.md rather than deleted.
+- **HF Spaces** -- 16 GB for $9 and the model lives on their infra, but outbound
+  traffic is limited to ports 80/443/8080. Neon speaks Postgres on 5432, and its
+  443 is an HTTPS API, not the wire protocol -- tested, and it fails with
+  `received invalid response to SSL negotiation`. Chainlit persistence would
+  break: no history, no feedback, no stored cost telemetry.
+- **Cloud Run** -- scale-to-zero is attractive until every cold start reloads a
+  2 GB model. `min-instances=1` fixes it and removes the cost advantage.
+- **Fly.io** -- the best managed option, but 2 GB is the same squeeze as Render.
 
-**What would change this.** Multi-worker deployment (move the ledger to the DB),
-or streaming responses (would want SSE through the API to the UI).
+**What it costs us.** We own the machine: OS patching, backups, and no rollback
+button. An unpatched internet-facing box is a real liability, and that is the
+honest price of the cheap plan.
+
+**What would change this.** Needing zero-ops or multi-region; or dropping to
+`bm25`/ATE-2-base, at which point a 512 MB-2 GB managed tier becomes viable again
+and the maintenance burden is no longer worth EUR 6.
 
 ---
 
@@ -83,6 +91,45 @@ config.toml or per-request on `/ask`.
 
 **What would change this.** Hybrid (BM25 + dense fused) is the intended
 destination; the eval set should decide whether it beats dense alone.
+
+---
+
+## 17. The API and LLM client are async, converted together
+
+**Date** 2026-08-01 · **Status** active · **Driver:** concurrent users are expected
+
+**Why.** A request spends ~5 seconds waiting on OpenRouter. Sync handlers were
+*correct* — FastAPI runs `def` endpoints in a threadpool, verified at 3
+concurrent requests — but each one holds an OS thread for the whole wait, and
+anyio's default limit is **40**. That caps sustained throughput near 8 req/s and
+queues everything after. Async makes the wait cost a coroutine instead.
+
+**Converted as one unit, deliberately.** `async def` handlers around a blocking
+`requests.post` would be *worse* than staying sync: it parks the whole event loop
+for 5 seconds per request. That is precisely the archived prototype's bug (sync
+`rag.answer()` inside `async def handle_message`). So the client moved to
+`httpx.AsyncClient` in the same change, and it is now shared process-wide — which
+also removes the TCP + TLS handshake that `requests` was paying on every call.
+
+BM25 scoring is CPU-bound, so it goes through `asyncio.to_thread` rather than
+blocking the loop. The index is warmed in the lifespan, so no unlucky first
+request pays to build it and concurrent requests cannot race to build it at once.
+
+**Verified:** 6 concurrent requests, 50.67s of work in 9.48s wall clock, all 200.
+
+**Fixed alongside — a live data-loss bug.** The cost ledger did an unguarded
+`open(path, "a")` per call and lost **~10% of rows** under 8 threads, with zero
+corrupt lines. It was already happening, since sync handlers were already
+concurrent. Now guarded by a `threading.Lock`, with a 200-write regression test.
+
+**Still open for real concurrent users.** Authentication, per-user cost caps and
+rate limiting do not exist. A shared API key with no ceiling is an unbounded
+spend risk the moment the UI is reachable by anyone else. Also, the ledger lock
+is per-process — multiple uvicorn workers would race again, and at that point
+cost accounting should move to Postgres.
+
+**What would change this.** Multi-worker deployment (move the ledger to the DB),
+or streaming responses (would want SSE through the API to the UI).
 
 ---
 
@@ -502,3 +549,4 @@ unsearchable.
 
 **What would change this.** If `DECISIONS.md` grows past comfortable end-to-end
 reading, split it into `_decisions/` the way `LEARNINGS.md` became `_learnings/`.
+

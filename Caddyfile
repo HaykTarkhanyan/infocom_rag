@@ -1,0 +1,25 @@
+# Caddy obtains and renews Let's Encrypt certificates automatically.
+# DOMAIN and ACME_EMAIL come from docker-compose (which reads .env).
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	# Chainlit is a websocket app; Caddy proxies the upgrade transparently, but
+	# the read timeout must outlast a slow answer (retrieval + generation can be
+	# ~7s, and the model load on first boot is longer still).
+	reverse_proxy app:8001 {
+		transport http {
+			read_timeout 300s
+			write_timeout 300s
+		}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
