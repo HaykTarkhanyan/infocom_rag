@@ -9,6 +9,9 @@ requires-python = "==3.12.*"
 dependencies = [
     "requests==2.34.2",
     "selectolax==0.4.11",
+    "python-dotenv==1.2.2",
+    "huggingface-hub==1.26.0",
+    "transformers==5.14.1",
 ]
 
 [dependency-groups]
@@ -18,5 +21,9 @@ research = [
     "trafilatura==2.2.0",
 ]
 
+dev = [
+    "pytest==9.1.1",
+]
+
 [tool.uv]
-default-groups = ["research"]
+default-groups = ["research", "dev"]
