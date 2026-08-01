@@ -1,0 +1,145 @@
+title = "config.toml, OpenRouter client, Neon, Chainlit UI, async, ATE-2 embeddings, dense retrieval, eval harness"
+date = "2026-08-01"
+time = "21:00"
+areas = ["src/", "eval/", "_knowledge/", "_learnings/", "chainlit_app.py", "config.toml", "DECISIONS.md"]
+
+done = [
+  "Pinned every generation knob in config.toml -- model, temperature, top_p/top_k, retrieval top_k, max_distance, embedding model, AND the system prompt. src/config.py loads it strictly: a missing key raises at import, and bounds are checked.",
+  "Built src/llm.py: OpenRouter client with per-call token/cost accounting into logs/llm_calls.jsonl, plus research/llm_cost_report.py to aggregate by model/role/day. Cost comes from OpenRouter's usage.cost, never a local price table.",
+  "Read ArmBench-LLM 1.0 (locally in metric/ArmBench-LLM/references/) and wrote _knowledge/03. Switched the model twice on evidence: gemini-2.5-flash -> gemini-3-flash-preview -> openai/gpt-5.4-mini.",
+  "Added DECISIONS.md (18 entries) after the user asked for a global convention that design choices get written down at the time they are made.",
+  "Set up Neon Postgres. First with our own sessions/turns/feedback schema, then retired it for Chainlit's data layer when the UI choice was made.",
+  "Built the UI: FastAPI /ask as the single entry point + Chainlit with cl.Step rendering retrieval and generation as a collapsible debug tree. Verified in a browser against real Armenian questions.",
+  "Converted the API and LLM client to async as one unit (concurrent users are expected), and fixed a LIVE data-loss bug found while doing it.",
+  "Installed torch, downloaded both ATE-2 models, wrote src/embedding.py, and indexed the 969-chunk corpus with BOTH models on a Colab T4 via WSL.",
+  "Wired dense retrieval into src/retrieval.py behind the existing search() interface; BM25 kept as the lexical half of future hybrid.",
+  "Built the eval harness: 35 questions (27 factual, 5 unanswerable, 2 multi-source, 1 partial-coverage), 8 held out. First run: recall@k 27/29 = 93.1%, corrected to 28/29 after investigating the misses.",
+  "Tuned max_distance 0.50 -> 0.55 on non-holdout questions only, verified no degradation on the held-out set.",
+]
+
+pending = [
+  "Grounding across the 27 factual questions is SAMPLED, not measured. Run the pinned judge (openai/gpt-5.2-pro, ~$3.28, cached after) for a real number.",
+  "No auth, no per-user cost cap, no rate limiting. Anyone who can reach the UI spends the OpenRouter key without limit.",
+  "The ledger lock is per-process; multiple uvicorn workers would race again. Cost accounting would need to move to Postgres.",
+  "Only 94 articles indexed (research + data-driven). The full indepth corpus is 5,836 articles -- the Colab path makes that ~minutes on a T4 rather than ~28h on CPU.",
+  "Hybrid retrieval (BM25 + dense fused) is the intended destination; the eval should decide whether it beats dense alone.",
+  "Answer language occasionally drops to English despite an Armenian question. Intermittent, unmeasured.",
+]
+
+next = [
+  "Run the pinned judge to get a real grounding number across all 35 questions.",
+  "Then decide: scale the corpus to full indepth (5,836 articles) on Colab, or add auth + cost caps first if anyone else will touch the UI.",
+]
+
+files = [
+  "config.toml -- every pinned hyperparameter including the system prompt",
+  "src/llm.py -- async OpenRouter client + cost ledger",
+  "src/api.py -- FastAPI /ask, the only entry point",
+  "src/retrieval.py -- dense + bm25 behind one search()",
+  "src/embedding.py -- mean-pool, L2 norm, e5 prefixes, raises instead of truncating",
+  "src/embed_corpus_colab.py -- GPU indexing job",
+  "src/db.py -- Chainlit's Neon schema",
+  "chainlit_app.py -- UI with cl.Step debug tree",
+  "eval/questions.toml, eval/run_eval.py, eval/RESULTS.md -- the eval harness",
+  "research/verify_embedding_parity.py -- guards the duplicated pooling math",
+  "DECISIONS.md -- 18 entries, 4 superseded rather than edited",
+]
+
+commits = [
+  "997be28 Pin generation settings in config.toml; add OpenRouter client with cost ledger",
+  "788d066 Add ArmBench-LLM findings; switch default model to gemini-3-flash-preview",
+  "58a1f72 Add DECISIONS.md; extend ArmBench analysis to reading-only scoring",
+  "0e5f0b5 Switch generation model to openai/gpt-5.4-mini",
+  "66f16c1 Add Neon Postgres persistence: sessions, turns, feedback",
+  "8cf5070 Add Chainlit UI over a FastAPI /ask endpoint, with BM25 retrieval",
+  "0393fff Convert the API and LLM client to async; fix a live ledger race",
+  "4737fb0 Add ATE-2 embeddings; index the corpus on a Colab T4 with both models",
+  "b887bc0 Wire dense retrieval (ATE-2-large) into retrieval.py",
+  "8df0475 Add the evaluation harness, question set and first results",
+]
+
+notes = """
+Total OpenRouter spend for the whole session: $0.318 across 112 calls.
+
+THREE CORRECTIONS THE USER MADE, all recorded in the global CLAUDE.md:
+
+1. I picked Streamlit unilaterally, then asked two follow-up questions that both
+   presupposed it. New rule: technology choices are the user's -- present options
+   and STOP, and never bury the big decision as a premise inside questions about
+   small ones.
+2. I ran two eval batches (~$0.19) without mentioning cost, then priced a $3.28
+   run; the user reasonably asked whether the $3.28 had already happened. New
+   rule: under ~$0.25 proceed and report, at or above estimate and ask first.
+3. Asked for a DECISIONS.md convention and for _learnings/ to carry a time in the
+   filename like _work_sessions/.
+
+Also: my dismissal of Chainlit on maintenance grounds was overstated. It IS
+community-maintained since May 2025, but under a formal Maintainer Agreement and
+still shipping (v2.11.1, April 2026). I substituted one scary headline for a
+two-minute check of release cadence. Chainlit then won on merit: cl.Step renders
+the retrieval/generation debug tree natively, which Streamlit would need
+hand-built.
+
+MEASUREMENTS THAT CHANGED DECISIONS:
+
+- Armenian tokenizer efficiency INVERTS the price comparison. gpt-5.4-mini lists
+  at $0.75/M vs gemini-3-flash's $0.50/M, but needs 2.49 tok/word against
+  Gemini's 4.07 -- 63% fewer tokens for identical Armenian. Measured on our own
+  corpus by reading usage.prompt_tokens back from one API call per model.
+  Compare USD per Armenian WORD, never per token.
+- ArmBench's headline Average is unusable for RAG: its columns are on
+  incompatible scales and it is dominated by knowledge tasks a RAG system does
+  not use. Scored on reading comprehension alone, the blog's own "Gemini 3 Flash
+  beats Gemini 3 Pro on Armenian" finding reverses.
+- ATE-2-large vs base is not close. Discrimination margin +0.226 vs +0.116, and
+  5/5 vs 2/5 relevant hits in top-5 on a real question. Base scores 0.644
+  similarity between COMPLETELY unrelated Armenian topics -- a compressed space
+  no reranker can repair. Its 3.3x indexing cost is one-time.
+- Dense vs BM25 on the same question, same model, same prompt: dense produced a
+  cited substantive answer; BM25's noisier context made the model correctly say
+  "insufficient data". Retrieval quality surfacing directly as answer quality.
+
+BUGS FOUND, in rough order of how quietly they would have failed:
+
+- Unguarded file appends lost ~10% of ledger rows at 8 threads, with ZERO corrupt
+  lines -- the file looked valid and simply contained less. Already live, because
+  FastAPI runs sync `def` handlers in a threadpool. The concurrency was injected
+  by the framework three layers from the code that had the bug.
+- Chainlit's PUBLISHED schema is stale: 2.11.1 writes an "autoCollapse" column
+  the docs never create, and step persistence is fire-and-forget, so every insert
+  failed while the UI looked flawless. Derive the schema from
+  chainlit.step.StepDict, not the docs, and verify a row actually lands.
+- mock.patch is NOT thread-safe. The regression test for the ledger race
+  originally patched inside each worker; one thread's restore put the real client
+  back mid-test and a live API call escaped, returning HTTP 401.
+- The eval set had 3 hallucinated `must_contain` strings out of 42 candidates.
+  An eval that asserts on invented text is broken before it runs.
+- pkill -f "chainlit run" does not match `python -m chainlit run` on Windows. The
+  old process kept the port AND kept writing to the truncated log, so a
+  "restarted" server appeared healthy while serving stale code for ten minutes.
+
+WHAT THE EVAL TAUGHT US -- mostly about the eval:
+Three of four findings on the first run were eval bugs, not system bugs:
+hallucinated assertions, incomplete single-source ground truth (a different
+article answered the question equally well), and a mislabelled "unanswerable"
+question whose grading note would have FAILED a correct answer (the corpus does
+contain state debt as of 2026-03-31). Inspecting failures beat reading the score.
+
+The one real finding was that max_distance = 0.50 was slightly too tight -- the
+correct article ranked #2 at distance 0.5249. Swept offline (free, no LLM calls),
+tuned on non-holdout only, verified 6/6 on holdout, adopted 0.55.
+
+All 6 unanswerable/partial-coverage cases were handled correctly, including a
+topically-adjacent trap (Yerevan-Sevan highway, which pulled real road chunks)
+and an after-cutoff question where the model reasoned that its newest excerpt
+predates the asked month.
+
+COLAB NOTES (the CLI is Unix-only, runs via WSL):
+- default exec timeout is too short for a 3.3 GB model download; pass --timeout
+- the websocket goes quiet while the kernel keeps working. `colab status` showed
+  IDLE with a stale timestamp while the job was finishing; `colab ls` revealed
+  both output files. Trust the artifacts, not the status line.
+- `colab download` needs an explicit destination FILENAME, not a directory.
+- free tier has no compute-unit billing but does have usage limits, so still stop
+  idle sessions.
+"""
