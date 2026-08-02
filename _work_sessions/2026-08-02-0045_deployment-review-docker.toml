@@ -13,6 +13,7 @@ done = [
   "Ran a review pass: ruff over the whole codebase, plus a read of the hot paths and a secrets scan.",
   "Started Docker Desktop (installed but not running) and built + ran the image for the FIRST time. Two real bugs surfaced immediately.",
   "Recorded Docker and the WSL Colab CLI in the global CLAUDE.md, with the gotchas that cost time.",
+  "Second review pass found the embedding model had TWO disagreeing sources of truth (config.toml said large, .env said base). Collapsed to config.toml and verified by re-chunking to a byte-identical file.",
 ]
 
 pending = [
@@ -21,6 +22,7 @@ pending = [
   "No per-user cost cap and no rate limiting. APP_PASSWORD is a lock on the door, not identity.",
   "Only 94 of 5,836 indepth articles are indexed.",
   "Hetzner plan not yet purchased; CPX22/CPX21 (4 GB) confirmed available, price only visible in the console.",
+  "Docker Desktop is currently STOPPED. The image infocom-rag:test (1.44 GB) exists locally; the test container was removed.",
 ]
 
 next = [
@@ -41,6 +43,8 @@ commits = [
   "beebe59 Deploy to Hetzner: Docker + Caddy stack, Render kept as an appendix",
   "cc5b8c0 Review pass: fix a broken judge cache, speed up dense search, tighten secrets",
   "7943a41 Fix two deploy bugs found by actually building and running the image",
+  "ac8d294 Add session log for the deployment and review session",
+  "f8098d6 Make config.toml the single source of truth for the embedding model",
 ]
 
 notes = """
@@ -116,4 +120,19 @@ anything resembling production.
 The value of actually running it: both startup bugs were invisible to reading,
 linting and 15 passing tests. The image had been committed and documented as
 ready before it had ever been built once.
+
+SECOND REVIEW PASS (12:00-12:15) found the deepest issue of the session: the
+embedding model had two disagreeing sources of truth. config.toml said large
+(used by retrieval, embedding, api, prefetch) while .env said base (used by
+chunking.py and download_model.py). Chunk budgets were therefore measured with
+one model and queries embedded with another. It was harmless ONLY because ATE-2
+base and large ship a byte-identical tokenizer -- correct by coincidence.
+
+That is the third instance of one pattern in two days: two artefacts that must
+agree, with nothing enforcing it. The other two (chunk index vs model, and the
+duplicated pooling math) each HAD a runtime guard and neither drifted. This one
+had only a comment, and it drifted. Written up as
+_learnings/2026-08-02-1214_two-sources-that-must-agree.md -- the rule is collapse
+to one source, or add a check that screams; a comment asserting they match is
+worth nothing.
 """
