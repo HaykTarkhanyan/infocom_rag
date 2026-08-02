@@ -164,7 +164,7 @@ at which point the self-containment rule is in the prompt and should hold.
 > Cause: the dominant cost is torch's forward-pass **allocator arena**, which our
 > own notes identified — and an arena is exactly what differs between platforms.
 > Written up in
-> [`_learnings/2026-08-02-2100_measure-on-the-target-platform.md`](_learnings/2026-08-02-2100_measure-on-the-target-platform.md).
+> [`_learnings/2026-08-02-2255_measure-on-the-target-platform.md`](_learnings/2026-08-02-2255_measure-on-the-target-platform.md).
 >
 > **What would change this:** if retrieval ever needs 2 GB again, revisit whether
 > a managed 2 GB tier beats owning the box.

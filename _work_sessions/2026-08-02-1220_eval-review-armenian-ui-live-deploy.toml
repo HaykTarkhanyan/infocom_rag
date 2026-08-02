@@ -1,0 +1,156 @@
+title = "Eval harness review, Armenian UI, first live deployment, and query rewriting"
+date = "2026-08-02"
+time = "12:20"
+areas = ["eval/", "src/", "chainlit_app.py", "config.toml", "DEPLOY.md", "DECISIONS.md", "Hetzner"]
+
+done = [
+  "Reviewed the eval harness on request and found five defects, none of which raised an error. The arithmetic was sound; the plumbing was not. report() crashed on any API-error row; answer_must_contain and multi_source coverage were computed, stored and NEVER printed; --limit N returned the first N, which curate.py had made all-holdout; the judge cache key omitted the excerpts that `grounded` is defined against.",
+  "Repaired the question set: 13 of 35 carried an unresolved deictic because the generator could see the source chunk. Rewrote eight by hand, added a self-containment rule to the generator prompt, restored unans-state-debt's expected_post_ids, corrected a stale overlap figure in RESULTS.md.",
+  "Discovered the eval CANNOT distinguish dense from bm25 -- tied at 100% recall@10, every Wilson interval overlapping. Added a revisit note to DECISIONS #18 rather than editing it.",
+  "Built eval/generate_hard_candidates.py after that finding. Distractor-only generation FAILED (0/16 retriever disagreement, worse than baseline); adding a mechanical ban on each article's distinctive vocabulary worked (5/16).",
+  "Fixed the model writing English 'excerpt' inside Armenian answers -- A/B tested with context held identical: 5/8 -> 0/8.",
+  "Corrected DEPLOY.md's stale claims (60s wait, never-built-locally) before using it as a runbook.",
+  "Provisioned Hetzner cx23 via Playwright and deployed the whole stack over SSH: ufw, Docker, clone, .env, build. First time /health has EVER answered inside a container -- the oldest open item in the project.",
+  "Created the GitHub repo, which did not exist. 26 commits were on this laptop only. Scanned all history for secrets first (clean -- only .env.example placeholders), then made it public at the user's instruction.",
+  "Armenian greeting + four clickable starters, each verified against the live index before being offered.",
+  "Implemented query rewriting after the user asked whether the bot had memory. It did not, and the failure was confident wrongness rather than forgetting.",
+]
+
+pending = [
+  "APP_PASSWORD needs rotating -- it appeared in an editor selection in the transcript, and it crosses the wire in cleartext anyway.",
+  "No HTTPS (plain HTTP on the IP, deliberate demo scope), no rate limiting, no per-user spend cap. All three tracked in DEFERRED_TODO.md with triggers.",
+  "2FA is not enabled on the Hetzner account that now owns an internet-facing box.",
+  "Nine hard eval candidates in eval/hard_candidates_screened.jsonl await an Armenian read before adoption. Nothing was merged into questions.toml.",
+  "The conversational path is measured by THREE hand-run examples. No multi-turn cases exist in the eval set.",
+  "Grounding across the 27 factual questions is still sampled, not measured. The pinned judge has never run.",
+  "Only 94 of 5,836 indepth articles indexed.",
+]
+
+next = [
+  "Read the nine hard candidates and decide which to merge; then add the multi-turn eval bucket (four failure modes listed in DEFERRED_TODO.md).",
+  "Rotate APP_PASSWORD and enable Hetzner 2FA before showing the demo to anyone.",
+  "If the demo outlives the week, point a domain at 65.109.138.132 and set DOMAIN in .env -- Caddy switches to HTTPS with no rebuild.",
+]
+
+files = [
+  "eval/run_eval.py -- error tolerance, assertions and coverage now printed, seeded --limit, excerpts in the cache key",
+  "eval/generate_hard_candidates.py -- NEW, contrastive generation with --ban-terms",
+  "eval/questions.toml -- eight questions rewritten self-contained",
+  "config.toml -- language rule in the system prompt, new [rewrite] section",
+  "src/llm.py, src/api.py, src/config.py -- rewrite_question(), history on /ask, question_used in the response",
+  "chainlit_app.py + chainlit.md -- Armenian welcome, starters, session history, rewrite shown in the Retrieval step",
+  "DECISIONS.md -- #20 and #21 new; #18 revisit; #19 price and memory corrections",
+  "DEFERRED_TODO.md -- NEW",
+  "_learnings/ -- three new files",
+]
+
+commits = [
+  "921017f Fix the eval harness: it was hiding metrics it already computed",
+  "5541308 Stop the model writing English \"excerpt\" inside Armenian answers",
+  "b3dd6b3 Make the domain optional so the demo can run over plain HTTP",
+  "4213e02 Record decisions 20, the #18 revisit, the #19 price correction, and deferred work",
+  "b76c067 Greet in Armenian and suggest what the corpus can actually answer",
+  "6dde9d3 Move the Armenian welcome into chainlit.md so the starters actually render",
+  "9c5cb5c Correct the memory figure: 790 MB on Linux, not 1793 MB on Windows",
+  "4c2b3f3 Resolve follow-up questions into standalone ones before retrieval",
+  "b9d3094 Record decision 21 (query rewriting) and the multi-turn eval gap it opens",
+]
+
+notes = """
+LIVE: http://65.109.138.132/  -- Hetzner cx23, 2 vCPU / 4 GB, Helsinki, EUR 7.13/mo
+incl. VAT. Ubuntu 26.04 LTS, Docker 29.7.1, ufw allowing only 22/80/443.
+Repo public at github.com/HaykTarkhanyan/infocom_rag.
+
+Verified end to end through the UI, not just the API: Armenian cited answers,
+sources grouped with live links, cost footer, Neon persistence (7 threads, 74
+steps), feedback buttons, and a working two-turn conversation.
+
+TWO NUMBERS IN OUR OWN DOCS WERE WRONG, AND BOTH HAD SHAPED DECISIONS.
+
+1. Price. DEPLOY.md said "~EUR 6/mo", unverified, and told us to buy CPX22
+   "because the cost-optimized line shows not available". Read from the console:
+   cx23 is EUR 7.13 and cpx22 is EUR 23.79 -- 3.3x for identical RAM, which would
+   have put Hetzner level with the $25 Render plan that DECISIONS #19 rejects BY
+   NAME for being too expensive. A temporary stock-out had silently become a
+   permanent price rise in our own runbook. When availability forces a
+   substitution, re-derive the decision; do not just swap the part.
+
+2. Memory. The 1793 MB peak that set the ">= 4 GB" requirement was measured on
+   WINDOWS. On the Linux target it is ~790 MB, stable across four queries
+   (782 -> 792 MiB). A 2.3x overestimate, and it was the number that eliminated
+   every 2 GB host -- Fly.io at ~$10.70, Render, HF Spaces -- from the comparison.
+   All of them would have fit. The tell was already in our notes: "torch's
+   forward-pass ARENA, not the weights". An arena is exactly what varies by
+   platform. The final choice survives only by luck: cx23 is the cheapest plan
+   Hetzner sells at any size, and the 2 GB cpx12 costs MORE.
+
+THE RECURRING FAILURE, NOW FOUR INSTANCES DEEP. Everything found today was
+individually correct and broken in combination or in the dark:
+
+  - metrics computed and never printed (assertions, coverage)
+  - a container documented as ready that had never booted
+  - starters registered server-side and never drawn, because a welcome message
+    made the chat non-empty
+  - a follow-up answered from the wrong article, fluently and with a valid
+    citation
+
+None was catchable by reading, linting, or 22 passing tests. Every one needed the
+artifact: run the report, boot the container, render the page, hold a
+conversation. The habit that keeps working is checking the thing it PRODUCES, not
+the surface it presents.
+
+THE EVAL'S OWN BLIND SPOT. It scored 100% recall@10 for dense AND bm25 -- it had
+stopped measuring retrieval. The cause was not corpus size. Bucketing 32 hard
+candidates by question/source lexical overlap:
+
+    overlap < 0.40   dense 7/8    bm25 5/8
+    overlap 0.40-55  dense 9/11   bm25 9/11
+    overlap > 0.55   dense 11/13  bm25 13/13
+
+High overlap is a word-matching problem BM25 wins outright; low overlap has no
+words to match and dense wins. Our set sits at median 0.46 -- dead in the
+crossover. It was not merely too easy, it was concentrated in the one band where
+the retriever choice cannot show up. That is also the first real evidence FOR
+hybrid retrieval: the two win different questions, not the same ones by different
+margins. (n is small; the direction matches theory, it is not significant.)
+
+Second-order: the mechanical screen that rejects deictics, bad must_contain and
+high overlap cut retriever disagreement from 6/24 in the raw batch to 1/9 among
+survivors. It threw out the interesting questions with the broken ones. Hard
+questions and defective questions look identical from outside.
+
+QUERY REWRITING. The user asked whether the bot had memory. It did not, and the
+demonstration mattered more than the answer:
+
+    turn 1  "how many criminal cases from the 44-day war?"  -> 2044   correct
+    turn 2  "and how many OF THOSE went to court?"          -> 118    WRONG (310)
+
+"դրանցից" had no referent, so retrieval landed on a different article about
+military desertion. Not a refusal -- a fluent, correctly-cited answer to a
+question nobody asked. Fixed BEFORE retrieval, which is where the wrong document
+gets chosen; feeding history to the generator alone would have fixed the wording
+while still fetching the wrong article.
+
+The design choice worth defending: a rewrite failure returns 502 rather than
+falling back to the raw question. A fallback looks obviously right and would
+silently reintroduce the exact bug, on the branch nobody ever exercises --
+the same shape as the NameError that survived in the judge cache because every
+run used --no-judge. Graceful degradation into a known-wrong state is not
+graceful. And the substitution is PRINTED in the Retrieval step: the original bug
+was invisible, so a fix that silently swaps your question would just be quieter.
+
+The regression check mattered more than the fix. Two unrelated, already-standalone
+questions asked with war history in the buffer both passed through unchanged.
+
+PLAYWRIGHT IS HEADLESS HERE. The outer window is 159x27 px. The user could not
+see any of the browser work and I sent them hunting for a window that was never
+going to appear -- I assumed headed mode instead of checking. Check
+window.outerWidth before telling anyone to look at the screen.
+
+SPEND. $0.1804 on experiments this session (prompt A/B $0.1264, hard-question
+generation $0.0540 across three attempts), plus deployment verification. Lifetime
+across the project is now ~$0.52. One estimate was 58% low because I guessed the
+input size instead of computing it from top_k x max_tokens; also asserted
+"reasoning tokens" as the cause without checking, and there are ZERO reasoning
+tokens across all 136 calls ever made. Both facts now pinned in config.toml.
+"""
