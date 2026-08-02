@@ -8,9 +8,92 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
-## 19. Deploy to a Hetzner VPS with Docker + Caddy, not a PaaS
+## 20. Eval questions must be self-contained; the harness prints its own caveats
 
 **Date** 2026-08-02 · **Status** active
+
+**Why.** A review of `eval/run_eval.py` found the arithmetic sound and the
+plumbing broken. Five defects, none of which would have raised an error:
+
+- `report()` crashed with `KeyError` on any row that failed to reach the API, so
+  one flaky request destroyed the summary of a run already paid for.
+- `answer_must_contain` results were computed, written to `results.jsonl`, and
+  **never printed**. 10 of 35 failed in the last run and nobody had seen it.
+- `coverage` likewise. `recall@k` counts a multi-source question as a hit if
+  *any* expected article appears, so `kgmsn-multi` found **1 of 3** articles and
+  scored identically to a perfect retrieval.
+- `--limit N` returned `questions[:N]`, and `curate.py` writes every holdout
+  case first — so the documented cheap command tested only the held-out set.
+- The judge cache key omitted the excerpts, though `grounded` is defined
+  relative to them.
+
+**The question set had a deeper problem.** 13 of 35 questions carried an
+unresolved deictic ("in **this** case", "what does **he** say") because the
+generator could see the source chunk and its pronouns resolved for it. About six
+had no determinate answer, making any grounding verdict on them meaningless.
+Repaired by hand; the generator prompt now requires self-containment.
+
+**Measured while repairing it — the two quality axes trade off.** Naming a
+question's subject is what makes it self-contained, and it is also what leaks
+source vocabulary: one rewrite moved overlap from 0.45 to **0.77**, past
+`curate.py`'s own 0.65 rejection threshold. Rephrased to name the subject in
+fewer words, it landed at 0.36. Final set: median overlap 0.46, max 0.65, none
+rejected.
+
+**Alternatives rejected.**
+- **Regenerating the set** rather than hand-repairing — `questions.toml` is
+  hand-maintained and holds the unanswerable cases no generator can produce.
+- **Normalising Armenian suffixes** so `answer_must_contain` stops false-failing
+  on inflection — suffix rules were already rejected for BM25 (#16) and would be
+  no better here. The report now states the limitation in its own output instead.
+- **Dropping the assertion check** — it is the only LLM-free signal in the
+  harness. Kept, but labelled as a pointer rather than a verdict.
+
+**What this costs.** The assertion pass rate (17/27 = 63%) is a floor, not an
+accuracy; most failures are morphology. Fixing the ~20 assertion strings is
+parked in `DEFERRED_TODO.md`.
+
+**What would change this.** Rewriting the assertions to non-declining stems, or
+the corpus growing enough that the set needs regenerating rather than curating —
+at which point the self-containment rule is in the prompt and should hold.
+
+---
+
+## 19. Deploy to a Hetzner VPS with Docker + Caddy, not a PaaS
+
+**Date** 2026-08-02 · **Status** active, **prices verified in the console 2026-08-02**
+
+> **Price correction.** The ~€6/mo below came from a blog post and was flagged
+> unverified. Read from the console, Helsinki, incl. 19% VAT:
+>
+> | plan | RAM | monthly |
+> |---|---|---|
+> | **cx23** (Cost-Optimized) | 4 GB | **€7.13** inc. IPv4 — chosen |
+> | cpx22 (Regular Performance) | 4 GB | **€23.79** inc. IPv4 |
+>
+> The original estimate was right *for cx23*. But an earlier Playwright check
+> found the whole Cost-Optimized line showing "not available", so DEPLOY.md
+> steered to CPX22 — **without re-checking the price the decision rested on**. A
+> temporary stock-out silently became a permanent 3.3x price rise in our own
+> runbook, and at €23.79 Hetzner is level with the $25 Render plan this entry
+> rejects two paragraphs down for being "most expensive AND tightest". Buying the
+> plan our own documentation recommended would have invalidated the reasoning
+> that chose Hetzner at all.
+>
+> **The generalisable bit:** when availability forces a substitution, re-derive
+> the decision, do not just swap the part. Availability rotates; a decision
+> written down during an outage outlives it.
+>
+> Also corrected while provisioning: Ubuntu **26.04 LTS** is the console default
+> and Docker officially supports it (verified on docs.docker.com), so the "24.04"
+> instruction was needlessly stale.
+
+> **Amendment 2026-08-02 — no HTTPS for now.** Deployed with no domain, so Caddy
+> serves plain HTTP on `:80`; Let's Encrypt does not certify IP addresses. A
+> deliberate demo-scope choice, with the cleartext-password cost accepted
+> explicitly. `docker-compose.yml` derives `SITE_ADDRESS: ${DOMAIN:-:80}`, so
+> setting `DOMAIN` later flips to automatic HTTPS with no rebuild. Tracked in
+> DEFERRED_TODO.md with the trigger for doing it.
 
 **Why.** The binding constraint is *resident memory*, not CPU, and almost every
 PaaS prices CPU generously and RAM stingily. Measured peak RSS is **sustained** --
@@ -57,7 +140,36 @@ and the maintenance burden is no longer worth EUR 6.
 
 ## 18. Retrieval is dense (ATE-2-large); BM25 kept behind the same interface
 
-**Date** 2026-08-01 · **Status** active (supersedes #16)
+**Date** 2026-08-01 · **Status** active, **revisited 2026-08-02 — evidence is weaker than this entry claimed**
+
+> **Revisit note, 2026-08-02.** This entry said "the eval set should decide
+> whether hybrid beats dense alone." The eval set now exists, and it **cannot
+> decide anything** — it does not separate dense from BM25 at any k:
+>
+> | | R@1 | R@3 | R@10 | MRR |
+> |---|---|---|---|---|
+> | dense | 27/30 = 90.0% | 30/30 = 100% | **30/30 = 100%** | 0.944 |
+> | bm25 | 26/30 = 86.7% | 28/30 = 93.3% | **30/30 = 100%** | 0.908 |
+>
+> Every Wilson interval overlaps; at `top_k = 10`, the configured operating
+> point, the two are **tied at 100%**. Detecting a 5-point recall gap at 80%
+> power would need roughly **685 questions per arm**. We have 30.
+>
+> The cause is corpus size, not the eval: finding the right article among **94**
+> is easy for anything. This should become discriminative on the full 5,836
+> article corpus, and that is the measurement that would actually settle it.
+>
+> **What this does not overturn.** The qualitative finding below stands and is
+> not captured by recall@k: with BM25's noisier context the model *declined to
+> answer* where dense produced a cited answer. Retrieval quality shows up in
+> answer quality before it shows up in recall.
+>
+> **What it does mean.** Dense costs **1793 MB resident against BM25's ~250 MB**,
+> which is the entire reason decision #19 needs a 4 GB box. That memory is
+> currently bought on a single-question spot check plus one qualitative
+> observation — not on the eval this entry pointed to. Worth re-testing once the
+> corpus is fully indexed, and worth knowing before treating the €6/mo VPS and
+> its ops burden as forced.
 
 **Why.** Measured through the API on the same question, same model, same prompt:
 
