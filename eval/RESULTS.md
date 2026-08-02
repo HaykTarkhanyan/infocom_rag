@@ -181,7 +181,11 @@ answers worth reading, and the report now says so in the output itself.
   hallucinated `must_contain` strings, 12 for >0.65 token overlap with their
   source. Median overlap after the 2026-08-02 repair is **0.46**, max 0.65, so
   the set still leans easier than real user questions.
-- Only 2 multi-source questions, and none tests multi-turn or conflicting sources.
+- Only 2 multi-source questions, and none tests conflicting sources.
+- **No multi-turn cases.** Query rewriting shipped 2026-08-02 (DECISIONS #21) and
+  the eval does not exercise it at all — `run_eval.py` sends no `history`, which
+  keeps these numbers comparable with earlier runs but leaves the whole
+  conversational path unmeasured. See DEFERRED_TODO.md for what that bucket needs.
 - `results.jsonl` holds two runs, both at `max_distance = 0.50` with no judge.
   The 0.55 threshold now in `config.toml` was chosen from an offline sweep and
   has **never been through a full recorded run**.

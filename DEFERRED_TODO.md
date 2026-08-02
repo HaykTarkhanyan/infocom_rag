@@ -59,6 +59,24 @@ reading before they are believed.
 
 ---
 
+### No multi-turn cases in the eval set
+
+Query rewriting now ships (DECISIONS #21) and **nothing in `eval/questions.toml`
+exercises it** — every case is single-turn, and `run_eval.py` sends no history.
+That was fine when the system was stateless; it is now a real blind spot.
+
+Verified by hand at the time of the change: the "of those" case resolves
+correctly (118 → 310) and two already-standalone questions pass through
+unchanged. That is three data points, not a measurement.
+
+**What a multi-turn bucket needs:** a `history` field per question, an assertion
+on the *rewritten* query rather than only the answer, and cases for the failure
+modes that actually matter —
+1. a genuine follow-up that must inherit an entity from turn 1,
+2. an already-standalone question asked mid-conversation (must be left alone),
+3. a topic switch (must NOT inherit the previous subject),
+4. a follow-up whose referent is genuinely ambiguous (must not be invented).
+
 ## Measurement not yet taken
 
 - **Grounding across the 27 factual questions.** The pinned judge

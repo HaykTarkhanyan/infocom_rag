@@ -8,6 +8,68 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
+## 21. Follow-up questions are rewritten into standalone ones BEFORE retrieval
+
+**Date** 2026-08-02 · **Status** active
+
+**Why.** The system had no conversational memory, and the failure was not
+forgetting — it was confident wrongness. Measured on the deployed app:
+
+| turn | question | answer |
+|---|---|---|
+| 1 | Քանի՞ քրեական գործ ... 44-օրյա պատերազմին առնչվող | **2044** ✓ |
+| 2 | Իսկ **դրանցից** քանի՞սն են ուղարկվել դատարան։ | **118** ✗ (correct: **310**) |
+
+`դրանցից` ("of those") has no referent alone, so the retriever embedded a bare
+query about court referrals and landed on a **different article** about military
+desertion prosecutions. Every safety property held — grounded in real excerpts,
+citation `[1]` genuinely supported 118 — and the answer was still wrong for the
+question asked. Not a refusal: a fluent, correctly-cited answer to a question
+nobody asked, with nothing in the UI signalling the substitution.
+
+**Fixed at the retrieval stage, deliberately.** Retrieval is where the wrong
+document gets chosen. Passing history to the *generator* instead would have
+fixed the phrasing while still fetching the desertion article — making the
+failure harder to spot rather than fixing it.
+
+**Verified after the change:**
+
+    typed:    Իսկ դրանցից քանիսն են ուղարկվել դատարան։
+    searched: ...հարուցված 2044 քրեական գործերից քանիսն են ուղարկվել դատարան։
+    answer:   310    (+666 ms, $0.0059 for the turn)
+
+And the regression that matters more, since it is the common case: two unrelated
+**already-standalone** questions asked with war history in the buffer both passed
+through **unchanged** and answered on their own topics. A rewriter that corrupts
+good questions would be worse than the bug it fixes.
+
+**Design choices worth naming.**
+- **A rewrite failure is fatal (502), not a fallback to the raw question.**
+  Falling back silently reintroduces exactly this bug, and it is the branch
+  nobody would ever notice.
+- **The substitution is printed** in the Retrieval step and returned as
+  `question_used` / `rewritten`. What is searched is not always what was typed;
+  hiding that would be its own version of the bug.
+- **History stores what the user TYPED**, not the rewritten form, so successive
+  rewrites do not compound on each other's paraphrases.
+- **`history` defaults to empty**, so every existing caller stays single-turn.
+  The eval harness sends none deliberately — its numbers stay comparable with
+  every earlier run.
+- Cost reported per turn now includes the rewrite call.
+
+**Alternatives rejected.** Full chat history to the generator (fixes wording, not
+retrieval); embedding the concatenated history as the query (drags old topics
+into every search); doing nothing and telling users to write standalone
+questions (real option, and it is what the greeting used to imply — but the
+failure is silent, so it puts the cost of a subtle bug on the user).
+
+**What would change this.** Evidence the rewriter mangles good questions at
+scale — worth an eval bucket of multi-turn cases, which does not exist yet
+(tracked in DEFERRED_TODO.md). Or a cheaper model for the rewrite: the task is
+far easier than answering, and it currently runs on the full generation model.
+
+---
+
 ## 20. Eval questions must be self-contained; the harness prints its own caveats
 
 **Date** 2026-08-02 · **Status** active
