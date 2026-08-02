@@ -66,11 +66,20 @@ class Logging:
 
 
 @dataclass(frozen=True)
+class Rewrite:
+    """Follow-up -> standalone question, applied before retrieval."""
+    enabled: bool
+    max_turns: int
+    prompt: str
+
+
+@dataclass(frozen=True)
 class Settings:
     generation: Generation
     retrieval: Retrieval
     embedding: Embedding
     logging: Logging
+    rewrite: Rewrite
     system_prompt: str
 
 
@@ -81,6 +90,7 @@ def _build() -> Settings:
     ret = _require(raw, "retrieval", "root")
     emb = _require(raw, "embedding", "root")
     log = _require(raw, "logging", "root")
+    rew = _require(raw, "rewrite", "root")
     prompt = _require(raw, "prompt", "root")
 
     settings = Settings(
@@ -106,6 +116,11 @@ def _build() -> Settings:
             passage_prefix=_require(emb, "passage_prefix", "embedding"),
         ),
         logging=Logging(llm_ledger=_require(log, "llm_ledger", "logging")),
+        rewrite=Rewrite(
+            enabled=bool(_require(rew, "enabled", "rewrite")),
+            max_turns=int(_require(rew, "max_turns", "rewrite")),
+            prompt=_require(rew, "prompt", "rewrite").strip(),
+        ),
         system_prompt=_require(prompt, "system", "prompt").strip(),
     )
 
@@ -122,6 +137,11 @@ def _build() -> Settings:
     if not 0.0 <= settings.retrieval.max_distance <= 2.0:
         raise ValueError(
             f"retrieval.max_distance must be 0.0-2.0, got {settings.retrieval.max_distance}"
+        )
+    if settings.rewrite.max_turns < 1:
+        raise ValueError(
+            f"rewrite.max_turns must be >= 1, got {settings.rewrite.max_turns} "
+            "(set rewrite.enabled = false to turn rewriting off instead)"
         )
     if settings.embedding.max_tokens > 512:
         raise ValueError(

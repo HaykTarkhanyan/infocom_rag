@@ -58,14 +58,24 @@ app = FastAPI(
 )
 
 
+class Turn(BaseModel):
+    question: str
+    answer: str = ""
+
+
 class AskRequest(BaseModel):
     question: str = Field(min_length=1)
+    # Prior turns, oldest first. OPTIONAL and empty by default, which keeps every
+    # existing caller single-turn -- the eval harness deliberately sends none, so
+    # its measurements stay comparable with earlier runs.
+    history: list[Turn] = Field(default_factory=list)
     # Overrides are explicit and echoed back in `config`, so a stored answer
     # still explains which settings produced it.
     top_k: int | None = Field(default=None, ge=1, le=50)
     min_score: float = 0.0                       # bm25 only
     max_distance: float | None = Field(default=None, ge=0.0, le=2.0)  # dense only
     retriever: str | None = None                 # override the configured default
+    rewrite: bool | None = None                  # override [rewrite] enabled
 
 
 class Source(BaseModel):
@@ -102,6 +112,12 @@ class AskResponse(BaseModel):
     config: dict
     retrieval_ms: int
     generation_ms: int
+    # What was ACTUALLY searched and answered. Differs from the user's wording
+    # whenever a follow-up was rewritten, and surfacing it is the point: the
+    # failure this prevents is invisible, so the substitution must not be.
+    question_used: str = ""
+    rewritten: bool = False
+    rewrite_ms: int = 0
 
 
 @app.get("/health")
@@ -125,12 +141,45 @@ async def health() -> dict:
 async def ask(req: AskRequest) -> AskResponse:
     top_k = req.top_k or settings.retrieval.top_k
 
+    # --- resolve the question against the conversation, BEFORE retrieval ---
+    # A follow-up like "and how many of THOSE went to court?" has no referent on
+    # its own. Retrieved as-is it lands on an unrelated article and produces a
+    # fluent, correctly-cited answer to a question nobody asked. Rewriting has to
+    # happen here rather than at generation time, because retrieval is where the
+    # wrong document gets chosen.
+    question = req.question
+    rewritten = False
+    rewrite_ms = 0
+    rewrite_cost = 0.0
+    use_rewrite = settings.rewrite.enabled if req.rewrite is None else req.rewrite
+
+    if use_rewrite and req.history:
+        start = time.monotonic_ns()
+        try:
+            resolved = await llm.rewrite_question(
+                req.question, [t.model_dump() for t in req.history]
+            )
+        except llm.LLMError as exc:
+            # Deliberately fatal. Continuing would retrieve on unresolved
+            # pronouns -- the exact silent failure this guards against.
+            logger.error("Question rewrite failed: %s", exc)
+            raise HTTPException(
+                status_code=502, detail=f"Could not resolve the follow-up question: {exc}"
+            ) from exc
+        rewrite_ms = (time.monotonic_ns() - start) // 1_000_000
+        rewrite_cost = resolved.usage.cost_usd
+        candidate = resolved.content.strip().strip('"')
+        if candidate and candidate != req.question:
+            question = candidate
+            rewritten = True
+            logger.info("Rewrote %r -> %r", req.question, question)
+
     start = time.monotonic_ns()
     # Retrieval is CPU-bound and blocking either way -- BM25 scoring, or a torch
     # forward pass to embed the query -- so it goes to a worker thread rather
     # than stalling the event loop for every other in-flight request.
     hits = await asyncio.to_thread(
-        retrieval.search, req.question, top_k, req.min_score,
+        retrieval.search, question, top_k, req.min_score,
         req.retriever, req.max_distance,
     )
     retrieval_ms = (time.monotonic_ns() - start) // 1_000_000
@@ -145,7 +194,7 @@ async def ask(req: AskRequest) -> AskResponse:
 
     context = retrieval.format_context(hits)
     try:
-        response = await llm.answer(req.question, context)
+        response = await llm.answer(question, context)
     except llm.LLMError as exc:
         logger.error("Generation failed: %s", exc)
         raise HTTPException(status_code=502, detail=f"LLM call failed: {exc}") from exc
@@ -164,7 +213,9 @@ async def ask(req: AskRequest) -> AskResponse:
             output_tokens=response.usage.output_tokens,
             reasoning_tokens=response.usage.reasoning_tokens,
             cached_tokens=response.usage.cached_tokens,
-            cost_usd=response.usage.cost_usd,
+            # Includes the rewrite call, so the reported cost is what the turn
+            # actually cost rather than just its last step.
+            cost_usd=response.usage.cost_usd + rewrite_cost,
         ),
         model=response.model,
         config={
@@ -175,7 +226,12 @@ async def ask(req: AskRequest) -> AskResponse:
             "embedding_model": settings.embedding.model,
             "max_distance": (req.max_distance if req.max_distance is not None
                              else settings.retrieval.max_distance),
+            "rewrite": use_rewrite,
+            "history_turns": len(req.history),
         },
         retrieval_ms=retrieval_ms,
         generation_ms=response.latency_ms,
+        question_used=question,
+        rewritten=rewritten,
+        rewrite_ms=rewrite_ms,
     )

@@ -220,6 +220,33 @@ async def call(messages: list[dict[str, str]], role: str = "answer",
     return response
 
 
+async def rewrite_question(question: str, history: list[dict[str, str]],
+                          role: str = "rewrite") -> LLMResponse:
+    """Rewrite a follow-up into a standalone question, using recent turns.
+
+    `history` is oldest-first `[{"question": ..., "answer": ...}, ...]`; only the
+    last `rewrite.max_turns` are shown. Answers are truncated because the
+    rewriter needs the topic and the entities, not the full cited text -- and the
+    whole point is to keep this call small and cheap next to generation.
+
+    NOT wrapped in a try/except. A failed rewrite means the follow-up would be
+    retrieved with its pronouns unresolved, which is precisely the bug this
+    exists to prevent -- and that failure is silent and confidently wrong. Better
+    to surface an error than to answer the wrong question. The caller turns
+    `LLMError` into a 502, the same as a generation failure.
+    """
+    turns = history[-settings.rewrite.max_turns:]
+    transcript = "\n\n".join(
+        f"Q: {t['question']}\nA: {(t.get('answer') or '')[:600]}" for t in turns
+    )
+    messages = [
+        {"role": "system", "content": settings.rewrite.prompt},
+        {"role": "user",
+         "content": f"Conversation:\n---\n{transcript}\n---\n\nNew question: {question}"},
+    ]
+    return await call(messages, role=role)
+
+
 async def answer(question: str, context: str, role: str = "answer") -> LLMResponse:
     """Run the pinned RAG system prompt over `context` and `question`."""
     messages = [

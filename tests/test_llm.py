@@ -226,6 +226,73 @@ class TestErrors:
             run(llm.call([{"role": "user", "content": "hi"}]))
 
 
+class TestRewriteQuestion:
+    """Follow-up -> standalone question, before retrieval.
+
+    The bug this prevents is silent: an unresolved "of those" retrieves an
+    unrelated article and yields a fluent, correctly-cited answer to a different
+    question. Measured live before this existed -- "how many of THOSE went to
+    court?" answered 118 from a desertion article when the answer was 310.
+    """
+
+    def test_sends_pinned_rewrite_prompt_not_the_answering_prompt(self):
+        client = fake_client(ok_body(content="rewritten"))
+        with patch("llm.get_client", return_value=client):
+            run(llm.rewrite_question("Իսկ դրանցի՞ց քանիսն են", [{"question": "q", "answer": "a"}]))
+        messages = client.calls[0]["json"]["messages"]
+        assert messages[0]["content"] == settings.rewrite.prompt
+        assert messages[0]["content"] != settings.system_prompt
+
+    def test_includes_prior_turns_and_the_new_question(self):
+        client = fake_client(ok_body(content="rewritten"))
+        history = [{"question": "Քանի՞ գործ", "answer": "2044 գործ"}]
+        with patch("llm.get_client", return_value=client):
+            run(llm.rewrite_question("Իսկ դրանցից քանիսն են ուղարկվել դատարան", history))
+        content = client.calls[0]["json"]["messages"][1]["content"]
+        assert "Քանի՞ գործ" in content
+        assert "2044 գործ" in content
+        assert "Իսկ դրանցից քանիսն են ուղարկվել դատարան" in content
+
+    def test_shows_only_the_configured_number_of_turns(self):
+        """An old topic dragging the rewrite off course is a real failure mode."""
+        client = fake_client(ok_body(content="rewritten"))
+        history = [{"question": f"q{i}", "answer": f"a{i}"} for i in range(10)]
+        with patch("llm.get_client", return_value=client):
+            run(llm.rewrite_question("follow-up", history))
+        content = client.calls[0]["json"]["messages"][1]["content"]
+        kept = settings.rewrite.max_turns
+        assert f"q{10 - kept}" in content          # newest window is present
+        assert "q0" not in content                 # oldest turns are dropped
+
+    def test_truncates_long_answers(self):
+        """The rewriter needs entities and topic, not the full cited article."""
+        client = fake_client(ok_body(content="rewritten"))
+        history = [{"question": "q", "answer": "x" * 5000}]
+        with patch("llm.get_client", return_value=client):
+            run(llm.rewrite_question("follow-up", history))
+        content = client.calls[0]["json"]["messages"][1]["content"]
+        assert len(content) < 2000
+
+    def test_is_labelled_separately_in_the_ledger(self):
+        """Rewrites and answers must be tellable apart when auditing spend."""
+        client = fake_client(ok_body(content="rewritten"))
+        with patch("llm.get_client", return_value=client):
+            response = run(llm.rewrite_question("q", [{"question": "a", "answer": "b"}]))
+        assert response.role == "rewrite"
+
+    def test_failure_propagates_rather_than_falling_back(self):
+        """Silently reusing the raw question would reintroduce the exact bug."""
+        with (patch("llm.get_client", return_value=fake_client({"e": 1}, 500)),
+              pytest.raises(llm.LLMError)):
+            run(llm.rewrite_question("q", [{"question": "a", "answer": "b"}]))
+
+    def test_tolerates_a_turn_with_no_answer_yet(self):
+        client = fake_client(ok_body(content="rewritten"))
+        with patch("llm.get_client", return_value=client):
+            run(llm.rewrite_question("follow-up", [{"question": "q"}]))
+        assert client.calls, "a turn missing 'answer' must not raise"
+
+
 class TestAnswerPrompt:
     def test_uses_pinned_system_prompt_and_embeds_context(self):
         client = fake_client(ok_body())

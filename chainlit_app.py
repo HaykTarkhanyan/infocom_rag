@@ -33,6 +33,10 @@ from db import async_dsn
 API_URL = os.environ.get("RAG_API_URL", "http://localhost:8000")
 REQUEST_TIMEOUT = 120
 
+# Turns kept in the session. The API shows the rewriter only the last
+# `rewrite.max_turns`, so this is a small buffer above that, not a second policy.
+HISTORY_LIMIT = 8
+
 
 APP_PASSWORD = os.environ.get("APP_PASSWORD")
 
@@ -163,12 +167,18 @@ async def on_message(message: cl.Message) -> None:
     if not question:
         return
 
+    # Prior turns, oldest first. Kept per-session in memory rather than read back
+    # from Neon: the DB is the durable record, but a chat needs the last few
+    # turns synchronously and a query per message would be pure latency.
+    history: list[dict] = cl.user_session.get("history") or []
+
     async with cl.Step(name="Retrieval", type="retrieval") as retrieval_step:
         retrieval_step.input = question
         try:
             async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
                 response = await client.post(
-                    f"{API_URL}/ask", json={"question": question}
+                    f"{API_URL}/ask",
+                    json={"question": question, "history": history},
                 )
         except httpx.HTTPError as exc:
             retrieval_step.is_error = True
@@ -199,11 +209,22 @@ async def on_message(message: cl.Message) -> None:
                 return f"cos {src['score']:.4f} dist {src['distance']:.4f}"
             return f"bm25 {src['score']:>7.2f}"
 
-        retrieval_step.output = "\n".join(
+        # Show the rewritten query FIRST when it differs. What was searched is
+        # not always what was typed, and a silent substitution would be its own
+        # version of the bug rewriting exists to fix.
+        rewrite_note = ""
+        if data.get("rewritten"):
+            rewrite_note = (
+                f"follow-up resolved for search ({data['rewrite_ms']} ms):\n"
+                f"  typed:    {question}\n"
+                f"  searched: {data['question_used']}\n\n"
+            )
+
+        retrieval_step.output = rewrite_note + ("\n".join(
             f"[{s['n']}] {score_label(s)}  {s['n_tokens']:>3} tok  {s['title'][:52]}"
             + (f"\n      § {s['heading'][:56]}" if s.get("heading") else "")
             for s in sources
-        ) or "no hits"
+        ) or "no hits")
         retrieval_step.metadata = {
             "n_sources": len(sources),
             "retrieval_ms": data["retrieval_ms"],
@@ -211,6 +232,11 @@ async def on_message(message: cl.Message) -> None:
             "retriever": data["config"]["retriever"],
             "embedding_model": data["config"].get("embedding_model"),
             "max_distance": data["config"].get("max_distance"),
+            "question_typed": question,
+            "question_searched": data.get("question_used", question),
+            "rewritten": data.get("rewritten", False),
+            "rewrite_ms": data.get("rewrite_ms", 0),
+            "history_turns": len(history),
         }
 
     usage = data["usage"]
@@ -236,9 +262,21 @@ async def on_message(message: cl.Message) -> None:
             "config": data["config"],
         }
 
+    # Record the turn for the next follow-up. Stored under the question the user
+    # TYPED, not the rewritten one -- the rewriter is resolving references
+    # against a human conversation, and replacing what was said with a machine
+    # paraphrase would compound each rewrite on the last.
+    #
+    # Trimmed to the configured window plus a little slack; the API trims again,
+    # so an over-long list here costs memory, never tokens.
+    history.append({"question": question, "answer": data["answer"]})
+    cl.user_session.set("history", history[-HISTORY_LIMIT:])
+
     # Plain markdown, not HTML: Chainlit's renderer prints raw <sub> literally.
+    rewrite_bit = f" · rewrite {data['rewrite_ms']}ms" if data.get("rewritten") else ""
     footer = (
         f"\n\n*{data['model']} · {usage['input_tokens']:,}→{usage['output_tokens']:,} tok · "
-        f"${usage['cost_usd']:.4f} · {data['retrieval_ms']}ms + {data['generation_ms']:,}ms*"
+        f"${usage['cost_usd']:.4f} · {data['retrieval_ms']}ms + {data['generation_ms']:,}ms"
+        f"{rewrite_bit}*"
     )
     await cl.Message(content=data["answer"] + _format_sources(sources) + footer).send()
