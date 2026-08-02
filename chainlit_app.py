@@ -71,6 +71,40 @@ def get_data_layer() -> SQLAlchemyDataLayer:
     return SQLAlchemyDataLayer(conninfo=async_dsn())
 
 
+@cl.set_starters
+async def starters() -> list[cl.Starter]:
+    """Clickable example questions on the empty chat screen.
+
+    Every one of these was checked against the live index before being offered:
+    all retrieve their correct article at rank 1, at cosine distance 0.21-0.34
+    against a 0.55 cutoff. A suggested question that returns nothing would fail
+    on a user's very first click, which is the worst possible first impression --
+    so if the corpus changes, re-run the check rather than assuming these still
+    land.
+
+    Deliberately spread across four different subject areas, so the starters
+    advertise the corpus's actual breadth rather than four flavours of one topic.
+    """
+    return [
+        cl.Starter(
+            label="Աշտարակի գնումները",
+            message="Ինչպե՞ս է Աշտարակի համայնքը գնումներ կատարել ավագանու անդամի ընկերությունից",
+        ),
+        cl.Starter(
+            label="44-օրյա պատերազմի գործերը",
+            message="Քանի՞ քրեական գործ է հարուցվել 44-օրյա պատերազմին առնչվող դեպքերով",
+        ),
+        cl.Starter(
+            label="Անկանխիկ կենսաթոշակներ",
+            message="Ինչո՞ւ են կենսաթոշակառուները դժվարությամբ կանխիկացնում իրենց թոշակը",
+        ),
+        cl.Starter(
+            label="IMEI գրանցում",
+            message="Ի՞նչ է նախատեսում հեռախոսների IMEI գրանցման նոր համակարգը",
+        ),
+    ]
+
+
 @cl.on_chat_start
 async def on_chat_start() -> None:
     try:
@@ -79,8 +113,8 @@ async def on_chat_start() -> None:
     except httpx.HTTPError as exc:
         await cl.Message(
             content=(
-                f"**Cannot reach the API at {API_URL}.**\n\n"
-                "Start it with:\n"
+                f"**Չհաջողվեց կապվել API-ի հետ ({API_URL}).**\n\n"
+                "Գործարկեք այն՝\n"
                 "```\npython -m uvicorn api:app --app-dir src --port 8000\n```\n\n"
                 f"`{exc}`"
             )
@@ -90,13 +124,29 @@ async def on_chat_start() -> None:
     corpus = health["corpus"]
     await cl.Message(
         content=(
-            f"Ask me about **{corpus['articles']} infocom.am articles** "
-            f"({corpus['chunks']:,} chunks). Questions in Armenian, English or Russian.\n\n"
-            f"- model `{health['model']}` · retriever `{health['retriever']}`"
+            "### Բարև Ձեզ 👋\n\n"
+            f"Պատասխանում եմ **infocom.am**-ի **{corpus['articles']} վերլուծական "
+            f"հոդվածների** հիման վրա ({corpus['chunks']:,} հատված)։ "
+            "Գրեք հայերեն, անգլերեն կամ ռուսերեն։\n\n"
+            "**Ի՞նչ թեմաներ են ընդգրկված**\n"
+            "- դատաիրավական համակարգ, քրեական վարույթներ, արդարադատություն\n"
+            "- ընտրություններ, կուսակցություններ, խորհրդարան\n"
+            "- պետական գնումներ և կոռուպցիոն ռիսկեր\n"
+            "- սոցիալական քաղաքականություն՝ կենսաթոշակներ, առողջապահություն\n"
+            "- տրանսպորտ և քաղաքային ենթակառուցվածքներ\n"
+            "- գիտություն, կրթություն, թվային իրավունքներ\n\n"
+            "**Ինչպես եմ աշխատում**\n"
+            "- պատասխանում եմ **միայն** այս հոդվածների բովանդակությամբ և միշտ "
+            "նշում եմ աղբյուրը՝ [1], [2]\n"
+            "- եթե հոդվածներում տվյալները չկան, ուղիղ կասեմ՝ փոխանակ ենթադրելու\n"
+            "- ամսաթվերը կարևոր են. հոդվածները ժամանակի մեջ սահմանափակ են, "
+            "ուստի նոր իրադարձությունները կարող են ընդգրկված չլինել\n\n"
+            "Ներքևի օրինակներից ընտրեք մեկը կամ գրեք Ձեր հարցը։\n\n"
+            f"*model `{health['model']}` · retriever `{health['retriever']}`"
             + (f" (`{health['embedding_model'].rsplit('/', 1)[-1]}`)"
-               if health.get("embedding_model") else "") + "\n"
-            "- expand **Retrieval** / **Generation** under any answer to see "
-            "which chunks were used, their scores, the assembled prompt and the cost."
+               if health.get("embedding_model") else "") + " · "
+            "ցանկացած պատասխանի տակ բացեք **Retrieval** / **Generation**՝ "
+            "օգտագործված հատվածները, միավորները և արժեքը տեսնելու համար*"
         )
     ).send()
 
