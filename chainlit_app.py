@@ -34,24 +34,30 @@ API_URL = os.environ.get("RAG_API_URL", "http://localhost:8000")
 REQUEST_TIMEOUT = 120
 
 
-@cl.password_auth_callback
-def auth(username: str, password: str) -> cl.User | None:
-    """Gate the UI behind a shared password when APP_PASSWORD is set.
+APP_PASSWORD = os.environ.get("APP_PASSWORD")
 
-    Deployed publicly without this, anyone who finds the URL spends the
-    OpenRouter key -- there is no per-user cap or rate limit yet. Chainlit only
-    registers this callback if the env var exists, so local development stays
-    frictionless.
+# Registered CONDITIONALLY, and that is load-bearing: `@cl.password_auth_callback`
+# takes effect at import, and merely applying it makes Chainlit demand
+# CHAINLIT_AUTH_SECRET or refuse to boot --
+#   ValueError: You must provide a JWT secret in the environment to use authentication
+# An earlier version decorated unconditionally and checked APP_PASSWORD inside the
+# function, which crashed the container on startup and would have broken local
+# development too. Guarding the decorator itself keeps dev frictionless while the
+# deployment stays gated.
+if APP_PASSWORD:
+    @cl.password_auth_callback
+    def auth(username: str, password: str) -> cl.User | None:
+        """Gate the UI behind a shared password.
 
-    Compared with `secrets.compare_digest` rather than `==` so the check does not
-    leak the password's length through timing.
-    """
-    expected = os.environ.get("APP_PASSWORD")
-    if not expected:
+        Deployed publicly without this, anyone who finds the URL spends the
+        OpenRouter key -- there is no per-user cap or rate limit yet.
+
+        Uses `secrets.compare_digest` rather than `==` so the comparison does not
+        leak the password's length through timing.
+        """
+        if secrets.compare_digest(password, APP_PASSWORD):
+            return cl.User(identifier=username or "user")
         return None
-    if secrets.compare_digest(password, expected):
-        return cl.User(identifier=username or "user")
-    return None
 
 
 @cl.data_layer

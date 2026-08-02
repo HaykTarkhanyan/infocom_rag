@@ -82,6 +82,8 @@ git clone https://github.com/HaykTarkhanyan/infocom_rag.git
 cd infocom_rag
 cp .env.example .env
 nano .env          # fill in the values below, then:
+                   # IMPORTANT: delete the HF_HOME line. It is a Windows dev path
+                   # and would override the container's HF_HOME=/models volume.
 docker compose up -d --build
 ```
 
@@ -93,7 +95,7 @@ docker compose up -d --build
 | `ACME_EMAIL` | Let's Encrypt expiry notices |
 | `OPENROUTER_API_KEY` | generation |
 | `NEON_DB_STRING` | Chainlit persistence (threads, steps, feedback) |
-| `CHAINLIT_AUTH_SECRET` | any long random string; signs session cookies |
+| `CHAINLIT_AUTH_SECRET` | signs session cookies. **Required** whenever `APP_PASSWORD` is set — Chainlit refuses to start with auth enabled and no secret |
 | `APP_PASSWORD` | **gates the UI** — see below |
 
 ### 5. Initialise the database once

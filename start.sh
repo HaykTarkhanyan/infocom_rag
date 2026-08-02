@@ -22,20 +22,35 @@ python -m uvicorn api:app --app-dir src --host 127.0.0.1 --port 8000 &
 API_PID=$!
 trap 'kill $API_PID 2>/dev/null || true' EXIT
 
-# Wait for the API to warm up before accepting traffic. Loading the embedding
-# model takes ~15s and the UI is useless until it is ready; without this the
-# first visitor sees "cannot reach the API".
-for i in $(seq 1 60); do
-  if curl -sf "http://127.0.0.1:8000/health" >/dev/null 2>&1; then
+# Wait for the API before accepting traffic -- the UI is useless until it answers,
+# and starting early greets the first visitor with "cannot reach the API".
+#
+# The budget is generous on purpose. On a FIRST deploy the API has to download
+# ~2 GB of model weights before it can even load them, and loading ATE-2-large
+# itself is not instant. A 60s budget was measured expiring while the model was
+# still loading, so the UI came up in front of a dead API.
+API_WAIT_SECONDS="${API_WAIT_SECONDS:-900}"
+
+echo "Waiting up to ${API_WAIT_SECONDS}s for the API (first boot downloads the model)..."
+for i in $(seq 1 "$API_WAIT_SECONDS"); do
+  if curl -sf --max-time 5 "http://127.0.0.1:8000/health" >/dev/null 2>&1; then
     echo "API ready after ${i}s"
     break
   fi
+  # Fail fast if uvicorn exited rather than burning the whole budget.
   if ! kill -0 "$API_PID" 2>/dev/null; then
     echo "API process died during startup" >&2
     exit 1
   fi
+  if [ $((i % 30)) -eq 0 ]; then
+    echo "  still waiting (${i}s)..."
+  fi
   sleep 1
 done
+
+if ! curl -sf --max-time 5 "http://127.0.0.1:8000/health" >/dev/null 2>&1; then
+  echo "API did not become healthy within ${API_WAIT_SECONDS}s; starting the UI anyway" >&2
+fi
 
 exec chainlit run chainlit_app.py \
   --host 0.0.0.0 \
