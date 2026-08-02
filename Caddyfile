@@ -1,11 +1,18 @@
-# Caddy obtains and renews Let's Encrypt certificates automatically.
-# DOMAIN and ACME_EMAIL come from docker-compose (which reads .env).
+# SITE_ADDRESS comes from docker-compose, which derives it from DOMAIN:
+#
+#   DOMAIN set    ->  SITE_ADDRESS=rag.example.com  ->  automatic Let's Encrypt HTTPS
+#   DOMAIN unset  ->  SITE_ADDRESS=:80              ->  plain HTTP on the server's IP
+#
+# The HTTP mode exists because Let's Encrypt will not issue a certificate for a
+# bare IP address, only for a domain name. It is a DEMO-ONLY fallback: over plain
+# HTTP the APP_PASSWORD and every question and answer cross the network in
+# cleartext. See DEFERRED_TODO.md -- setting DOMAIN is the whole fix.
 
 {
 	email {$ACME_EMAIL}
 }
 
-{$DOMAIN} {
+{$SITE_ADDRESS} {
 	encode zstd gzip
 
 	# Chainlit is a websocket app; Caddy proxies the upgrade transparently, but

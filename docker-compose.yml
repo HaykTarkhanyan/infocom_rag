@@ -37,9 +37,18 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      DOMAIN: ${DOMAIN:?set DOMAIN in .env, e.g. rag.example.com}
-      # Let's Encrypt uses this for expiry warnings.
-      ACME_EMAIL: ${ACME_EMAIL:-}
+      # DOMAIN is OPTIONAL. Set it and Caddy serves HTTPS with an automatically
+      # renewed Let's Encrypt certificate. Leave it unset and Caddy falls back to
+      # plain HTTP on :80, reachable at the server's bare IP -- the only option
+      # when there is no domain, since Let's Encrypt does not issue certificates
+      # for IP addresses.
+      #
+      # HTTP mode is for demos ONLY: the APP_PASSWORD and all traffic are
+      # cleartext. Setting DOMAIN is the entire fix, no rebuild needed.
+      SITE_ADDRESS: ${DOMAIN:-:80}
+      # Let's Encrypt uses this for expiry warnings. Unused in HTTP mode, but it
+      # must be non-empty or the Caddyfile global block fails to parse.
+      ACME_EMAIL: ${ACME_EMAIL:-noreply@example.invalid}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data      # certificates -- losing this re-issues them and

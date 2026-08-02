@@ -32,13 +32,23 @@ Thread count does not help (1791 MB at 1 thread vs 1792 at 4) — the memory is
 torch's forward-pass arena, not the weights, which load in 630 MB.
 
 Most PaaS prices CPU generously and RAM stingily, which is why a raw VPS wins
-here: **2 vCPU / 4 GB for roughly €6/mo** versus $25/mo for 2 GB on Render. The
-trade is that you own the machine — OS patches, backups, and a bad deploy has no
-rollback button.
+here. **Read from the Hetzner console on 2026-08-02, Helsinki, incl. 19% VAT:**
 
-> Prices move. Hetzner raised cloud prices in June 2026 and their shared-vCPU
-> tier periodically shows "currently not available" by region. Check the console
-> before assuming a figure. Pick any plan with **≥ 4 GB RAM**.
+| plan | | monthly | note |
+|---|---|---|---|
+| **cx23** (Cost-Optimized) | 2 vCPU / 4 GB | **€6.53 + €0.60 IPv4 = €7.13** | what we use |
+| cpx22 (Regular Performance) | 2 vCPU / 4 GB | €23.19 + €0.60 = €23.79 | **3.3x more** |
+| cx33 / cx43 / cx53 | 8 / 16 / 32 GB | €10.10 / €19.03 / €35.09 | sold out at HEL1 |
+
+**Pick cx23 or an equally cheap ≥4 GB plan, and check the price before you buy.**
+An earlier revision of this file told you to pick CPX22 "because the
+cost-optimized line shows not available". That was a temporary stock-out, and
+following the instruction would have cost **3.3x** for identical RAM — enough to
+put Hetzner level with the $25/mo Render plan that decision #19 rejected for
+being too expensive. Availability rotates; re-check both columns.
+
+The trade is that you own the machine — OS patches, backups, and a bad deploy has
+no rollback button.
 
 ---
 
@@ -46,22 +56,27 @@ rollback button.
 
 ### 1. Create the server
 
-Hetzner Cloud console → new project → **Add Server**:
+Hetzner Cloud console → project → **Add Server**:
 
-- **Image:** Ubuntu 24.04
-- **Type:** **CPX22** (2 vCPU / 4 GB) or **CPX21** (3 vCPU / 4 GB).
-  Checked 2026-08-02: the cheaper *cost-optimized* line (CX23, CAX11 and the
-  rest) shows **"not available"** across the board — that tier is periodically
-  sold out. CPX is available and has US/Singapore locations, not just EU.
-  Prices only render in the console, so confirm there. Requirement is ≥ 4 GB.
-- **SSH key:** add yours — do not use password auth
-- Location: whichever is nearest your users
+- **Image:** Ubuntu 26.04 LTS (the console default). Docker Engine officially
+  supports it — verified against docs.docker.com, which lists Resolute 26.04,
+  25.10, Noble 24.04 and Jammy 22.04. 24.04 also works if you prefer it.
+- **Type:** **cx23** — 2 vCPU / 4 GB, under *Shared Resources → Cost-Optimized*.
+  See the price table above before substituting anything.
+- **SSH key:** add yours — do not use password auth. Hetzner emails a root
+  password instead if you skip this.
+- **Location:** Nuremberg / Falkenstein / Helsinki (eu-central), Singapore,
+  Hillsboro or Ashburn. Singapore adds €8.33/mo; the EU three do not.
+- **Name:** anything; `infocom-rag` keeps the console readable.
 
-### 2. Point DNS at it
+### 2. Point DNS at it — only if you have a domain
 
-Create an `A` record for your domain (e.g. `rag.example.com`) → the server's
-IPv4. **Do this before starting Caddy**: it validates the domain over HTTP to
-issue a certificate, and repeated failures hit Let's Encrypt rate limits.
+**Optional.** With no domain the stack serves plain HTTP on the IP (see below).
+
+With one, create an `A` record (e.g. `rag.example.com`) → the server's IPv4 and
+set `DOMAIN` in `.env`. **Do this before starting Caddy**: it validates the
+domain over HTTP to issue the certificate, and repeated failures hit Let's
+Encrypt rate limits.
 
 ### 3. Harden and install Docker
 
@@ -91,8 +106,8 @@ docker compose up -d --build
 
 | key | why |
 |---|---|
-| `DOMAIN` | e.g. `rag.example.com` — Caddy issues the certificate for it |
-| `ACME_EMAIL` | Let's Encrypt expiry notices |
+| `DOMAIN` | **optional.** Set → Caddy serves HTTPS with an auto-renewed Let's Encrypt certificate. Unset → plain HTTP on `:80` at the bare IP. Let's Encrypt will not certify an IP address, so a domain is the only route to HTTPS |
+| `ACME_EMAIL` | Let's Encrypt expiry notices. Unused in HTTP mode |
 | `OPENROUTER_API_KEY` | generation |
 | `NEON_DB_STRING` | Chainlit persistence (threads, steps, feedback) |
 | `CHAINLIT_AUTH_SECRET` | signs session cookies. **Required** whenever `APP_PASSWORD` is set — Chainlit refuses to start with auth enabled and no secret |
@@ -107,9 +122,10 @@ docker compose exec app python src/db.py --init --check
 ### 6. Watch the first boot
 
 The **first** start downloads ~2 GB of model weights into the `hf_models`
-volume. Expect several minutes. `start.sh` polls `/health` for up to 60s before
-starting Chainlit, so if the download runs longer the UI comes up on the next
-restart — which `restart: unless-stopped` handles.
+volume. Expect several minutes. `start.sh` waits for `/health` before starting
+Chainlit, with a budget generous enough to cover that download
+(`API_WAIT_SECONDS`, default 900) — a shorter one was measured expiring while
+the model was still loading, putting the UI in front of a dead API.
 
 ```bash
 docker compose logs -f app
@@ -126,6 +142,28 @@ when `APP_PASSWORD` is set, so local development stays frictionless and the
 public deployment does not.
 
 This is a shared password — a lock on the door, not identity.
+
+## Running without a domain (plain HTTP)
+
+Leave `DOMAIN` unset and Caddy listens on `:80` with no TLS. Reach the UI at
+`http://YOUR_SERVER_IP/`. Verify what it resolved to:
+
+```bash
+docker compose config | grep SITE_ADDRESS      # ":80" = HTTP, a hostname = HTTPS
+```
+
+**What this costs you.** Everything is cleartext on the wire: the
+`APP_PASSWORD`, every question, every answer. Anyone between the browser and the
+server — a shared café network, a hotspot, an ISP — can read and alter it, and
+the browser will mark the page "Not secure".
+
+Deliberate for a short-lived demo, and **not acceptable once anyone else uses
+it**. Use a throwaway `APP_PASSWORD` you do not reuse anywhere.
+
+**The upgrade is one variable.** Point a domain's `A` record at the IP, put
+`DOMAIN=` in `.env`, `docker compose up -d`. No rebuild, no image change — Caddy
+requests the certificate on its own. A free `sslip.io` name (`157-90-1-2.sslip.io`
+resolves to `157.90.1.2`) works if you do not want to register anything.
 
 ---
 
@@ -180,8 +218,15 @@ peak memory to ~250 MB — at a measurable cost in retrieval quality.
 - Model weights live in a **volume**, not the image: it keeps the image ~2 GB
   smaller and survives rebuilds.
 - The container runs as a non-root user.
-- The image was **not** built locally (no Docker daemon on the dev machine), so
-  the first build on the server is its first real test.
+- **Built and run locally** on 2026-08-02: image 1.44 GB, container memory 1.83
+  GiB — matching the 1793 MB measured on the host, which is what validates the
+  sizing table above. Doing so surfaced two startup bugs that reading, linting
+  and 15 passing tests had all missed. Full boot (`/health` answering, then a
+  real question) is still **unverified** — see the session log.
+- Testing locally, mount a **native docker volume**, not a Windows host path.
+  Bind-mounting the Windows model cache is unusably slow through Docker
+  Desktop's filesystem translation (still loading after 15 minutes), and
+  `docker stats` then reads high because it counts page cache.
 
 ---
 
