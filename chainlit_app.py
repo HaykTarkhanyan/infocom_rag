@@ -107,48 +107,30 @@ async def starters() -> list[cl.Starter]:
 
 @cl.on_chat_start
 async def on_chat_start() -> None:
+    """Speak ONLY when something is wrong.
+
+    The welcome text lives in chainlit.md, not here, and that is load-bearing:
+    Chainlit draws the README and the starters only while the thread is empty, so
+    any message sent here silently suppresses BOTH. That is exactly what happened
+    on the first deploy -- /project/settings returned all four starters and the
+    screen showed none of them.
+
+    Staying silent on the happy path is therefore the feature. An unreachable API
+    is worth breaking that rule for: without it the user gets a welcome screen
+    and then an error on their first question, with no clue which part is broken.
+    """
     try:
         async with httpx.AsyncClient(timeout=10) as client:
-            health = (await client.get(f"{API_URL}/health")).json()
+            (await client.get(f"{API_URL}/health")).raise_for_status()
     except httpx.HTTPError as exc:
         await cl.Message(
             content=(
-                f"**Չհաջողվեց կապվել API-ի հետ ({API_URL}).**\n\n"
-                "Գործարկեք այն՝\n"
+                f"⚠️ **Չհաջողվեց կապվել API-ի հետ ({API_URL}).**\n\n"
+                "Հարցերը հիմա չեն աշխատի։ Գործարկեք API-ն՝\n"
                 "```\npython -m uvicorn api:app --app-dir src --port 8000\n```\n\n"
                 f"`{exc}`"
             )
         ).send()
-        return
-
-    corpus = health["corpus"]
-    await cl.Message(
-        content=(
-            "### Բարև Ձեզ 👋\n\n"
-            f"Պատասխանում եմ **infocom.am**-ի **{corpus['articles']} վերլուծական "
-            f"հոդվածների** հիման վրա ({corpus['chunks']:,} հատված)։ "
-            "Գրեք հայերեն, անգլերեն կամ ռուսերեն։\n\n"
-            "**Ի՞նչ թեմաներ են ընդգրկված**\n"
-            "- դատաիրավական համակարգ, քրեական վարույթներ, արդարադատություն\n"
-            "- ընտրություններ, կուսակցություններ, խորհրդարան\n"
-            "- պետական գնումներ և կոռուպցիոն ռիսկեր\n"
-            "- սոցիալական քաղաքականություն՝ կենսաթոշակներ, առողջապահություն\n"
-            "- տրանսպորտ և քաղաքային ենթակառուցվածքներ\n"
-            "- գիտություն, կրթություն, թվային իրավունքներ\n\n"
-            "**Ինչպես եմ աշխատում**\n"
-            "- պատասխանում եմ **միայն** այս հոդվածների բովանդակությամբ և միշտ "
-            "նշում եմ աղբյուրը՝ [1], [2]\n"
-            "- եթե հոդվածներում տվյալները չկան, ուղիղ կասեմ՝ փոխանակ ենթադրելու\n"
-            "- ամսաթվերը կարևոր են. հոդվածները ժամանակի մեջ սահմանափակ են, "
-            "ուստի նոր իրադարձությունները կարող են ընդգրկված չլինել\n\n"
-            "Ներքևի օրինակներից ընտրեք մեկը կամ գրեք Ձեր հարցը։\n\n"
-            f"*model `{health['model']}` · retriever `{health['retriever']}`"
-            + (f" (`{health['embedding_model'].rsplit('/', 1)[-1]}`)"
-               if health.get("embedding_model") else "") + " · "
-            "ցանկացած պատասխանի տակ բացեք **Retrieval** / **Generation**՝ "
-            "օգտագործված հատվածները, միավորները և արժեքը տեսնելու համար*"
-        )
-    ).send()
 
 
 def _format_sources(sources: list[dict]) -> str:
