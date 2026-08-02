@@ -1,0 +1,119 @@
+title = "Deployment (Render -> Hetzner), codebase review, first real Docker build"
+date = "2026-08-02"
+time = "00:45"
+areas = ["Dockerfile", "docker-compose.yml", "Caddyfile", "start.sh", "DEPLOY.md", "src/", "eval/"]
+
+done = [
+  "Wired Render deployment first (render.yaml, start.sh, prefetch_model.py, requirements.txt, DEPLOY.md), following the Washington pattern of one service running FastAPI privately and the UI publicly.",
+  "Measured the deployment constraint properly: peak RSS is SUSTAINED, not transient -- 1793 MB for ATE-2-large, 958 MB for base, ~250 MB for bm25. Thread limits do not help; it is torch's forward-pass arena, not the weights (which load in 630 MB).",
+  "Compared providers on verified numbers after the user pushed back on Render. Hetzner won: ~4x cheaper than Render for 2x the RAM.",
+  "Rewired for Hetzner: Dockerfile, docker-compose (app + Caddy with automatic Let's Encrypt), Caddyfile, .dockerignore, full DEPLOY.md runbook. Render kept as an appendix rather than deleted.",
+  "Added a password gate to the UI (APP_PASSWORD), since deploying publicly with a live OpenRouter key and no cap is an unbounded spend risk.",
+  "Committed data/chunks.jsonl and data/vectors_large.npz (7.3 MB) -- the deploy builds from git and the vectors cannot be rebuilt on the server.",
+  "Ran a review pass: ruff over the whole codebase, plus a read of the hot paths and a secrets scan.",
+  "Started Docker Desktop (installed but not running) and built + ran the image for the FIRST time. Two real bugs surfaced immediately.",
+  "Recorded Docker and the WSL Colab CLI in the global CLAUDE.md, with the gotchas that cost time.",
+]
+
+pending = [
+  "The container was still downloading the model when we stopped for the night -- API health was never confirmed end-to-end inside Docker. The UI served 200 and the build is sound, but the full boot is UNVERIFIED. Resume by re-running it with a native volume and watching /health.",
+  "Grounding across the 27 factual eval questions is still SAMPLED, not measured. The pinned judge (gpt-5.2-pro, ~$3.28, now cached) would settle it.",
+  "No per-user cost cap and no rate limiting. APP_PASSWORD is a lock on the door, not identity.",
+  "Only 94 of 5,836 indepth articles are indexed.",
+  "Hetzner plan not yet purchased; CPX22/CPX21 (4 GB) confirmed available, price only visible in the console.",
+]
+
+next = [
+  "Re-run the container with a native docker volume and confirm /health answers and the UI can ask a real question end to end.",
+  "Then provision the Hetzner box and follow DEPLOY.md.",
+]
+
+files = [
+  "Dockerfile, docker-compose.yml, Caddyfile, .dockerignore -- the Hetzner stack",
+  "start.sh -- both processes, now with a 900s API wait",
+  "DEPLOY.md -- full runbook, Render as appendix",
+  "scripts/prefetch_model.py -- caches the model at build time",
+  "DECISIONS.md #19 -- provider choice with the measured comparison",
+]
+
+commits = [
+  "c6bf3e6 Wire up Render deployment",
+  "beebe59 Deploy to Hetzner: Docker + Caddy stack, Render kept as an appendix",
+  "cc5b8c0 Review pass: fix a broken judge cache, speed up dense search, tighten secrets",
+  "7943a41 Fix two deploy bugs found by actually building and running the image",
+]
+
+notes = """
+PROVIDER COMPARISON, all verified rather than assumed:
+
+  Hetzner VPS     4 GB   ~EUR 6/mo   fits large with 2.2 GB spare   Neon works
+  HF Spaces PRO  16 GB   $9/mo       fits easily                    Neon BLOCKED
+  Fly.io          2 GB   ~$10.70     tight, 88%                     Neon works
+  Render Std      2 GB   $25/mo      tight, 88%                     Neon works
+  Railway         2 GB   $30/mo      tight                          Neon works
+
+The user's instinct that Render was a poor fit was right: most expensive AND
+tightest. The reason generalises -- our binding resource is RESIDENT MEMORY, and
+almost every PaaS prices CPU generously and RAM stingily because their typical
+customer is a stateless web app. A model that must stay loaded inverts their
+pricing model, which is why raw VPS and ML-specific hosts beat general PaaS 3-4x.
+
+HF Spaces looked like it dominated everything (16 GB for $9, model already on
+their infra) and died on one line in the docs: outbound traffic is limited to
+ports 80/443/8080. Neon speaks Postgres on 5432, and testing its 443 returned
+"received invalid response to SSL negotiation" -- that port is an HTTPS API, not
+the wire protocol. Chainlit persistence would break entirely. Platform
+constraints that kill a design live in the networking section, not the pricing
+table, and only surface by trying the actual connection.
+
+Hetzner "why so cheap" (the user asked, fairly): it is IaaS not PaaS, they own
+their datacenters, and the shared vCPU is oversubscribed. The catch is entirely
+that you become the ops team. Checked their site with Playwright: the
+cost-optimized line (CX23, CAX11 and every sibling) currently shows "not
+available" -- that tier periodically sells out. CPX is available and has US and
+Singapore locations. Prices render only in the console; the ~EUR 6 figure is from
+a blog and remains UNVERIFIED.
+
+BUGS FOUND, ordered by how quietly they would have failed:
+
+- eval/run_eval.py referenced an undefined `key` in judge(). The caching patch
+  had half-applied. The first real judge run would have died with NameError, and
+  it survived review because every run so far used --no-judge. Cost creates
+  untested code paths as reliably as complexity does: the expensive branch is the
+  one nobody exercises.
+- The auth gate crashed container startup. `@cl.password_auth_callback` takes
+  effect at IMPORT, so merely applying the decorator makes Chainlit demand
+  CHAINLIT_AUTH_SECRET or refuse to boot. My comment claimed it "only registers
+  if the env var exists", which is false. It would have broken local dev on the
+  next restart too. Now the decorator itself is applied conditionally.
+- start.sh gave up on the API after 60s. The log showed Chainlit starting at
+  23:53:30 while the model was still loading at 23:53:56 -- and a FIRST deploy
+  also downloads 2 GB before loading. The UI would have come up in front of a
+  dead API. Budget raised to 900s with progress logging.
+- .env.example carried HF_HOME=C:/hf_models, a Windows dev path. Copied to a
+  server it would override the image's HF_HOME=/models volume and send the 2 GB
+  download somewhere useless inside the container.
+- search_dense rebuilt two whole-corpus dicts on EVERY query and argsorted all
+  rows for a top-10. Trivial at 969 chunks, wasteful at 40k. Now cached, with
+  argpartition.
+- download_model.py logged the first 6 and last 4 chars of HF_TOKEN. Logs get
+  pasted into issues; it now logs only the length.
+
+THE BUILD VALIDATED THE THEORY:
+  torch-2.13.0+cpu ... (191.8 MB)   from download.pytorch.org/whl/cpu
+On LINUX the default PyPI torch wheel bundles the CUDA runtime -- gigabytes of
+nvidia-* a VPS cannot use. On Windows the default is already CPU-only, which is
+exactly why this never appears in local development. Final image: 1.44 GB.
+Container memory read 1.83 GiB, matching the 1793 MB measured on the host, which
+validates the DEPLOY.md sizing.
+
+DOCKER TESTING GOTCHA: mounting the Windows model cache (C:/hf_models) into the
+container is unusably slow -- the model was still loading after 15 minutes over
+Docker Desktop's filesystem translation, and container memory read 2.2 GiB
+because Docker's stats include page cache. Use a native docker volume to test
+anything resembling production.
+
+The value of actually running it: both startup bugs were invisible to reading,
+linting and 15 passing tests. The image had been committed and documented as
+ready before it had ever been built once.
+"""
