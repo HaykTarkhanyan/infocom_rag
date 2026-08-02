@@ -19,17 +19,36 @@ Chainlit talks to the API over loopback rather than importing the pipeline, so
 
 ## Why this, and what it costs
 
-Memory is the binding constraint, not CPU. Peak RSS is **sustained** — it
-plateaus after the first query and is never released:
+Memory is the binding constraint, not CPU — but **far less of one than we
+thought**. Measured on the actual deployed container, Ubuntu 26.04 / Docker,
+across four real queries:
 
-| retriever | peak RSS | needs |
-|---|---|---|
-| dense, ATE-2-**large** | **1793 MB** | ≥ 4 GB box |
-| dense, ATE-2-**base** | 958 MB | 2 GB is workable |
-| bm25 (no torch) | ~250 MB | anything |
+```
+after 1 query   782 MiB
+after 2         785 MiB
+after 3         788 MiB
+after 4         792 MiB      <- stable, ~3 MiB drift per query
+```
 
-Thread count does not help (1791 MB at 1 thread vs 1792 at 4) — the memory is
-torch's forward-pass arena, not the weights, which load in 630 MB.
+| retriever | Windows dev box | **measured on Linux** | needs |
+|---|---|---|---|
+| dense, ATE-2-**large** | 1793 MB | **~790 MB** | 2 GB is ample |
+| dense, ATE-2-**base** | 958 MB | not re-measured | — |
+| bm25 (no torch) | ~250 MB | not re-measured | anything |
+
+**The 1793 MB figure was a Windows artifact and overstated the requirement by
+2.3x.** The original note had the cause right — "torch's forward-pass arena, not
+the weights, which load in 630 MB" — without noticing that an allocator arena is
+precisely the thing that varies by platform. On Linux it is 630 MB of weights
+plus ~160 MB of overhead, and it does not balloon.
+
+That wrong number ruled out every 2 GB option in the provider comparison below.
+It did not change the final choice (cx23 is the cheapest plan on offer at any
+size; the 2 GB cpx12 costs *more*), but the reasoning that got there was wrong.
+**Measure a deployment constraint on the deployment platform.**
+
+Query latency on cx23's shared vCPU: **2.0-3.8s** end to end, retrieval plus
+generation.
 
 Most PaaS prices CPU generously and RAM stingily, which is why a raw VPS wins
 here. **Read from the Hetzner console on 2026-08-02, Helsinki, incl. 19% VAT:**

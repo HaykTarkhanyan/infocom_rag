@@ -88,6 +88,25 @@ at which point the self-containment rule is in the prompt and should hold.
 > and Docker officially supports it (verified on docs.docker.com), so the "24.04"
 > instruction was needlessly stale.
 
+> **Memory correction 2026-08-02, measured on the deployed box.** The 1793 MB
+> peak below was measured on **Windows**. On the Linux target it is **~790 MB**,
+> stable across four real queries (782 → 792 MiB, ~3 MiB drift each). A **2.3x
+> overestimate**, and it was the number that eliminated every 2 GB candidate —
+> Fly.io at ~$10.70, Render, HF Spaces — from the comparison table below. All of
+> them would have fit.
+>
+> The final choice survives anyway, by luck rather than reasoning: cx23 at €7.13
+> is the cheapest plan Hetzner sells at any size, and the 2 GB cpx12 is €13.67,
+> more expensive for less RAM. The comparison table below is nonetheless wrong.
+>
+> Cause: the dominant cost is torch's forward-pass **allocator arena**, which our
+> own notes identified — and an arena is exactly what differs between platforms.
+> Written up in
+> [`_learnings/2026-08-02-2100_measure-on-the-target-platform.md`](_learnings/2026-08-02-2100_measure-on-the-target-platform.md).
+>
+> **What would change this:** if retrieval ever needs 2 GB again, revisit whether
+> a managed 2 GB tier beats owning the box.
+
 > **Amendment 2026-08-02 — no HTTPS for now.** Deployed with no domain, so Caddy
 > serves plain HTTP on `:80`; Let's Encrypt does not certify IP addresses. A
 > deliberate demo-scope choice, with the cleartext-password cost accepted
