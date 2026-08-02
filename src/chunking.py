@@ -41,6 +41,8 @@ os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 from transformers import AutoTokenizer
 
+from config import settings
+
 Path("logs").mkdir(exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
@@ -256,13 +258,13 @@ def main() -> None:
                         help="Hard token ceiling per chunk (default: ATE-2's 512)")
     parser.add_argument("--overlap-sentences", type=int, default=1,
                         help="Sentences carried across a chunk boundary (default: 1)")
-    parser.add_argument("--model", default=os.getenv("EMBEDDING_MODEL"),
-                        help="Tokenizer to measure with (default: EMBEDDING_MODEL from .env)")
+    # Defaults to config.toml, NOT an env var. Chunk boundaries and query
+    # embeddings must come from the SAME tokenizer: computing chunks with one
+    # model and embedding with another degrades retrieval silently, and nothing
+    # would raise. config.toml is the single source of truth.
+    parser.add_argument("--model", default=settings.embedding.model,
+                        help="Tokenizer to measure with (default: [embedding] model in config.toml)")
     args = parser.parse_args()
-
-    if not args.model:
-        logger.error("No tokenizer: set EMBEDDING_MODEL in .env or pass --model")
-        sys.exit(1)
 
     source = Path(args.input)
     if not source.exists():

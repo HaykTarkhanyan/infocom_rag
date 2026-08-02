@@ -173,6 +173,14 @@ def _row_to_chunk() -> list[dict]:
     ordered: list[dict] = [None] * len(id_to_row)  # type: ignore[list-item]
     for chunk_id, row in id_to_row.items():
         ordered[row] = by_id[chunk_id]
+    # Duplicate chunk_ids in the npz would leave a hole here, and the failure
+    # would surface later as an AttributeError on None deep inside a search.
+    missing = [i for i, c in enumerate(ordered) if c is None]
+    if missing:
+        raise ValueError(
+            f"{_vectors_path()} has {len(missing)} vector rows with no matching "
+            f"chunk (duplicate chunk_ids?). First bad rows: {missing[:5]}"
+        )
     return ordered
 
 

@@ -1,10 +1,11 @@
 """Download ATE-2 (Armenian Text Embeddings 2) weights from Hugging Face.
 
-Credentials and paths come from .env -- nothing is hardcoded here.
+Credentials and paths come from .env; the MODEL comes from config.toml.
+Nothing is hardcoded here.
 
 Usage:
     python src/download_model.py --tokenizer-only --both   # ~21 MB, no weights
-    python src/download_model.py                 # the model named in .env
+    python src/download_model.py                 # the model named in config.toml
     python src/download_model.py --both          # base and large, for comparison
     python src/download_model.py --model Metric-AI/armenian-text-embeddings-2-large
 
@@ -48,6 +49,14 @@ os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import GatedRepoError, RepositoryNotFoundError
+
+
+def _configured_model() -> str:
+    """The model named in config.toml. Imported late so --tokenizer-only still
+    works in an environment where config.toml is absent."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from config import settings
+    return settings.embedding.model
 
 Path("logs").mkdir(exist_ok=True)
 logging.basicConfig(
@@ -106,7 +115,8 @@ def download(repo_id: str, token: str | None, tokenizer_only: bool = False) -> P
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download ATE-2 embedding weights")
-    parser.add_argument("--model", help="Repo id (default: EMBEDDING_MODEL from .env)")
+    parser.add_argument("--model",
+                        help="Repo id (default: [embedding] model in config.toml)")
     parser.add_argument("--both", action="store_true",
                         help="Download both -base and -large for benchmarking")
     parser.add_argument("--tokenizer-only", action="store_true",
@@ -130,11 +140,8 @@ def main() -> None:
     elif args.model:
         repos = [args.model]
     else:
-        configured = os.getenv("EMBEDDING_MODEL")
-        if not configured:
-            logger.error("No model given: set EMBEDDING_MODEL in .env or pass --model")
-            sys.exit(1)
-        repos = [configured]
+        # config.toml, not an env var -- see the note in src/chunking.py.
+        repos = [_configured_model()]
 
     for repo_id in repos:
         download(repo_id, token, tokenizer_only=args.tokenizer_only)
