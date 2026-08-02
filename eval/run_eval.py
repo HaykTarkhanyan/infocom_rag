@@ -19,6 +19,14 @@ Usage:
     python eval/run_eval.py --smoke              # priority 5 only
     python eval/run_eval.py --limit 5 --no-judge # cheap retrieval-only pass
     python eval/run_eval.py --retriever bm25     # compare retrievers
+
+Three things the report prints that are easy to misread:
+  - recall@k counts a multi_source question as a hit if ANY expected article was
+    retrieved. Read the `coverage` line beneath it.
+  - ASSERTIONS are literal substring matches against an agglutinative language.
+    Failures there are a prompt to go and look, not a verdict.
+  - `--limit` takes a SEEDED SAMPLE, not the first N. The file is ordered with
+    every holdout case first, so a head slice would test only holdout.
 """
 
 import argparse
@@ -27,6 +35,8 @@ import hashlib
 import json
 import logging
 import math
+import os
+import random
 import statistics
 import sys
 import tomllib
@@ -54,7 +64,11 @@ logger = logging.getLogger(__name__)
 QUESTIONS = Path("eval/questions.toml")
 RESULTS = Path("eval/results.jsonl")
 JUDGE_CACHE = Path("eval/judge_cache.jsonl")
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("RAG_API_URL", "http://localhost:8000")
+
+# Matches the project default and curate.py, so `--limit` samples the same
+# questions every run.
+SEED = 509
 
 # The judge MUST be stronger at the task than the model being graded, per
 # _knowledge/02. We grade gpt-5.4-mini, which scores 0.965 on ArmBench reading
@@ -68,9 +82,16 @@ API_URL = "http://localhost:8000"
 JUDGE_MODEL = "openai/gpt-5.2-pro"
 
 
-def judge_key(question: dict, answer: str, model: str) -> str:
+def judge_key(question: dict, answer: str, excerpts: str, model: str) -> str:
+    """Cache identity for one judgement.
+
+    The EXCERPTS are part of the key, not just the answer. `grounded` is defined
+    relative to the excerpts, so the same answer text judged against different
+    retrieved context is a different question -- changing `max_distance` or
+    `top_k` can leave the answer identical while the evidence behind it moved.
+    """
     payload = json.dumps([question["id"], question.get("grading_notes", ""),
-                          answer, model], ensure_ascii=False)
+                          answer, excerpts, model], ensure_ascii=False)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:32]
 
 
@@ -139,7 +160,14 @@ def load_questions(smoke: bool, limit: int | None) -> list[dict]:
     questions = tomllib.loads(QUESTIONS.read_text(encoding="utf-8"))["question"]
     if smoke:
         questions = [q for q in questions if q["priority"] >= 5]
-    return questions[:limit] if limit else questions
+    if not limit or limit >= len(questions):
+        return questions
+    # A SEEDED SAMPLE, not the first N. curate.py wrote every holdout case to the
+    # top of the file, so `questions[:5]` returned five held-out questions --
+    # exactly the set that must never be looked at while tuning. Seeded so the
+    # subset is still reproducible run to run.
+    sample = random.Random(SEED).sample(questions, limit)
+    return sorted(sample, key=lambda q: questions.index(q))
 
 
 async def ask(client: httpx.AsyncClient, question: dict,
@@ -181,13 +209,14 @@ async def judge(question: dict, result: dict, cache: dict[str, dict] | None = No
     """Grade one answer, reusing a cached verdict when the answer is unchanged."""
     cache = cache if cache is not None else {}
     answer_text = result.get("answer") or ""
-    key = judge_key(question, answer_text, JUDGE_MODEL)
-    if key in cache:
-        return {**cache[key], "cost_usd": 0.0, "cached": True}
-
     excerpts = "\n\n".join(
         f"[{s['n']}] {s['title']}\n{s['text'][:900]}" for s in result.get("sources", [])
     ) or "(no excerpts were retrieved)"
+
+    key = judge_key(question, answer_text, excerpts, JUDGE_MODEL)
+    if key in cache:
+        return {**cache[key], "cost_usd": 0.0, "cached": True}
+
     answer = answer_text or "(the system returned no answer)"
 
     response = await llm.call(
@@ -209,9 +238,18 @@ async def judge(question: dict, result: dict, cache: dict[str, dict] | None = No
 
 
 def check_assertions(question: dict, answer: str) -> dict:
-    must = [s for s in question.get("answer_must_contain", []) if s not in answer]
-    must_not = [s for s in question.get("answer_must_not_contain", []) if s in answer]
+    """Literal substring checks against the answer.
+
+    `n_checks` is recorded so the report can tell "declared no assertions" apart
+    from "passed every assertion" -- 9 of 35 questions declare none, and counting
+    them as passes would inflate the rate.
+    """
+    contains = question.get("answer_must_contain", [])
+    excludes = question.get("answer_must_not_contain", [])
+    must = [s for s in contains if s not in answer]
+    must_not = [s for s in excludes if s in answer]
     return {"missing": must, "forbidden_present": must_not,
+            "n_checks": len(contains) + len(excludes),
             "passed": not must and not must_not}
 
 
@@ -244,10 +282,26 @@ async def run_one(client: httpx.AsyncClient, question: dict, retriever: str | No
 
 
 def report(rows: list[dict], meta: dict) -> None:
+    # Rows that never reached the API have no metrics at all. Report them first
+    # and loudly, then exclude them -- a run that half-failed must not print a
+    # clean-looking summary over the surviving half.
+    errors = [r for r in rows if "error" in r]
+    rows = [r for r in rows if "error" not in r]
+
     print()
     print("=" * 74)
     print(f"EVAL  {meta['run_id']}   retriever={meta['retriever']}  n={len(rows)}")
     print("=" * 74)
+
+    if errors:
+        print(f"\n!! {len(errors)} QUESTION(S) FAILED TO RUN -- every number below "
+              f"excludes them")
+        for row in errors[:6]:
+            print(f"     {row['id']}: {row['error'][:70]}")
+    if not rows:
+        print("\nNo question completed. Nothing to report.")
+        print("=" * 74)
+        return
 
     # --- retrieval ---
     scored = [r for r in rows if r["retrieval"].get("applicable")]
@@ -263,6 +317,20 @@ def report(rows: list[dict], meta: dict) -> None:
         if ranks:
             print(f"  rank of first correct: median {statistics.median(ranks):.0f}, "
                   f"worst {max(ranks)}")
+
+        # recall@k counts a question as hit if ANY expected article was found, so
+        # a 3-source question that retrieved 1 scores the same as a perfect one.
+        # Coverage is the honest number for those, and it was being computed and
+        # thrown away.
+        partial = [r for r in scored
+                   if r["retrieval"]["hit"] and r["retrieval"].get("coverage", 1.0) < 1.0]
+        if partial:
+            mean_cov = statistics.mean(r["retrieval"]["coverage"] for r in scored)
+            print(f"  coverage  {mean_cov:.1%} of expected articles retrieved on average")
+            print("  PARTIAL (counted as a hit, found only some sources):")
+            for row in partial:
+                print(f"     {row['id']:<26} {row['retrieval']['coverage']:.0%}")
+
         misses = [r["id"] for r in scored if not r["retrieval"]["hit"]]
         if misses:
             print(f"  MISSED: {', '.join(misses[:6])}")
@@ -280,6 +348,24 @@ def report(rows: list[dict], meta: dict) -> None:
         print(f"  verdicts  {dict(verdicts)}")
         print(f"  grounded  {grounded}/{len(judged)} = {grounded/len(judged):.1%}"
               "   (no claims outside the excerpts)")
+
+    # --- assertions: the only LLM-free quality signal, so always shown ---
+    checked = [r for r in rows if r["assertions"].get("n_checks")]
+    if checked:
+        passed = sum(1 for r in checked if r["assertions"]["passed"])
+        print(f"\nASSERTIONS  (n={len(checked)}, exact substring match)")
+        print(f"  passed    {passed}/{len(checked)} = {passed/len(checked):.1%}")
+        print("  NOTE: Armenian is agglutinative and these are literal substring")
+        print("  checks, so an inflected form ('Կառավարությունից' vs "
+              "'Կառավարությունը')")
+        print("  or a synonym counts as a failure. Read the misses before "
+              "believing them.")
+        for row in checked:
+            if not row["assertions"]["passed"]:
+                bad = row["assertions"]["missing"]
+                forbidden = row["assertions"]["forbidden_present"]
+                print(f"     {row['id']:<26} missing={bad}"
+                      + (f" FORBIDDEN={forbidden}" if forbidden else ""))
 
     # --- by bucket ---
     print("\nBY TYPE")
@@ -382,7 +468,9 @@ async def main_async(args) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the RAG eval set")
     parser.add_argument("--smoke", action="store_true", help="priority 5 only")
-    parser.add_argument("--limit", type=int)
+    parser.add_argument("--limit", type=int,
+                        help="Run a seeded random sample of N questions "
+                             "(NOT the first N -- holdout cases are written first)")
     parser.add_argument("--retriever", choices=["dense", "bm25"])
     parser.add_argument("--top-k", type=int)
     parser.add_argument("--no-judge", action="store_true",

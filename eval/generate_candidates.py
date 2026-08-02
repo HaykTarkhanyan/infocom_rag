@@ -4,13 +4,24 @@ Generating a question *from* a chunk means the correct source is known by
 construction -- that is where ground truth for retrieval recall comes from,
 without anyone hand-labelling 969 chunks.
 
-The obvious hazard: a model asked to write a question about a passage tends to
-reuse that passage's vocabulary, which makes lexical retrieval look far better
-than it is and makes dense retrieval look easy. Two mitigations:
+Two hazards pull in OPPOSITE directions, which is why the prompt addresses both.
 
-  1. The prompt demands paraphrase and forbids copying distinctive phrases.
-  2. `--report` measures token overlap between each question and its source
-     chunk, so a set that is too easy is visible rather than assumed away.
+1. **Leakage.** A model asked to write a question about a passage reuses that
+   passage's vocabulary, which flatters lexical retrieval and makes dense
+   retrieval look easy. Mitigated by demanding paraphrase, and by `--report`,
+   which measures question/source token overlap so a too-easy set is visible.
+
+2. **Dangling reference.** The generator can see the excerpt, so its "this
+   decision" and "he" resolve for *it* and for nobody else. The first version of
+   this prompt did not forbid them and 13 of 35 questions came out carrying one;
+   roughly six had no determinate answer at all. Mitigated by the
+   self-containment rule below.
+
+Fixing (2) makes (1) worse -- naming a subject means borrowing the words that
+identify it. Measured while repairing the set by hand: rewriting one question to
+name its subject took overlap from 0.45 to 0.77, past the 0.65 rejection
+threshold. The instruction therefore asks for the FEWEST identifying words, and
+`--report` remains the check that the trade did not go too far.
 
 Output is JSONL of CANDIDATES. They are not the eval set -- they need reading and
 curating into eval/questions.toml. Anything auto-generated and auto-accepted
@@ -59,6 +70,8 @@ Below is one excerpt from an article. Write TWO questions in Armenian that this 
 
 Requirements:
 - Questions must be answerable from THIS excerpt alone.
+- Each question must be SELF-CONTAINED. The reader has NOT seen this excerpt and has no conversation history. Never write a bare "this", "that", "these", "he", "she" or "they" whose referent is only in the excerpt: name the person, place, organisation or decision instead. "On what basis did the ministry decide, in this case?" is broken; "On what basis did the ministry recognise public interest in Yeghipatrush?" is not.
+- But name the subject in the FEWEST distinctive words that identify it, and paraphrase everything else. Naming the subject necessarily borrows some of the excerpt's vocabulary; borrowing more than that just leaks the answer.
 - Write them the way a reader would actually ask, NOT by copying the excerpt's phrasing. Paraphrase. Avoid reusing the excerpt's distinctive noun phrases verbatim.
 - One question should be specific (a figure, a date, a name, a decision). One should be broader (a cause, a consequence, a position someone took).
 - Do not ask meta questions about "the article" or "the excerpt". Ask about the subject matter.

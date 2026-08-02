@@ -14,36 +14,47 @@
 # on time or budget.
 #
 # type:
-#   factual      answerable from one article
-#   multi_source needs more than one article
-#   unanswerable NOT in the corpus -- the system must decline, not invent.
-#                expected_post_ids is empty and answer_must_contain is a
-#                refusal marker.
+#   factual          answerable from one article
+#   multi_source     needs more than one article. NOTE: recall@k counts these as
+#                    a hit if ANY expected article is found; the report prints
+#                    per-question coverage, which is the number to read.
+#   unanswerable     NOT in the corpus -- the system must decline, not invent.
+#                    expected_post_ids is empty and answer_must_contain is a
+#                    refusal marker.
+#   partial_coverage the corpus answers a NEARBY question but not the one asked
+#                    (usually a different date). Correct behaviour is to give
+#                    what IS covered, labelled with its real scope, and decline
+#                    the rest. expected_post_ids still points at the article
+#                    that should be retrieved.
+#
+# answer_must_contain is a LITERAL substring check. Armenian is agglutinative, so
+# an inflected form of the right word fails it -- keep these to stems, numbers
+# and names that will not decline, and read every failure before trusting it.
 
 [[question]]
 id = "q-51999-spec"
 priority = 4
 type = "factual"
-text = "Ի՞նչ հիմքով է նախարարությունը ճանաչել հանրային գերակա շահը այս դեպքում։"
+text = "Եղիպատրուշի գործով ո՞ւմ ներկայացրած տվյալներով է հիմնավորվել, թե տեղացիների հետ հանդիպումներ են կայացել։"
 expected_post_ids = [51999]
 answer_must_contain = ["մեկ ընկերության", "տրամադրած տեղեկատվության"]
 answer_must_not_contain = []
 grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
 holdout = true
-source_overlap = 0.45   # question/source token overlap
+source_overlap = 0.36   # question/source token overlap
 source_url = "https://infocom.am/70095/"
 
 [[question]]
 id = "q-88380-broa"
 priority = 3
 type = "factual"
-text = "Ի՞նչ հիմնավորում է նա տալիս այն մտքին, որ մասնավոր մեղադրանքով վարույթը որոշ հանցանքների դեպքում կարող է գործնականում արդյունավետ լինել։"
+text = "Ի՞նչ հիմնավորում է տալիս Արդարադատության նախարարության ներկայացուցիչ Արփի Լազարյանը այն մտքին, որ մասնավոր մեղադրանքով վարույթը որոշ հանցանքների դեպքում կարող է գործնականում արդյունավետ լինել։"
 expected_post_ids = [88380]
 answer_must_contain = ["մասնավոր մեղադրանքով վարույթ", "խարդախություն"]
 answer_must_not_contain = []
 grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
 holdout = true
-source_overlap = 0.63   # question/source token overlap
+source_overlap = 0.65   # question/source token overlap
 source_url = "https://infocom.am/124279/"
 
 [[question]]
@@ -102,7 +113,7 @@ source_url = "https://infocom.am/10027231/"
 id = "q-1159469-broa"
 priority = 3
 type = "factual"
-text = "ԲՀԿ-ի և նրան համակրող ուժերի կարծիքով՝ ինչո՞ւ է վիճարկվում այդ տեղամասերի արդյունքների չեղարկումը, և ինչ են նրանք առաջարկում դրա փոխարեն։"
+text = "ԲՀԿ-ի և նրան համակրող ուժերի կարծիքով՝ ինչո՞ւ է վիճարկվում երկու ընտրատեղամասերի արդյունքները չեղարկելու ԿԸՀ որոշումը, և ի՞նչ են նրանք առաջարկում դրա փոխարեն։"
 expected_post_ids = [1159469]
 answer_must_contain = ["անվավեր", "նորից քվեարկություն"]
 answer_must_not_contain = []
@@ -115,13 +126,13 @@ source_url = "https://infocom.am/10038664/"
 id = "3-806341-broa"
 priority = 3
 type = "factual"
-text = "Ինչո՞ւ էին համայնքը նույն ընկերությանը լրացուցիչ գումարներ վճարում այս պայմանագրերի դեպքում։"
+text = "Ինչո՞ւ էր Աշտարակ համայնքը «Ավանգարդ Շին» ընկերության հետ կնքած պայմանագրերով լրացուցիչ գումարներ վճարում։"
 expected_post_ids = [806341]
 answer_must_contain = ["աշխատանքների ծավալների ավելացման", "հավելյալ վճարել"]
 answer_must_not_contain = []
 grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
 holdout = false
-source_overlap = 0.33   # question/source token overlap
+source_overlap = 0.50   # question/source token overlap
 source_url = "https://infocom.am/156352/"
 
 [[question]]
@@ -154,13 +165,13 @@ source_url = "https://infocom.am/80698/"
 id = "q-806535-broa"
 priority = 3
 type = "factual"
-text = "Ո՞ր պետական մարմինն է այս հարցում ներկայացվում որպես լիազոր մարմին, որին պետք է ուղղել կապված հարցերը։"
+text = "2019 թվականից ո՞ր գերատեսչությանն են անցել հայկական երկաթուղու կոնցեսիայի գծով պետական լիազորությունները։"
 expected_post_ids = [806535]
 answer_must_contain = ["ՏԿԵ նախարարություն", "լիազոր մարմինը"]
 answer_must_not_contain = []
 grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
 holdout = false
-source_overlap = 0.50   # question/source token overlap
+source_overlap = 0.54   # question/source token overlap
 source_url = "https://infocom.am/156530/"
 
 [[question]]
@@ -245,7 +256,7 @@ source_url = "https://infocom.am/126884/"
 id = "q-805830-spec"
 priority = 4
 type = "factual"
-text = "Քանի՞ հայ և քանի՞ իտալացի գիտնականներ են ընդգրկվել այդ համեմատական ուսումնասիրության մեջ։"
+text = "Քանի՞ հայ և քանի՞ իտալացի գիտնական են ընդգրկվել Հայաստանի և Իտալիայի գիտական համակարգերը համեմատող հետազոտության մեջ։"
 expected_post_ids = [805830]
 answer_must_contain = ["3617", "27 034"]
 answer_must_not_contain = []
@@ -284,26 +295,26 @@ source_url = "https://infocom.am/154881/"
 id = "q-51999-broa"
 priority = 3
 type = "factual"
-text = "Ինչո՞ւ էր նախարարությունը կարծում, որ այս որոշումը դրական ազդեցություն կունենա բնակավայրի վրա։"
+text = "Ինչո՞ւ էր նախարարությունը կարծում, որ Եղիպատրուշում հանրային գերակա շահ ճանաչելու որոշումը դրական ազդեցություն կունենա բնակավայրի վրա։"
 expected_post_ids = [51999]
 answer_must_contain = ["նոր աշխատատեղեր", "ներդրումներ"]
 answer_must_not_contain = []
 grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
 holdout = false
-source_overlap = 0.46   # question/source token overlap
+source_overlap = 0.53   # question/source token overlap
 source_url = "https://infocom.am/70095/"
 
 [[question]]
 id = "4-44-625820-broa"
 priority = 3
 type = "factual"
-text = "Ինչի՞ հետ էր կապված այդ քրեական գործերի հարուցումը՝ միայն ադրբեջանական կողմի գործողությունների՞, թե նաև հայկական բանակի որոշ զինծառայողների վարքի հետ։"
+text = "44-օրյա պատերազմին առնչվող քրեական գործերի հարուցումը կապվա՞ծ էր միայն ադրբեջանական կողմի գործողությունների հետ, թե՞ նաև հայկական բանակի որոշ զինծառայողների վարքի։"
 expected_post_ids = [625820]
 answer_must_contain = ["ադրբեջանական զինված ուժերի", "հայկական զինված ուժերի", "դասալքությանը"]
 answer_must_not_contain = []
 grading_notes = "Must answer from the cited article and include the exact figures or names listed in answer_must_contain."
 holdout = false
-source_overlap = 0.32   # question/source token overlap
+source_overlap = 0.41   # question/source token overlap
 source_url = "https://infocom.am/141227/"
 
 [[question]]
@@ -415,7 +426,11 @@ id = "unans-state-debt"
 priority = 5
 type = "partial_coverage"
 text = "Որքա՞ն է Հայաստանի պետական պարտքը 2026 թվականի վերջի դրությամբ։"
-expected_post_ids = []
+# The article carrying the March-2026 debt figure IS in the corpus, so retrieval
+# is scorable here even though the question as asked cannot be fully answered.
+# Left empty when this was reclassified from `unanswerable`, which silently
+# dropped it from recall@k.
+expected_post_ids = [1156904]
 answer_must_contain = []
 answer_must_not_contain = []
 grading_notes = "PARTIAL COVERAGE, not unanswerable: the corpus does contain state debt as of 2026-03-31 ($14.5bn). Correct behaviour is to give that figure WITH its date and say the end-of-2026 figure is not covered. FAIL if it presents the March figure as the year-end one."
