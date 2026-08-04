@@ -204,7 +204,30 @@ def extract_content(raw_html: str) -> tuple[str, str | None]:
         if not deduped or deduped[-1] != block:
             deduped.append(block)
 
-    return "\n\n".join(deduped).strip(), page_byline
+    text = "\n\n".join(deduped).strip()
+
+    if not text:
+        # Some posts carry their whole body as bare text inside <div>s with no
+        # <p> at all, so BLOCK_SELECTOR matches nothing and the post silently
+        # becomes an empty string. Measured at 7/1236 (0.6%) of one month of
+        # `news`; zero of the 94 `indepth` articles, which are Elementor-built
+        # and always have <p>.
+        #
+        # Adding `div` to BLOCK_SELECTOR would be wrong: divs nest, so each
+        # ancestor would re-emit its children's text and the dedup above only
+        # collapses CONSECUTIVE repeats. Falling back to the whole tree's text
+        # once, only when the structured pass found nothing, keeps the normal
+        # path untouched.
+        #
+        # Logged at WARNING rather than applied quietly -- a second extraction
+        # strategy firing is worth seeing in the fetch log.
+        fallback = re.sub(r"\s+", " ", tree.text(separator=" ", strip=False)).strip()
+        if fallback:
+            logger.warning("No block elements matched; recovered %d chars of "
+                           "unstructured text from a <div>-only body", len(fallback))
+            return fallback, page_byline
+
+    return text, page_byline
 
 
 def clean_title(raw_title: str) -> str:
