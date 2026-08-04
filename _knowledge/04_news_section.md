@@ -176,6 +176,49 @@ server leaves plenty inside the 4 GB box.
 
 ---
 
+---
+
+## What was actually fetched — 2026-08-04
+
+`python src/fetch_news.py` pulled the full year. **Not yet chunked, embedded or
+indexed** — this is the raw corpus only.
+
+```
+data/news/YYYY-MM.jsonl.gz     13 files, 16.5 MB gzipped
+20,549 posts    2025-08-04 .. 2026-08-04    365 distinct days
+0 duplicate post_ids           3,231,606 words total
+```
+
+Far smaller on disk than the 175 MB of JSON downloaded, because Armenian text
+gzips hard: a month is ~1.2 MB. `data/*` is already gitignored, so none of this
+is committed.
+
+| field | coverage | |
+|---|---|---|
+| `text`, `title`, `date`, `time`, `url`, `published_gmt`, `n_words` | **100%** | one post has empty text |
+| `infotags` | 94.3% | **616 distinct** tags present |
+| `source_outlet` | 47.6% | **38 distinct** outlets |
+
+- words: median **115**, mean 157, p90 283, max 18,497
+- republished **48%**. Top: `armenpress.am` 2,214 · `azatutyun.am` 2,204 ·
+  `factor.am` 1,303 · `1lurer.am` 1,244 · `news.am` 837 · `arm.sputniknews.ru` 481
+- raw `content_html` retained on every record, so anything not extracted today
+  can be recovered without refetching
+
+**One gap in the calendar, and it is real:** no posts on 2025-08-31. The API
+independently reports 0 for that Sunday, and our stored counts match it exactly
+on both sides (15 / 0 / 39). Verified rather than assumed, because a missing day
+is exactly what a month-boundary bug would look like.
+
+**A bug this fetch exposed.** `extract_content` matched only block elements
+(`p, h1-h5, li, ...`), so posts whose body is bare text inside `<div>`s extracted
+to an empty string — silently, with no error. 7 of 1,236 in the first month
+(0.6%), each holding 43-207 real words; projected ~116 lost across the year.
+Zero of the 94 `indepth` articles were affected, which is why it survived until
+news was fetched. Fixed with a logged fallback; the year came in with **1** empty
+text instead of ~116. See
+[`_learnings/2026-08-04-1120_extractor-tuned-on-one-corpus.md`](../_learnings/2026-08-04-1120_extractor-tuned-on-one-corpus.md).
+
 ## Open questions before committing to this
 
 1. **Scope.** Whole last year (20.5k), a shorter rolling window (30-90 days), or
