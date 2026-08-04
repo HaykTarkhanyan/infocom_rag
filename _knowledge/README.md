@@ -11,6 +11,7 @@ it live in [`research/`](../research/README.md), and raw artifacts in
 | 01 | [01_site_structure.md](01_site_structure.md) | infocom.am survey | Access surface (robots, sitemaps, WP REST API), URL patterns, category inventory with volumes, per-category content quality, data-quality problems, field mapping for ingestion |
 | 02 | [02_evaluation_design.md](02_evaluation_design.md) | How to evaluate this RAG | Question-set schema, metrics, LLM-as-judge recipe, runner design, and the specific mistakes to avoid — surveyed from a prior text-to-SQL project |
 | 03 | [03_armenian_llm_benchmarks.md](03_armenian_llm_benchmarks.md) | ArmBench-LLM 1.0 | Which LLM to pick for Armenian, read by reading-comprehension score rather than the headline Average; cost nuances; why several leaderboard zeros are harness failures |
+| 04 | [04_news_section.md](04_news_section.md) | The `news` section (Լրահոս) | Volume by date, the two separate news streams (WordPress vs an embedded Telegram channel), the 46% republished-from-other-outlets split, measured word counts and near-duplicate rates that revise DECISIONS #3, fetch feasibility and downstream sizing |
 
 ## How this differs from the other note folders
 
