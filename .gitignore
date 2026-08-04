@@ -228,6 +228,7 @@ research/raw/category_samples.json
 logs/*.jsonl
 logs/*.json
 logs/*.log
+logs/*.out
 
 # Playwright MCP scratch output (page snapshots, console logs, screenshots)
 .playwright-mcp/
