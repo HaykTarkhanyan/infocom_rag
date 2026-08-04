@@ -1,0 +1,122 @@
+title = "Survey the news section and fetch a year of it"
+date = "2026-08-04"
+time = "10:35"
+areas = ["_knowledge/", "src/fetch_news.py", "src/fetch_articles.py", "tests/", "data/news/"]
+
+done = [
+  "Explored https://infocom.am/news/ with Playwright and the WP REST API to assess indexing daily news. Reopens DECISIONS #3, which is what #3 itself named as the trigger ('wanting recency coverage ... is the obvious extension').",
+  "Found that TWO of #3's premises do not hold at the sizes that matter now: news is median 111 words, not 72, and near-duplication is modest (0 pairs above cosine 0.95 in a full day) rather than the 'near-identical wire stubs' #3 feared.",
+  "Found /mi-shnchov/ is not WordPress at all -- it redirects to /one-breath/ and embeds the Telegram channel @infocomm via wptelegram, ~69.7k messages, invisible to the REST API.",
+  "Quantified that 46-48% of news is republished from other outlets with the source in the title, spanning RFE/RL, the state agency and Russian state media.",
+  "Wrote _knowledge/04_news_section.md with the survey, then updated it with what the fetch actually produced.",
+  "Wrote src/fetch_news.py: date-bounded, month-sharded, gzipped, resumable, with the republished outlet parsed into its own field.",
+  "FOUND AND FIXED silent text loss in extract_content -- posts with <div>-only bodies extracted to empty strings. Would have cost ~116 documents across the year.",
+  "Fetched the full year: 20,549 posts, 2025-08-04..2026-08-04, 365 distinct days, 0 duplicates, 3.23M words, 17 MB gzipped.",
+  "Added tests/test_extraction.py (10 tests) pinning the block extraction, the div-only fallback, and the nesting case the obvious fix would have broken.",
+]
+
+pending = [
+  "SCOPE IS UNDECIDED and blocks everything downstream: whole year (20.5k) or a rolling window? News alongside indepth in one index, or separate?",
+  "Nothing is chunked, embedded or indexed. Projected ~21k chunks and an ~86 MB vector file at median 115 words.",
+  "Where the ~86 MB of vectors would live, given the deploy builds from git and the current 3.6 MB npz is committed.",
+  "Мի շնչով / Telegram is a separate ingestion path, not investigated beyond identifying it. Unknown whether it duplicates the main feed.",
+  "The eval set is entirely indepth. News questions are a different shape (recency, 'what happened on date X', entity lookups) and have no cases.",
+  "data/news/ is gitignored, so the corpus exists only on this machine. Refetching costs ~175 MB and ~14 minutes.",
+  "Carried over and untouched today: rotate APP_PASSWORD, no HTTPS/rate-limit/spend-cap on the live demo, Hetzner 2FA, the 9 hard eval candidates awaiting a read, no multi-turn eval bucket.",
+]
+
+next = [
+  "Decide scope (rolling window vs full year; mixed vs separate index) -- nothing else can proceed sensibly until then.",
+  "If indexing goes ahead: chunk, then embed on Colab GPU rather than this laptop (~14h on CPU at 0.4 chunks/s).",
+  "Add news-shaped eval cases, including the templated-numbers hazard found in the duplicate analysis.",
+]
+
+files = [
+  "_knowledge/04_news_section.md -- NEW, the survey plus what was fetched",
+  "src/fetch_news.py -- NEW, the year fetcher",
+  "src/fetch_articles.py -- extract_content gains a logged fallback for <div>-only bodies",
+  "tests/test_extraction.py -- NEW, 10 tests",
+  "data/news/*.jsonl.gz -- 13 month shards, gitignored",
+]
+
+commits = [
+  "5197435 Survey the news section; two premises of DECISIONS #3 do not hold",
+  "40612de Add a news fetcher, and fix silent text loss on <div>-only bodies",
+  "52bb671 Record the fetched year and the extractor lesson it exposed",
+]
+
+notes = """
+THE NUMBER THAT REFRAMES THE PROJECT. indepth publishes ~111 long-form pieces a
+year; news publishes 20,543. The existing 94-article corpus is therefore already
+most of a year of indepth, and no amount of indexing indepth will ever make the
+system know what happened last week. Recency is only reachable through news.
+
+DECISIONS #3 REOPENED, ON ITS OWN TERMS. #3 chose indepth and rejected news, and
+explicitly named this trigger. Two of its premises turned out wrong:
+
+  1. "median 72 words" -> measured 111 across the year, and rising (2025-08 was
+     63; every window since is 92-158). The 72 came from sampling the whole
+     146,960-post archive, which is dominated by older, shorter items. Right
+     about the archive, wrong about the recent window.
+  2. "near-identical wire stubs swamp top-k" -> on one full day (80 posts,
+     ATE-2-large, pairwise cosine): ZERO pairs above 0.95, one above 0.90, eight
+     above 0.80.
+
+A DIFFERENT HAZARD IN ITS PLACE. Several pairs sit at 0.83 not because they are
+duplicates but because they are TEMPLATES differing only in numbers -- "Ararat
+region recovered 122m dram" vs "Kotayk region recovered 52m". Ask "how much was
+recovered?" and several arrive at once; correctness depends on the model reading
+which region goes with which figure. A precision problem, not a swamping one,
+and it needs an eval case rather than a dedup filter. The original worry was
+directionally reasonable and wrong about the mechanism.
+
+TWO NEWS STREAMS, ONLY ONE IN WORDPRESS. /news/ (Լրահոս) is category 49 and
+reachable via the REST API. /mi-shnchov/ (Մի շնչով) redirects to /one-breath/ and
+is a wptelegram embed of t.me/infocomm -- ~69.7k messages, paginated by Telegram
+message id, entirely absent from the API. Pleasingly, the archived prototype was
+originally built for Telegram (DECISIONS #2), so attic/ may hold reusable pieces.
+
+48% REPUBLISHED, 38 OUTLETS. armenpress.am 2,214; azatutyun.am 2,204;
+factor.am 1,303; 1lurer.am 1,244; news.am 837; arm.sputniknews.ru 481. That
+spans RFE/RL, the state news agency and Russian state media. A RAG over this
+corpus is blending editorial standpoints, and today nothing in the prompt or the
+citations says so. The outlet is trivially parseable from the title suffix, so it
+is now its own field and can reach the citation line cheaply.
+
+THE BUG THIS FETCH EXPOSED -- and it is the session's real lesson. extract_content
+collects from "p, h1-h5, li, blockquote, figcaption, td, th". No div. A post whose
+whole body is bare text inside <div>s matches NOTHING and extracts to an empty
+string: no exception, no warning, just a document with no text. 7 of 1,236 in the
+first month, each holding 43-207 real words; ~116 across the year.
+
+Zero of the 94 indepth articles were affected -- they are Elementor-built and
+always have <p> -- which is exactly why it survived. An extractor's test set is
+the corpus it was written against.
+
+The obvious fix is wrong. Adding `div` to BLOCK_SELECTOR looks like one word and
+is not: divs nest, so every ancestor re-emits its descendants' text, and the
+dedup only collapses CONSECUTIVE repeats. A three-deep div would yield the same
+sentence three times. The fix is a fallback firing only when the structured pass
+found nothing, logged at WARNING so a second strategy is visible in the fetch log.
+Verified both directions: 7/7 recovered, 0 of 400 previously-good records changed.
+Year came in with 1 empty text instead of ~116.
+
+Generalisable: an extractor's failure mode is LESS OUTPUT, which is
+indistinguishable from a short document. One query for text=="" caught it in
+seconds. Comparing against a naive HTMLParser(html).text() showed 342-2,051 chars
+where ours returned 0 -- the gap between the careful extractor and the dumb one is
+the bug.
+
+VERIFIED RATHER THAN ASSUMED. The year has one calendar gap: no posts on
+2025-08-31. Checked against the API independently, because a missing day is
+exactly what a month-boundary bug in the sharding would look like. The API reports
+0 for that Sunday and our stored counts match on both sides (15 / 0 / 39). Real.
+
+SIZING. ~175 MB of JSON downloaded, 17 MB at rest -- Armenian gzips hard, roughly
+1.2 MB per month. Raw content_html is kept on every record so a later extraction
+change costs a re-parse, not a re-download; that decision paid for itself within
+the hour when the div bug was found. Deep pagination verified to page 206; page
+250 correctly 400s, as the X-WP-TotalPages learning describes.
+
+NO LLM SPEND THIS SESSION. All measurement was local embeddings plus the REST API.
+"""
