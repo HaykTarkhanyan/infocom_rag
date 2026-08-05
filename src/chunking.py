@@ -23,6 +23,8 @@ Usage:
 """
 
 import argparse
+import glob
+import gzip
 import json
 import logging
 import os
@@ -65,6 +67,65 @@ PASSAGE_PREFIX = "passage: "
 SENTENCE_SPLIT = re.compile(r"(?<=[։.!?])\s+")
 
 HEADING_RE = re.compile(r"^## (.+)$")
+
+
+# The WP `authors` field is a list of NAMES for indepth (fetch_articles resolves
+# them) but a list of raw WP objects for news (fetch_news keeps the API shape).
+# `api.Source.authors` is typed `list[str]`, so an unnormalised news record fails
+# validation at query time -- long after chunking "succeeded".
+GENERIC_AUTHOR = "adminfo_com"
+
+
+def normalize_authors(raw) -> list[str]:
+    """Coerce either author shape to a list of display names.
+
+    Drops the generic `adminfo_com` account, which carries 93% of news posts and
+    is a publishing account rather than a person -- a citation reading "by
+    adminfo_com" is worse than no byline. The raw value survives in
+    `data/news/*.jsonl.gz` and in the post's `author_id` either way.
+    """
+    names: list[str] = []
+    for author in raw or []:
+        name = author if isinstance(author, str) else (
+            author.get("display_name") or author.get("name") or author.get("slug") or ""
+        )
+        name = str(name).strip()
+        if name and name != GENERIC_AUTHOR:
+            names.append(name)
+    return names
+
+
+def load_articles(path: str) -> list[dict]:
+    """Read one .jsonl file, or a directory of .jsonl/.jsonl.gz shards.
+
+    News is fetched as one gzipped shard per month (20.5k posts would be a single
+    unwieldy file, and shards make an interrupted fetch resumable), so chunking
+    has to accept a directory as readily as a file.
+    """
+    source = Path(path)
+    if source.is_dir():
+        files = sorted(glob.glob(str(source / "*.jsonl.gz")) + glob.glob(str(source / "*.jsonl")))
+        if not files:
+            raise FileNotFoundError(f"No .jsonl or .jsonl.gz files in {source}")
+    elif source.exists():
+        files = [str(source)]
+    else:
+        raise FileNotFoundError(
+            f"{source} not found. Run src/fetch_articles.py or src/fetch_news.py first."
+        )
+
+    articles: list[dict] = []
+    for file in files:
+        opener = gzip.open if file.endswith(".gz") else open
+        with opener(file, "rt", encoding="utf-8") as handle:
+            for line in handle:
+                if line.strip():
+                    articles.append(json.loads(line))
+        logger.info("  read %-34s total %d", Path(file).name, len(articles))
+
+    for article in articles:
+        article["authors"] = normalize_authors(article.get("authors"))
+    return articles
 
 
 def token_length(tokenizer, text: str) -> int:
@@ -266,21 +327,23 @@ def main() -> None:
                         help="Tokenizer to measure with (default: [embedding] model in config.toml)")
     args = parser.parse_args()
 
-    source = Path(args.input)
-    if not source.exists():
-        logger.error("Input not found: %s -- run src/fetch_articles.py first", source)
-        sys.exit(1)
-
     logger.info("Tokenizer: %s", args.model)
     tokenizer = AutoTokenizer.from_pretrained(args.model)
 
-    articles = [json.loads(line) for line in source.open(encoding="utf-8") if line.strip()]
-    logger.info("Loaded %d articles from %s", len(articles), source)
+    try:
+        articles = load_articles(args.input)
+    except FileNotFoundError as exc:
+        logger.error("%s", exc)
+        sys.exit(1)
+    logger.info("Loaded %d articles from %s", len(articles), args.input)
 
     chunks: list[dict] = []
-    for article in articles:
+    for i, article in enumerate(articles, 1):
         chunks.extend(chunk_article(article, tokenizer, args.max_tokens,
                                     args.overlap_sentences))
+        # 94 articles finished before anyone looked; 20.5k does not.
+        if i % 2000 == 0 or i == len(articles):
+            logger.info("  chunked %d/%d articles -> %d chunks", i, len(articles), len(chunks))
 
     report(chunks, articles, args.max_tokens)
 

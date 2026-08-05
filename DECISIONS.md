@@ -8,6 +8,69 @@ day, before this file existed. Later entries are recorded as the decision is mad
 
 ---
 
+## 22. The corpus is a full year of `news`, replacing `indepth`
+
+**Date** 2026-08-04 · **Status** active · **supersedes #3**
+
+**Why.** #3 chose `indepth` and rejected `news`. It also named the condition for
+revisiting — *"wanting recency coverage"* — and measurement showed two of its
+premises no longer hold. Full survey in
+[`_knowledge/04_news_section.md`](_knowledge/04_news_section.md).
+
+**The number that forced it:**
+
+| | all time | **last 365 days** |
+|---|---|---|
+| `news` (cat 49) | 146,960 | **20,543** |
+| `indepth` (cat 51) | 5,827 | **111** |
+
+`indepth` publishes ~111 long-form pieces a year. The 94-article corpus was
+already most of a year of it, so no amount of indexing `indepth` would ever make
+the system able to answer about last week. Recency is only reachable through
+`news`.
+
+**The two premises of #3 that failed.**
+1. *"median 72 words"* — measured **111** across the year, and rising (2025-08
+   was 63; every window since 92-158). The 72 came from sampling the whole
+   146,960-post archive, which is dominated by older, shorter items. Correct
+   about the archive, wrong about the recent window.
+2. *"near-identical wire stubs swamp top-k"* — on a full day (80 posts,
+   ATE-2-large, pairwise cosine): **0** pairs above 0.95, 1 above 0.90, 8 above
+   0.80. Near-duplication is modest.
+
+**What replaced that worry.** Templated items differing only in numbers
+("Ararat region recovered 122m dram" / "Kotayk 52m") sit at ~0.83 and arrive
+together. A precision problem, not a swamping one — it needs an eval case, not a
+dedup filter.
+
+**Alternatives rejected.**
+- **News alongside indepth in one index** — the obvious hedge, and rejected
+  because a 100-word wire item can outrank a considered long-form piece on the
+  same question, with nothing in the ranking aware of the difference. Revisit
+  with source-type weighting.
+- **A shorter rolling window (30-90 days)** — cheaper to build and keep fresh,
+  but cannot answer anything seasonal or comparative.
+- **Keeping indepth** — 111 articles a year cannot carry a news assistant.
+
+**What this costs.**
+- **48% of the corpus is republished from 38 other outlets**, spanning RFE/RL,
+  the state news agency and Russian state media. The system is now blending
+  editorial standpoints. `source_outlet` is captured per record but is **not yet
+  surfaced in citations**, which it should be.
+- Real bylines nearly vanish: 93% of news carries the generic `adminfo_com`
+  publishing account, normalised away at chunking. 8 named journalists remain.
+- **The index no longer fits in git.** 25,797 chunks → 66 MB of chunks and
+  ~100 MB of fp32 vectors, against GitHub's 100 MB hard limit, while `DEPLOY.md`
+  builds from git. Unresolved; see DEFERRED_TODO.md.
+- The 35-question eval set is entirely `indepth` and now measures a corpus the
+  system no longer has.
+
+**What would change this.** Evidence that wire-item retrieval degrades answer
+quality against the old long-form corpus — which the current eval cannot show,
+because it tests documents that are no longer indexed.
+
+---
+
 ## 21. Follow-up questions are rewritten into standalone ones BEFORE retrieval
 
 **Date** 2026-08-02 · **Status** active
